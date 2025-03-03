@@ -1,0 +1,117 @@
+Plan Documentation Cliente Cybedefend :
+
+1) Introduction 
+- Explore Cybedefend 
+	What is Cybedefend ?
+	Motivation
+	With Cybedefend, you can
+	Roadmap
+- Security Analysis as a Service
+	Cybdefend, unified plateform
+	Benefit of AI to go faster
+	Evolution and Innovation with a new product: BLSA
+Cybdefend FAQs
+ -Some Main Questions 
+ 
+2) Getting Started
+A) General Information
+- Cybedefend never stores your code
+- Cybedefend Security Checks (Checks static scan, container, Cloud, Domain DAST, Security By Design BLSA)
+- SAST, IAC and SCA by Cybedefend: supported languages, security focus and scanner
+	IAC : Cybdefend Engine + checkov, trivy, Kicks
+	SAST : Cybdefend Engine + Semgrep, Bearer
+	SCA : Cybdefend Engine + Github adisories
+- Reachability engine to remove false positives with AI (see roadmap)
+	Using or not the vulnerability detected function or package
+- Dataflow to follow the vulnerability in your code (Alpha)
+- RBAC/Rebac management Organization, Teams, Project and Users (advanced segmentation and choice)
+- Parameters Start Scan project 
+	Frequencies Scanning
+	Vulnerability severity choice
+	Type of scanning (recommended everyone)
+	Sast fast scaninng and Datafflow option
+- Free plan to test on your project And Demonstration planfication
+	How On Boarding is plannified : 
+		- Kick Off presentation and demonstration (If you require a signed NDA, we can provide one to you (or review your own to sign))
+		- Support (In-app support, Slack/Teams, Dev Docs)
+		- Evaluation Form to helps us improve 
+			- Ease of use & setup
+			- Capabilities (meet requirements, are the features and integrations sufficient, is ai integration help you in your process to improve focus and prioritisation compared to others you've seen),
+			- Comparisons (pricing, features comprared to other stack provider, does ai make the difference ?)
+			- Support (reactive, response time quality, does your team trust Cybdefend)
+			- Costs & ROI (good proce in return of ROI, reduce dev time on security issue and better understanding easiier thanks to ai ?)
+
+B) On-boarding and Account Creation and management
+- Create Account, your Organization and Connect Your Repositories 
+	- Create an acocunt only with Oauth2
+	- Detail : As soon as you have done account setup and connected repositories, Cybdefend will instantly start a scan
+	- redirection Detailed Integration Guides
+- Managing access with Organizations and Teams
+	- Each organization has member roles and Teams and each Teams has members, roles and Project (whitch is the code based)
+	- How To Create Teams
+	- How To Create Projects
+	- How invite organizations member
+	- How to invite Teams member
+	- How to select your team in UI
+- Assigning Roles in Organizations and Teams
+	- Presentation of roles and accessibility for team member and organization member (Table comparaison)
+	- Roles and Permissions for Organization members
+	- Roles and Permissionsfor Team members
+	- How to modify Team adn organization roles (In an organization it needs to have one administrator and in a team a team manager and administrator and team manager can not modify their own roles and between each other) 
+- GitHub Integration for Authentication and User Management
+
+C) Relevant Functionnalities
+- Page Project Management with main statistics and project list with vulnerability by severity.
+- For each Project List of vulnerability class by type of scanner + different filter to present
+- Security Champion directly integrates in dashboard with understanding f the context of the vulnerability
+- Update any vulnerability easily (severity, risk and add comment to follow up the progress)
+- Overview project page (main statics on the proejct vulneraiblity by type, by time, by scanner type ect...)
+- Fix analysis : correct any issue and create a pull request (with a human validation) with ai
+- AI-Powered Vulnerabulity Detection (in Developmement see roadmap) : Reduction of false positive and false negativeon scanner SAST and IAC
+- Cross-Analysis of Results : Correlates findings across different analysis types, identifying patterns and dependencies that could increase or decrease risk.
+- AI Intelligent Vulnerability Triage : Sort vulnerabilities based on exploitability, availability and relevance to the application for focus on the most critical issues first.
+- Innovation BLSA (in Developmement see roadmap): New Product to find inserue by design issue in a repository 
+
+3) Static Scanning Code Repository
+A) Connect Your Source Code
+	- Connect GitHub Account to Cybedefend
+		First link Organization in integration setting (few minutes to set up)
+		Then create project with github 
+		Select the repository and click on create (start scan launch and immediate results)
+	- More to come see roadmap
+B) Scanning a project with Cybedefend - Good Practice
+	- SCA specifications (Support for dependency scanning by language)
+		Array Language, File Scanned, zero day vulneraibility analysis (CRON Task)
+	- Maven, C/C++,.NET, Java/Scala/Kotlin to take and modify from Aikido documentaiton
+	- Scanned Branches in Cybedefend : Single-Branch Scanning only the master branch
+C) Local Code Scanning
+	- Introduction + Api Key creation tuotorial and redirection to article local scaning for Linux/MAc/Windows
+	- CLI options for Local Scanner + Documentation from github cli repository + specific command
+	- Mac Setup for Local Code Scanning : Requirements, How to set up Local Scanning
+	- Windows Setup for Local Code Scanning : Requirements, How to set up Local Scanning
+	- Linux Setup for Local Code Scanning : Requirements, How to set up Local Scanning
+D) Autres
+	- Why does Cybedefend not find a specific vulnerability or CVE inside a dependency?
+	
+4) CI Integrations
+	- GitLab Self Managed Setup for Local Code Scanning Tutorial (documentaiton example)
+	- Azure DevOps Server Setup for Local Code Scanning Tutorial (documentaiton example)
+	- GitHub Action Setup for Local Code Scanning Tutorial (documentaiton example)
+
+5) Cybedefend Autofix
+A) AI Autofix for SAST and IaC Issues
+	- Key Features of AI Autofix
+	- Important Info (We do not use your code for training / fine-tuning, Speed,Confidence Levels)
+	- How to use the AI Autofix functionality (in developpement see roadmap)
+
+6) Cybedefend Sorting Vulnerability (in developpement see roadmap)
+
+7) Cybedefend BLSA Innovation (in developpement see roadmap)
+
+8) IDE Plugins
+A) VS Code
+	- How to Install and Test
+B) Cursor IDE
+	- How to Install and Test
+
+9) Integrations
