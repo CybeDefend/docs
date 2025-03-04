@@ -21,8 +21,7 @@
                 "group": "General Information",
                 "pages": [
                   "/get-started/general-information/never-stores-your-code",
-                  "/get-started/general-information/security-checks",
-                  "/get-started/general-information/sast-iac-sca",
+                  "/get-started/general-information/code-repository-scanning",
                   "/get-started/general-information/reachability-engine",
                   "/get-started/general-information/dataflow-analysis",
                   "/get-started/general-information/rbac-management",
