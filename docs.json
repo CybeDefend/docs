@@ -22,9 +22,9 @@
                 "pages": [
                   "/get-started/general-information/never-stores-your-code",
                   "/get-started/general-information/code-repository-scanning",
-                  "/get-started/general-information/reachability-engine",
+                  "/get-started/general-information/ai-driven-false-positive-reduction",
                   "/get-started/general-information/dataflow-analysis",
-                  "/get-started/general-information/rbac-management",
+                  "/get-started/general-information/rebac-management",
                   "/get-started/general-information/scan-parameters",
                   "/get-started/general-information/free-plan"
                 ]
@@ -62,8 +62,8 @@
         },
         {
           "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
+          "href": "https://www.linkedin.com/company/cybedefend",
+          "icon": "linkedin"
         },
         {
           "anchor": "Blog",
