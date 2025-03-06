@@ -28,7 +28,15 @@
                   "/get-started/general-information/scan-parameters",
                   "/get-started/general-information/free-plan"
                 ]
-              }
+              },
+              {
+                "group": "Setting Up Your Account",
+                "pages": [
+                  "/get-started/setting-up-account/create-account-organization",
+                  "/get-started/setting-up-account/managing-access-org-teams",
+                  "/get-started/setting-up-account/assigning-roles"
+                ]
+              }              
             ]
           }
         ]

@@ -1,0 +1,87 @@
+---
+title: "Assigning Roles in Organizations and Teams"
+description: "Learn about the different roles available in CybeDefend organizations and teams, and how to manage user permissions."
+---
+
+CybeDefend provides **distinct roles** for Organizations and Teams, each granting specific permissions. Update roles from Organization or Team settings to ensure everyone has appropriate access levels.
+
+<Frame>
+  <img src="/images/get-started/setting-up-account/roles-overview.png" alt="Roles and Permissions Overview" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+<Warning>
+Each Organization needs at least one <strong>Administrator</strong>, and each Team must have at least one <strong>Team Manager</strong>.
+</Warning>
+
+---
+
+## Organization Roles
+
+| **Role**           | **Description**                                                                                           | **Key Permissions**                                 |
+|--------------------|-----------------------------------------------------------------------------------------------------------|-----------------------------------------------------|
+| **Administrator**  | Top-level authority. Cannot modify their own role or another Admin’s role.                                | <ul><li>Manage organization settings</li><li>Add/remove users</li><li>Update user roles</li><li>Create/delete teams</li><li>Read logs</li><li>Full access</li></ul> |
+| **Manager**        | High-level authority but slightly less than Administrator.                                               | <ul><li>Manage integrations</li><li>Add/remove users</li><li>Create teams</li><li>Read logs</li></ul> |
+| **Billing Manager**| Focuses on financial or billing aspects within the organization.                                          | <ul><li>Access billing settings</li><li>Read organization info</li></ul> |
+| **Member**         | Standard member with basic read and limited write rights.                                                | <ul><li>Read organization information</li><li>Use assigned tools</li></ul> |
+
+---
+
+## Team Roles
+
+| **Role**              | **Description**                                                                                                                 | **Key Permissions**                                                                                                              |
+|-----------------------|-------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| **Team Manager**      | Leads the team. Cannot modify their own role or another Team Manager’s role.                                                  | <ul><li>Manage team settings</li><li>Create/remove users</li><li>Update user roles</li><li>Create projects</li><li>Read logs</li><li>Start scans</li></ul> |
+| **Analyst Developer** | Focuses on analyzing scan results and possibly contributing code fixes.                                                        | <ul><li>Read and create reports</li><li>Change vulnerability states</li><li>Start scans</li><li>Full read on scan results</li></ul> |
+| **Developer**         | Primarily involved in writing code.                                                                                           | <ul><li>Read scan results</li><li>Change vulnerability states</li><li>Start scans</li></ul>                                       |
+| **Read Only**         | Has read access to projects, teams, and scan outcomes but no editing rights.                                                  | <ul><li>View team details</li><li>View project scan results (where granted by org/team)</li></ul>                                 |
+
+<Tip>
+All roles inherit the Organization’s overarching permissions, but these team roles define additional capabilities <strong>within each team</strong>.
+</Tip>
+
+---
+
+## Managing Organization Member Roles
+
+1. **Open Organization Settings → Manage**  
+   Scroll to the user list and click **Manage** next to a user’s name.
+2. **Choose New Role**  
+   Pick from Administrator, Manager, Billing Manager, or Member.
+3. **Save Changes**  
+   The user’s permissions update instantly.
+
+<Frame>
+  <img src="/images/get-started/setting-up-account/org-manage-role.png" alt="Change Organization Member Role" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+<Note>
+Must keep at least one <strong>Administrator</strong>. Admins cannot downgrade themselves or each other.
+</Note>
+
+---
+
+## Managing Team Member Roles
+
+1. **Organization Settings → Teams → Manage**  
+   Select a team, find the user, and click **Manage** next to their name.
+2. **Assign Role**  
+   Pick Team Manager, Analyst Developer, Developer, or Read Only.
+3. **Confirm**  
+   The user’s capabilities in that team adjust immediately.
+
+<Warning>
+Each team must have at least one <strong>Team Manager</strong>. Team Managers cannot modify their own or each other’s roles.
+</Warning>
+
+---
+
+## Future Role Customization
+
+Some organizations may require specialized roles. If your use case isn’t covered:
+
+- Visit our [Roadmap](/roadmap) for upcoming role expansions.  
+- Send feedback to our dev team—if enough customers share a need, we may add a new role.
+
+<Tip>
+We strive to balance <strong>simplicity</strong> and <strong>flexibility</strong> when expanding role definitions.
+</Tip>

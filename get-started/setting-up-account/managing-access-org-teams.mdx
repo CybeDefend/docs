@@ -1,0 +1,131 @@
+---
+title: "Managing Access with Organizations and Teams"
+description: "Learn how to structure your organization, create teams, and invite members to manage code and projects effectively."
+---
+
+CybeDefend offers flexible structures to keep your organization and teams organized. Each **Organization** can have multiple **Teams**, and each Team can own projects (the codebase). This helps segment permissions and simplify collaboration.
+
+<Frame>
+  <img src="/images/get-started/setting-up-account/organization-team-diagram.png" alt="Organization and Team Structure" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+<Tip>
+Teams are ideal for grouping people working on the same projects or requiring similar levels of access.
+</Tip>
+
+---
+
+## How to Create Teams
+
+1. **Open Organization Settings**  
+   From the main dashboard, select **Organization Settings**.
+2. **Navigate to Teams**  
+   Click **Teams** → **Create New Team**.
+3. **Provide Basic Info**  
+   Name your team and optionally include a description.
+
+<Frame>
+  <img src="/images/get-started/setting-up-account/create-team-step.png" alt="Create Team Popup" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+<Note>
+Each organization must have at least **one** Team Manager, who can manage team members and their projects.
+</Note>
+
+---
+
+## How to Create Projects
+
+Before creating your first project, decide how you want to add your code to CybeDefend:
+
+1. **Recommended: Link a Git Provider**  
+   If you haven’t installed the GitHub (or GitLab, Bitbucket) integration yet, go to our [Integration Setup](/get-started/integration-guides) page for instructions.
+2. **Alternatively: Upload a ZIP**  
+   You can upload your code in a zip file, but this is primarily for quick or offline testing. We strongly recommend connecting a Git repository for the best DevSecOps experience.
+
+---
+
+### Steps to Create a Project
+
+1. **Home → Create Project**  
+   In your organization’s home page, click **Create Project**.
+
+2. **Select Your Method**  
+   - **Continue with GitHub (or another Git provider)**: Pick your repository, then assign it to a specific team. 
+
+<Frame>
+  <img src="/images/get-started/setting-up-account/link-github-project.png" alt="Link GitHub Project" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+   - **Upload ZIP**: Provide your archive if you haven’t integrated a Git provider or need a short-term solution.
+
+<Frame>
+  <img src="/images/get-started/setting-up-account/upload-zip-project.png" alt="Upload ZIP Project" style={{ borderRadius: '0.5rem'}} />
+</Frame>
+
+3. **Set Scan Parameters**  
+   Adjust scanning frequency, severity levels, and advanced options like **SAST Fast Scan** or **Dataflow AI**. You can see more details in our [Scan Project Parameters](/get-started/general-information/scan-parameters) guide.
+
+
+
+<Note>
+While ZIP uploads can help in unique scenarios or offline testing, connecting a Git repository is the recommended approach for continuous, automated scans.
+</Note>
+
+---
+
+## Inviting Organization Members
+
+1. **Open the Invite Dialog**  
+   - Go to **Organization Settings** → **+ Add Member**.
+   - Enter the user’s email and assign an **Organization Role** (e.g., Administrator, Manager, Billing Manager, or Member).
+
+<Frame>
+  <img src="/images/get-started/setting-up-account/invite-dialog.png" alt="Invite Organization Member Popup" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+2. **Pending Invitations**  
+   - Once invited, the user appears in the member list with a **Pending** status.
+   - You can cancel the invite at any time if needed.
+
+<Frame>
+  <img src="/images/get-started/setting-up-account/invite-pending-list.png" alt="Pending Invitation List" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+3. **User Acceptance Flow**  
+   - **Receive Email**: The invitee gets an email with a unique link.  
+   - **Sign Up or Log In**: If they don’t have a CybeDefend account, they’ll be prompted to create one.  
+   - **Accept Invitation**: After confirming, they’re redirected to the main dashboard with new **Organization Access**.
+
+<Frame>
+  <img src="/images/get-started/setting-up-account/invitation-landing-page.png" alt="Invitation Landing Page" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+<Note>
+Admins can revoke an invitation before it’s accepted, ensuring you maintain full control over who joins your organization.
+</Note>
+
+---
+
+## Adding Team Members
+
+1. **Go to Teams**  
+   In **Organization Settings** → **Teams**, pick the team you want to modify.
+2. **+ Add Member**  
+   Enter the user’s email and a team role (Team Manager, Analyst Developer, Developer, or Read Only).
+3. **Save & Notify**  
+   Once they accept your organization invite, they’ll see team details and projects.
+
+<Frame>
+  <img src="/images/get-started/setting-up-account/add-team-member-step.png" alt="Add Team Member Popup" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+---
+
+## Switching Organizations in the UI
+
+If you belong to multiple organizations, use the top navigation bar or settings dropdown to switch org contexts easily.
+
+<Frame>
+  <img src="/images/get-started/setting-up-account/switch-organization-ui.png" alt="Switch Organization UI" style={{ borderRadius: '0.5rem' }} />
+</Frame>
