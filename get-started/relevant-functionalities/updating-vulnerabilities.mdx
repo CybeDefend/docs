@@ -1,0 +1,44 @@
+---
+title: "Updating Vulnerabilities"
+description: "Easily change vulnerability status, priority, and add comments to coordinate fixes."
+---
+
+# Updating Vulnerabilities
+
+CybeDefend streamlines remediation by letting you **update each vulnerability** (found by SAST, IAC, or SCA) directly from the dashboard. Whether you’re marking it as “In Progress” or adding a priority label, you can keep the entire team aligned.
+
+<Frame>
+  <img src="/images/get-started/relevant-functionalities/update-vuln-popup.png" alt="Vulnerability Update Popup" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+## Steps to Update
+
+1. **Open the Vulnerability**  
+   In the project’s vulnerability list, click a specific item to reveal the **Update Popup**.
+2. **Edit Fields**  
+   - **Status**: Switch from To Verify → Confirmed.  
+   - **Priority**: Assign internal priority tags (e.g., critical, low). 
+   - **Comment**: Record progress, decisions made, or references to external tickets.
+3. **Confirm & Save**  
+   Changes are immediately visible to all team members, helping them see updated statuses without additional overhead.
+
+<Frame>
+  <img src="/images/get-started/relevant-functionalities/update-vuln-result.png" alt="After Updating Vulnerability" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+<Note>
+Use the comment field for quick, contextual notes. This eliminates the need for separate emails or Slack threads where details can get lost.
+</Note>
+
+---
+
+## Consistent Management Across Scanners
+
+A critical SAST finding about SQL injection can be handled the same way as a high-severity IAC misconfiguration in Terraform. This uniform approach:
+
+- **Reduces Confusion**: No separate tools or flows for each scanner.  
+- **Speeds Remediation**: Everyone uses the same interface, no matter the vulnerability source.
+
+<Tip>
+Consider adopting <strong>weekly triage sessions</strong> where you review newly detected vulnerabilities and update them as a team.
+</Tip>

@@ -1,0 +1,38 @@
+---
+title: "Fix Analysis"
+description: "Automatically propose code changes and create pull requests for swift, AI-assisted remediation."
+---
+
+**Fix Analysis** is our upcoming feature designed to **auto-generate** code fixes for identified vulnerabilities and open a **pull request** with a single click. By leveraging AI to propose changes, we remove a major bottleneck—writing initial patch code manually.
+
+## How It Will Work
+
+1. **Find a Vulnerability**  
+   Once a vulnerability is flagged by SAST, IAC, or SCA, look for the **“Auto-Fix”** button.
+2. **AI-Generated Solution**  
+   The system proposes a code fix based on your existing code style, frameworks, and best practices. 
+3. **Pull Request Creation**  
+   Review the suggested patch, then let CybeDefend create a PR in your repository for further human validation.
+
+<Accordion icon="question" title="Why a Pull Request?">
+  Merging code into production requires caution. A pull request ensures your team can:
+  - Review the proposed changes.
+  - Check compatibility with your codebase.
+  - Run any required tests before final approval.
+</Accordion>
+
+---
+
+## Limitations & Best Practices
+
+- **Human Oversight**: AI suggestions aren’t infallible. Always review for logic, performance, or style preferences.
+- **Incremental Rollouts**: During early stages, we’ll pilot the feature with Java, Python, and Node.js repositories first.
+- **Security Depth**: Some complex vulnerabilities might require deeper architectural changes that auto-fix can’t handle alone.
+
+<Warning>
+This feature is <strong>in development</strong>. Track its progress in our <a href="https://progress.cybedefend.com/en/roadmap">Roadmap</a>—and feel free to suggest improvements if you’re part of our pilot program.
+</Warning>
+
+<Tip>
+We recommend combining <strong>Fix Analysis</strong> with your CI/CD pipeline for automated tests to verify that proposed fixes don’t introduce regressions.
+</Tip>

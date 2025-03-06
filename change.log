@@ -115,3 +115,12 @@ B) Cursor IDE
 	- How to Install and Test
 
 9) Integrations
+
+
+Create api endpoint from openapi file
+
+npx @mintlify/scraping@latest openapi-file api-reference/openapi.json -o .\api-reference\endpoint\
+
+verify openapi file
+
+mintlify openapi-check api-reference/openapi.json

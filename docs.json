@@ -36,7 +36,64 @@
                   "/get-started/setting-up-account/managing-access-org-teams",
                   "/get-started/setting-up-account/assigning-roles"
                 ]
-              }              
+              },
+              {
+                "group": "Relevant Functionalities",
+                "pages": [
+                  "/get-started/relevant-functionalities/global-project-management",
+                  "/get-started/relevant-functionalities/project-vulnerability-list",
+                  "/get-started/relevant-functionalities/updating-vulnerabilities",
+                  "/get-started/relevant-functionalities/project-overview-stats",
+                  "/get-started/relevant-functionalities/blsa-business-logic-security-analysis",
+                  "/get-started/relevant-functionalities/security-champion",
+                  "/get-started/relevant-functionalities/fix-analysis",
+                  "/get-started/relevant-functionalities/ai-powered-vulnerability-detection",
+                  "/get-started/relevant-functionalities/cross-analysis-results",
+                  "/get-started/relevant-functionalities/intelligent-vulnerability-triage"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Static Scanning Code Repostory",
+            "pages": [
+              "/static-scanning-code-repository/introduction"
+            ]
+          },
+          {
+            "group": "CI Pipeline Integration",
+            "pages": [
+              "/ci-pipeline-integration/introduction"
+            ]
+          },
+          {
+            "group": "CybeDefend Autofix",
+            "pages": [
+              "/cybedefend-autofix/introduction"
+            ]
+          },
+          {
+            "group": "CybeDefend Sorting Vulnerability",
+            "pages": [
+              "/cybedefend-sorting-vulnerability/introduction"
+            ]
+          },
+          {
+            "group": "CybeDefend BLSA Innovation",
+            "pages": [
+              "/cybedefend-blsa-innovation/introduction"
+            ]
+          },
+          {
+            "group": "IDE Plugins",
+            "pages": [
+              "/ide-plugins/introduction"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "/integrations/introduction"
             ]
           }
         ]
@@ -51,11 +108,66 @@
             ]
           },
           {
-            "group": "Endpoint Examples",
+            "group": "Endpoint",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete"
+              "api-reference/endpoint/get-organization-invitations",
+              "api-reference/endpoint/get-organizations-of-user",
+              "api-reference/endpoint/get-organization-by-id",
+              "api-reference/endpoint/get-organization-members",
+              "api-reference/endpoint/get-all-projects-of-an-organization-with-pagination",
+              "api-reference/endpoint/get-all-projects-of-a-team-with-pagination",
+              "api-reference/endpoint/get-a-project",
+              "api-reference/endpoint/get-team-by-id",
+              "api-reference/endpoint/get-all-teams-of-an-organization",
+              "api-reference/endpoint/get-all-members-of-a-team",
+              "api-reference/endpoint/get-a-member-of-a-team",
+              "api-reference/endpoint/get-a-scan-by-id",
+              "api-reference/endpoint/get-all-vulnerabilities-of-a-project-for-sast",
+              "api-reference/endpoint/get-all-iac-vulnerabilities-of-a-project",
+              "api-reference/endpoint/get-all-sca-vulnerabilities-of-a-project",
+              "api-reference/endpoint/get-all-sca-packages-of-a-project",
+              "api-reference/endpoint/get-a-vulnerability-of-a-project-for-sca",
+              "api-reference/endpoint/get-a-vulnerability-of-a-project-for-sast",
+              "api-reference/endpoint/get-a-vulnerability-of-a-project-for-iac",
+              "api-reference/endpoint/get-overview-of-a-project",
+              "api-reference/endpoint/identify-variable",
+              "api-reference/endpoint/get-user-profile-information",
+              "api-reference/endpoint/get-vulnerability-names",
+              "api-reference/endpoint/get-installation-for-organization",
+              "api-reference/endpoint/get-repositories-for-organization",
+              "api-reference/endpoint/callback-for-github-app-installation",
+              "api-reference/endpoint/invite-user-to-organization",
+              "api-reference/endpoint/accept-invitation-to-organization",
+              "api-reference/endpoint/create-organization",
+              "api-reference/endpoint/add-member-to-organization",
+              "api-reference/endpoint/create-a-project",
+              "api-reference/endpoint/create-a-new-team",
+              "api-reference/endpoint/add-a-member-to-a-team",
+              "api-reference/endpoint/start-a-scan",
+              "api-reference/endpoint/create-a-new-sca-scan-result",
+              "api-reference/endpoint/start-a-conversation-with-ai-llm",
+              "api-reference/endpoint/continue-a-conversation-with-ai-llm",
+              "api-reference/endpoint/autofix-code-snippet",
+              "api-reference/endpoint/post-webhooksgithub",
+              "api-reference/endpoint/install-github-app-for-user",
+              "api-reference/endpoint/link-project-with-github-repository",
+              "api-reference/endpoint/start-scan-for-last-commit-in-project",
+              "api-reference/endpoint/handle-github-webhook-event",
+              "api-reference/endpoint/update-organization",
+              "api-reference/endpoint/update-organization-member-role",
+              "api-reference/endpoint/update-a-project",
+              "api-reference/endpoint/update-a-team",
+              "api-reference/endpoint/update-a-scan-by-id",
+              "api-reference/endpoint/update-a-vulnerability-of-a-project",
+              "api-reference/endpoint/update-user-profile",
+              "api-reference/endpoint/cancel-organization-invitation",
+              "api-reference/endpoint/delete-organization",
+              "api-reference/endpoint/remove-member-from-organization",
+              "api-reference/endpoint/delete-a-project",
+              "api-reference/endpoint/delete-a-project-1",
+              "api-reference/endpoint/delete-a-team",
+              "api-reference/endpoint/remove-a-member-from-a-team",
+              "api-reference/endpoint/unlink-project-from-github-repository"
             ]
           }
         ]
