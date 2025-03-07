@@ -5082,11 +5082,6 @@
     },
     "tags": [],
     "servers": [],
-    "security": [
-        {
-            "bearerAuth": []
-        }
-    ],
     "components": {
         "securitySchemes": {
             "bearer": {

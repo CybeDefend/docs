@@ -98,37 +98,6 @@
                 ]
               }
             ]
-          },
-          {
-            "group": "CybeDefend Autofix",
-            "pages": [
-              "/cybedefend-autofix/introduction"
-            ]
-          },
-          {
-            "group": "CybeDefend Sorting Vulnerability",
-            "pages": [
-              "/cybedefend-sorting-vulnerability/introduction"
-            ]
-          },
-          {
-            "group": "CybeDefend BLSA Innovation",
-            "pages": [
-              "/cybedefend-blsa-innovation/introduction"
-            ]
-          },
-          {
-            "group": "IDE Plugins",
-            "pages": [
-              "/ide-plugins/vscode",
-              "/ide-plugins/cursor"
-            ]
-          },
-          {
-            "group": "Integrations",
-            "pages": [
-              "/integrations/introduction"
-            ]
           }
         ]
       },

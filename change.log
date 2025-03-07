@@ -124,3 +124,37 @@ npx @mintlify/scraping@latest openapi-file api-reference/openapi.json -o .\api-r
 verify openapi file
 
 mintlify openapi-check api-reference/openapi.json
+
+Documentation à venir : 
+
+{
+            "group": "CybeDefend Autofix",
+            "pages": [
+              "/cybedefend-autofix/introduction"
+            ]
+          },
+          {
+            "group": "CybeDefend Sorting Vulnerability",
+            "pages": [
+              "/cybedefend-sorting-vulnerability/introduction"
+            ]
+          },
+          {
+            "group": "CybeDefend BLSA Innovation",
+            "pages": [
+              "/cybedefend-blsa-innovation/introduction"
+            ]
+          },
+          {
+            "group": "IDE Plugins",
+            "pages": [
+              "/ide-plugins/vscode",
+              "/ide-plugins/cursor"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "/integrations/introduction"
+            ]
+          }
