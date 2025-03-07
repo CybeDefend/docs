@@ -1,0 +1,14 @@
+## Why You Should Use Lockfiles
+
+Using a **lockfile** is critical for secure and predictable builds. A lockfile contains a **fixed version** and a **hash** for each dependency and sub-dependency in your project.
+
+1. **Supply Chain Protection**  
+   Lockfiles prevent malicious package injections. This is crucial as supply chain attacks are rising.
+2. **Predictable Builds**  
+   Everyone uses the exact same package versions, avoiding “it works on my machine” inconsistencies.
+3. **Performance Gains**  
+   With dependency versions locked, build tools skip the usual resolution step, making builds faster.
+
+<Note>
+Lockfiles are never edited manually. They’re generated and updated by your package manager and committed to your repository, ensuring consistent environments for all teammates.
+</Note>

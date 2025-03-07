@@ -1,0 +1,34 @@
+---
+title: "How to Launch a Scan on a C/C++ Project"
+description: "Integrate CybeDefend with your C/C++ toolchain and lock dependencies, typically via conan.lock."
+---
+
+import UseLockfiles from '/snippets/lockfiles.mdx';
+
+CybeDefend supports scanning C/C++ code for vulnerabilities in your source files and **conan.lock** for dependency management. By committing this lockfile to your repository, you enhance security scanning and ensure consistent builds.
+
+## Recommended Steps
+
+1. **Adopt Conan (or Another Manager)**  
+   If you rely on external libraries, use a package manager like **Conan** that can produce `conan.lock`.
+2. **Generate & Commit conan.lock**  
+   - Run `conan install` (or equivalent) to produce the lockfile.  
+   - Commit `conan.lock` so everyone uses the exact same library versions.
+3. **Keep a Clean Codebase**  
+   Add any `.deps/` or build artifacts to `.gitignore` so that only the lockfile and source are tracked.
+
+<UseLockfiles />
+
+## Supported Files for C/C++
+
+| File Examples |
+|--------------|
+| `conan.lock`, `CMakeLists.txt`, `.cpp`, `.h` |
+
+<Note>
+CybeDefend can detect vulnerabilities in known C/C++ libraries if your lockfile references them. Without a lockfile, your scanning might be incomplete or prone to version ambiguity.
+</Note>
+
+<Warning>
+Always re-run <strong>conan install</strong> or <strong>conan lock create</strong> after updating library versions, and commit the new lockfile to keep CybeDefend scanning accurate.
+</Warning>

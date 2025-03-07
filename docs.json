@@ -41,6 +41,7 @@
                 "group": "Relevant Functionalities",
                 "pages": [
                   "/get-started/relevant-functionalities/global-project-management",
+                  "/get-started/relevant-functionalities/create-project",
                   "/get-started/relevant-functionalities/project-vulnerability-list",
                   "/get-started/relevant-functionalities/updating-vulnerabilities",
                   "/get-started/relevant-functionalities/project-overview-stats",
@@ -57,13 +58,45 @@
           {
             "group": "Static Scanning Code Repostory",
             "pages": [
-              "/static-scanning-code-repository/introduction"
-            ]
-          },
-          {
-            "group": "CI Pipeline Integration",
-            "pages": [
-              "/ci-pipeline-integration/introduction"
+              {
+                "group": "Connect Your Source Code",
+                "pages": [
+                  "/static-scanning-code-repository/connect-your-source-code/connect-github"
+                ]
+              },
+              {
+                "group": "Scanning a Project with CybeDefend",
+                "pages": [
+                  "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-maven",
+                  "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-c-cpp",
+                  "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-dotnet",
+                  "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-javascala-kotlin",
+                  "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-node"
+                ]
+              },
+              {
+                "group": "Local Code Scanning",
+                "pages": [
+                  "/static-scanning-code-repository/local-code-scanning/introduction-api-key",
+                  "/static-scanning-code-repository/local-code-scanning/cli-options",
+                  "/static-scanning-code-repository/local-code-scanning/mac-setup",
+                  "/static-scanning-code-repository/local-code-scanning/windows-setup",
+                  "/static-scanning-code-repository/local-code-scanning/linux-setup",
+                  {
+                    "group": "CI Integrations",
+                    "pages": [
+                      "/static-scanning-code-repository/local-code-scanning/ci-integrations/gitlab-self-managed-setup",
+                      "/static-scanning-code-repository/local-code-scanning/ci-integrations/azure-devops-server-setup",
+                      "/static-scanning-code-repository/local-code-scanning/ci-integrations/github-action-setup",
+                      "/static-scanning-code-repository/local-code-scanning/ci-integrations/bitbucket-pipeline-setup",
+                      "/static-scanning-code-repository/local-code-scanning/ci-integrations/teamcity-setup",
+                      "/static-scanning-code-repository/local-code-scanning/ci-integrations/jenkins-setup",
+                      "/static-scanning-code-repository/local-code-scanning/ci-integrations/circleci-setup",
+                      "/static-scanning-code-repository/local-code-scanning/ci-integrations/bamboo-setup"
+                    ]
+                  }
+                ]
+              }
             ]
           },
           {
@@ -87,7 +120,8 @@
           {
             "group": "IDE Plugins",
             "pages": [
-              "/ide-plugins/introduction"
+              "/ide-plugins/vscode",
+              "/ide-plugins/cursor"
             ]
           },
           {

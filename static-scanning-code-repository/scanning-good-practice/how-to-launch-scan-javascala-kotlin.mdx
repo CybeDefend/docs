@@ -1,0 +1,43 @@
+
+---
+title: "How to Launch a Scan on Java/Scala/Kotlin"
+description: "Optimize SCA scanning by using Gradle lockfiles and pinned versions for Java, Scala, or Kotlin builds."
+---
+
+import UseLockfiles from '/snippets/lockfiles.mdx';
+
+For **Gradle-based** projects in Java, Scala, or Kotlin, generating a `gradle.lockfile` ensures consistent dependencies that CybeDefend can accurately scan. SBT-based Scala projects can also pin versions in `.sbt.lock` or a centralized method.
+
+## Gradle Lockfiles
+
+1. **Enable Gradle Locking**  
+   In your `gradle.properties`, set:
+
+```properties
+systemProp.gradle.useLocks=true
+systemProp.gradle.dependencyVerification=strict
+```
+
+2. **Generate**  
+   Run `./gradlew dependencies` or `./gradlew --write-locks` to create `gradle.lockfile`.
+3. **Commit**  
+   Check in `gradle.lockfile` so that your entire team and CybeDefend sees fixed dependency versions.
+
+<UseLockfiles />
+
+## SBT Lock for Scala
+
+- **sbt-lock** plugin can generate `.sbt.lock`.  
+- Commit that lockfile to maintain pinned Scala library versions.
+
+## Supported Files
+
+| Lang      | File Examples                                                               |
+|-----------|-----------------------------------------------------------------------------|
+| **Java**  | `gradle.lockfile`, `pom.xml`, `.jar`, `.war`, `.ear`                        |
+| **Scala** | `build.sbt`, `plugins.sbt`, `.sbt.lock`, `dependencies.scala`, `.scala`     |
+| **Kotlin**| `gradle.lockfile`, `.kts` files (Gradle Kotlin DSL)                          |
+
+<Note>
+Some older build tools or frameworks may require additional steps. The primary goal is to produce a stable lock or pinned version set for each submodule.
+</Note>

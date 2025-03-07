@@ -1,0 +1,121 @@
+---
+title: "CLI Options for Local Scanner"
+description: "Explore the CybeDefend CLI usage, commands, and flags for local code scanning."
+---
+
+The **CybeDefend CLI** interacts with our API to perform local scans, fetch results, and manage your security posture from the terminal.
+
+## Usage
+
+```bash
+cybedefend [command] [flags]
+```
+
+```bash
+CybeDefend CLI is a CLI tool to interact with the CybeDefend API.
+
+Usage:
+  cybedefend [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  results     Get scan results
+  scan        Start a new scan
+  version     Show the version of cybedefend
+
+Flags:
+      --api-key string   API Key
+      --api-url string   API URL (default "https://api.cybedefend.com")
+      --ci               CI mode
+      --config string    Config file (default is $HOME/.cybedefend/config.yaml) (optional)
+      --debug            Debug mode
+  -h, --help             help for cybedefend
+
+Use "cybedefend [command] --help" for more information about a command.
+```
+
+**Commands**:
+- **scan**: Start a new security scan.
+- **results**: Retrieve scan results.
+- **completion**: Generate shell autocompletion scripts.
+- **help**: Display help info.
+- **version**: Show CLI version.
+
+**Global Flags**:
+- `--api-key string`: Your CybeDefend API Key (required).
+- `--api-url string`: API URL (default `https://api.cybedefend.com`).
+- `--ci`: CI-friendly mode (no colors, ASCII art).
+- `--config string`: Path to the config file (default `$HOME/.cybedefend/config.yaml`).
+- `--debug`: Enable debug output.
+
+<Tip>
+You can set <strong>CYBEDEFEND_API_KEY</strong> as an environment variable to avoid passing --api-key every time.
+</Tip>
+
+---
+
+## scan Command
+
+```bash
+cybedefend scan [flags]
+```
+
+- **--dir, -d**: Directory to scan (zipped before uploading).  
+- **--file, -f**: A pre-zipped file to scan (conflicts with `--dir`).  
+- **--project-id**: Associate scan with an existing CybeDefend project.  
+- **--ci**: Output in CI/CD mode (plain text, no colors).
+
+**Examples**:
+```bash
+# Scan a directory locally
+cybedefend scan --dir ./my-project --api-key your-api-key --project-id your-project-id
+
+# Scan a zip
+cybedefend scan --file ./my-project.zip
+
+# CI mode
+cybedefend scan --dir ./my-project --ci
+```
+
+<Note>
+If you haven’t created a project yet, you can specify an existing <strong>Project ID</strong> or let the tool store the ID in a config file for repeated usage.
+</Note>
+
+---
+
+## results Command
+
+```bash
+cybedefend results [flags]
+```
+
+- **--project-id**: Which project to fetch results for.
+- **--type, -t**: SAST or IAC (default SAST).
+- **--all, -a**: Fetch all result pages.
+- **--output, -o**: Output format (json, html, sarif).
+- **--filename, -f**: Output file name (default `results.json`).
+- **--filepath**: Directory to save the file (default current dir).
+- **--ci**: CI-friendly mode.
+
+**Examples**:
+```bash
+# Default JSON results
+cybedefend results --project-id your-project-id
+
+# All results in HTML
+cybedefend results --project-id your-project-id --all --output html --filename results.html
+
+# SARIF export in a subdir
+cybedefend results --project-id your-project-id --output sarif --filepath ./reports
+
+# IAC results
+cybedefend results --project-id your-project-id --type iac
+
+# Minimal CI output
+cybedefend results --project-id your-project-id --ci
+```
+
+<Tip>
+Combine <strong>scan</strong> and <strong>results</strong> commands in your pipeline to automate scanning and retrieve immediate feedback.
+</Tip>

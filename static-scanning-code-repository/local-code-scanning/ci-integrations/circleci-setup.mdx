@@ -1,0 +1,100 @@
+---
+title: "CircleCI Setup for Local Code Scanning"
+description: "Implement CybeDefend local scanning in your CircleCI pipeline without granting direct repo access."
+icon: "circle-check"
+---
+
+**CircleCI** pipelines can run **CybeDefend** local scans by either installing the CLI or using Docker. This approach ensures your code is scanned **within** your pipeline, and only relevant data is uploaded to CybeDefend.
+
+<Frame>
+  <img src="/images/static-scanning-code-repository/local-code-scanning/circleci-intro.png" alt="CircleCI Local Scanning Intro" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+## Prerequisites
+
+1. **API Key**  
+   Create one via [Introduction & API Key Creation](/static-scanning-code-repository/local-code-scanning/introduction-api-key). Store it in **Project Settings → Environment Variables** (e.g. `CYBEDEFEND_API_KEY`).
+2. **Branch Filters**  
+   We recommend scanning only the main (or production) branch to avoid mixing partial results.
+
+---
+
+## Docker Example
+
+**.circleci/config.yml**:
+
+```yaml
+version: 2.1
+
+jobs:
+  cybedefend-scan:
+    docker:
+      - image: cybedefend/local-scanner:latest
+    steps:
+      - checkout:
+          path: my-app
+      - run:
+          name: "Run CybeDefend scan"
+          command: |
+            cybedefend scan my-app \
+              --api-key $CYBEDEFEND_API_KEY \
+              --project-id $CYBEDEFEND_PROJECT_ID \
+              --ci
+
+workflows:
+  local-security-workflow:
+    jobs:
+      - cybedefend-scan:
+          filters:
+            branches:
+              only:
+                - main
+```
+
+### Explanation
+
+- **docker**: We use the prebuilt `cybedefend/local-scanner:latest` image.  
+- **checkout**: CircleCI’s built-in step to fetch code into `my-app`.  
+- **cybedefend scan**: Zips and uploads your code, referencing environment variables for the key and project ID.
+
+<Note>
+You can also run <strong>cybedefend results</strong> in a follow-up step to retrieve a SARIF or HTML report.
+</Note>
+
+---
+
+## Alternative: CLI Binary
+
+If you prefer your own Docker or machine executor:
+
+```yaml
+version: 2.1
+
+jobs:
+  cybedefend-scan:
+    docker:
+      - image: ubuntu:latest
+    steps:
+      - checkout
+      - run:
+          name: Install CybeDefend CLI
+          command: |
+            curl -L https://github.com/CybeDefend/cybedefend-cli/releases/download/v1.0.0/cybedefend-linux-amd64 -o cybedefend
+            chmod +x cybedefend
+            mv cybedefend /usr/local/bin/
+      - run:
+          name: Run Local Scan
+          command: |
+            cybedefend scan --dir . \
+              --api-key $CYBEDEFEND_API_KEY \
+              --project-id $CYBEDEFEND_PROJECT_ID \
+              --ci
+```
+
+<Warning>
+Large codebases can require extra CPU/RAM. If you hit resource limits, upgrade your CircleCI plan or use a larger resource class.
+</Warning>
+
+<Tip>
+For advanced gating, parse the CLI exit code or scan summary to fail the job on critical issues. 
+</Tip>

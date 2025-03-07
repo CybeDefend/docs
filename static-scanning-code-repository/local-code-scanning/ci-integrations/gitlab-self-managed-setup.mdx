@@ -1,0 +1,67 @@
+---
+title: "GitLab Self-Managed Setup for Local Code Scanning"
+description: "Integrate the CybeDefend CLI into a GitLab Self-Managed CI/CD pipeline for secure local code scanning."
+icon: "gitlab"
+---
+
+This guide shows you how to run **CybeDefend local scans** within a **GitLab Self-Managed** environment. It’s ideal if you want to keep your code in-house and still benefit from automated security checks.
+
+## Prerequisites
+
+1. **API Key**  
+   Ensure you’ve already created an API key in the CybeDefend dashboard. If not, see [Introduction & API Key Creation](/static-scanning-code-repository/local-code-scanning/introduction-api-key).
+2. **CybeDefend CLI**  
+   You can either install the CLI directly in your job container or use a Docker image containing the CLI.
+
+<Note>
+The <strong>--ci</strong> flag in CybeDefend’s CLI disables colors and fancy formatting, providing minimal, script-friendly output. 
+</Note>
+
+---
+
+## Example .gitlab-ci.yml
+
+```yaml
+stages:
+  - security-scan
+
+security_scan_job:
+  image: ubuntu:latest
+  stage: security-scan
+  script:
+    - apt-get update && apt-get install -y curl
+    - curl -L https://github.com/CybeDefend/cybedefend-cli/releases/download/v1.0.0/cybedefend-linux-amd64 -o cybedefend
+    - chmod +x cybedefend
+    - mv cybedefend /usr/local/bin/
+    - cybedefend scan --dir . --ci --api-key $CYBEDEFEND_API_KEY --project-id $CYBEDEFEND_PROJECT_ID
+  only:
+    - main
+```
+
+### Key Points
+
+- **Use the “security-scan” stage** or any custom stage relevant to your pipeline.  
+- **Install CLI**: Basic `curl` commands to grab the binary.  
+- **Run the scan**: Provide `--dir .` to scan current working directory.  
+- **Env Variables**: `$CYBEDEFEND_API_KEY` and `$CYBEDEFEND_PROJECT_ID` are stored in GitLab’s CI/CD Variables.
+
+<Accordion icon="alert-triangle" title="Using Docker Instead">
+  <p>If you prefer Docker-based scanning, create or pull an image with <strong>cybedefend</strong> pre-installed, then run the scan inside a container in your pipeline.</p>
+</Accordion>
+
+---
+
+## Viewing Results
+
+After the job completes, you can:
+
+- **Check the CLI output** for immediate details.  
+- **Use the CLI ‘results’ command** to fetch a more comprehensive vulnerability listing:
+  ```bash
+  cybedefend results --project-id $CYBEDEFEND_PROJECT_ID --all --output html
+  ```
+- **Visit CybeDefend Dashboard** to see a full breakdown of vulnerabilities found during each pipeline run.
+
+<Tip>
+For large codebases, consider caching dependencies to speed up builds – your security scans will remain unaffected as long as you keep scanning the final code or artifact.
+</Tip>

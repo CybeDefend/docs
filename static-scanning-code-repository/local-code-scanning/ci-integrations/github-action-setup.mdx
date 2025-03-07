@@ -1,0 +1,72 @@
+---
+title: "GitHub Action Setup for Local Code Scanning"
+description: "Integrate CybeDefend local scans into your GitHub Actions workflow for secure checks on code push."
+icon: "github"
+---
+
+By default, CybeDefend can scan GitHub repos in the cloud. If you prefer **not** to grant direct GitHub access, you can run local scans in your **GitHub Actions** pipeline, uploading code to CybeDefend yourself.
+
+## Prerequisites
+
+- **API Key**: [Create and store](/static-scanning-code-repository/local-code-scanning/introduction-api-key) it in **Settings → Secrets** → **Actions** (e.g., `CYBEDEFEND_API_KEY`).
+- **Project ID**: You can also store it as `CYBEDEFEND_PROJECT_ID` secret.
+
+---
+
+## Example .github/workflows/cybedefend-scan.yml
+
+```yaml
+name: CybeDefend Local Scan
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  local_security_scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install CybeDefend CLI
+        run: |
+          curl -L https://github.com/CybeDefend/cybedefend-cli/releases/download/v1.0.0/cybedefend-linux-amd64 -o cybedefend
+          chmod +x cybedefend
+          sudo mv cybedefend /usr/local/bin/
+
+      - name: Run security scan
+        run: cybedefend scan --dir ./ --ci \
+          --api-key ${{ secrets.CYBEDEFEND_API_KEY }} \
+          --project-id ${{ secrets.CYBEDEFEND_PROJECT_ID }}
+```
+
+### Explanation
+
+1. **Branch Filter**  
+   Only runs on `main` to avoid mixing partial results in other branches.  
+2. **CLI Download**  
+   Uses cURL to get the binary from GitHub Releases.  
+3. **Local Scan**  
+   The code is zipped and uploaded to CybeDefend’s servers for analysis.
+
+<Accordion icon="terminal" title="Using Docker Instead">
+  <p>Alternatively, run a Docker image containing the CLI. This can simplify scanning if you prefer pinned container versions and dependencies.</p>
+</Accordion>
+
+---
+
+## Checking Your Results
+
+- **Action Logs**: The job logs show a brief summary of vulnerabilities discovered.
+- **CLI “results”**: Add a step to fetch results in, say, HTML or SARIF:
+  ```yaml
+  - name: Fetch Detailed Results
+    run: |
+      cybedefend results --project-id ${{ secrets.CYBEDEFEND_PROJECT_ID }} --all --output sarif
+  ```
+- **CybeDefend Dashboard**: Full vulnerability details and historical tracking.
+
+<Tip>
+Restrict scanning to your main or dev branch. Use <strong>feature branch scans</strong> if you want to catch new issues before merging.
+</Tip>
