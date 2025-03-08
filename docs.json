@@ -161,7 +161,6 @@
               "api-reference/endpoint/delete-organization",
               "api-reference/endpoint/remove-member-from-organization",
               "api-reference/endpoint/delete-a-project",
-              "api-reference/endpoint/delete-a-project-1",
               "api-reference/endpoint/delete-a-team",
               "api-reference/endpoint/remove-a-member-from-a-team"
             ]
