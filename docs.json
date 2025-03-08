@@ -140,12 +140,7 @@
               "api-reference/endpoint/get-a-vulnerability-of-a-project-for-sast",
               "api-reference/endpoint/get-a-vulnerability-of-a-project-for-iac",
               "api-reference/endpoint/get-overview-of-a-project",
-              "api-reference/endpoint/identify-variable",
               "api-reference/endpoint/get-user-profile-information",
-              "api-reference/endpoint/get-vulnerability-names",
-              "api-reference/endpoint/get-installation-for-organization",
-              "api-reference/endpoint/get-repositories-for-organization",
-              "api-reference/endpoint/callback-for-github-app-installation",
               "api-reference/endpoint/invite-user-to-organization",
               "api-reference/endpoint/accept-invitation-to-organization",
               "api-reference/endpoint/create-organization",
@@ -155,19 +150,11 @@
               "api-reference/endpoint/add-a-member-to-a-team",
               "api-reference/endpoint/start-a-scan",
               "api-reference/endpoint/create-a-new-sca-scan-result",
-              "api-reference/endpoint/start-a-conversation-with-ai-llm",
-              "api-reference/endpoint/continue-a-conversation-with-ai-llm",
-              "api-reference/endpoint/autofix-code-snippet",
               "api-reference/endpoint/post-webhooksgithub",
-              "api-reference/endpoint/install-github-app-for-user",
-              "api-reference/endpoint/link-project-with-github-repository",
-              "api-reference/endpoint/start-scan-for-last-commit-in-project",
-              "api-reference/endpoint/handle-github-webhook-event",
               "api-reference/endpoint/update-organization",
               "api-reference/endpoint/update-organization-member-role",
               "api-reference/endpoint/update-a-project",
               "api-reference/endpoint/update-a-team",
-              "api-reference/endpoint/update-a-scan-by-id",
               "api-reference/endpoint/update-a-vulnerability-of-a-project",
               "api-reference/endpoint/update-user-profile",
               "api-reference/endpoint/cancel-organization-invitation",
@@ -176,8 +163,7 @@
               "api-reference/endpoint/delete-a-project",
               "api-reference/endpoint/delete-a-project-1",
               "api-reference/endpoint/delete-a-team",
-              "api-reference/endpoint/remove-a-member-from-a-team",
-              "api-reference/endpoint/unlink-project-from-github-repository"
+              "api-reference/endpoint/remove-a-member-from-a-team"
             ]
           }
         ]
