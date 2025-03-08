@@ -1,9 +1,9 @@
 ---
 title: "CLI Options for Local Scanner"
-description: "Explore the CybeDefend CLI usage, commands, and flags for local code scanning."
+description: "Quickly install and use the CybeDefend CLI to scan your code locally, fetch results, and integrate secure checks into CI/CD."
 ---
 
-The **CybeDefend CLI** interacts with our API to perform local scans, fetch results, and manage your security posture from the terminal.
+The **CybeDefend CLI** provides an efficient way to run local code scans and view results on our platform. It supports **Linux, macOS, and Windows** and is easily integrated into **CI/CD pipelines** or used in **offline** environments.
 
 ## Usage
 
@@ -35,87 +35,126 @@ Flags:
 Use "cybedefend [command] --help" for more information about a command.
 ```
 
-**Commands**:
-- **scan**: Start a new security scan.
-- **results**: Retrieve scan results.
-- **completion**: Generate shell autocompletion scripts.
-- **help**: Display help info.
-- **version**: Show CLI version.
+## Installation
 
-**Global Flags**:
-- `--api-key string`: Your CybeDefend API Key (required).
-- `--api-url string`: API URL (default `https://api.cybedefend.com`).
-- `--ci`: CI-friendly mode (no colors, ASCII art).
-- `--config string`: Path to the config file (default `$HOME/.cybedefend/config.yaml`).
-- `--debug`: Enable debug output.
+### 1. Pre-built Binaries
 
-<Tip>
-You can set <strong>CYBEDEFEND_API_KEY</strong> as an environment variable to avoid passing --api-key every time.
-</Tip>
+1. **Download** the release for your platform (e.g., `cybedefend-darwin-amd64`, `cybedefend-linux-amd64`, or `cybedefend-windows-amd64.exe`).
+2. **Make Executable** (Linux/macOS):
+   ```bash
+   chmod +x cybedefend-<platform>
+   ```
+3. **Move to PATH**:
+   ```bash
+   sudo mv cybedefend-<platform> /usr/local/bin/cybedefend
+   ```
+4. **Check**:
+   ```bash
+   cybedefend --version
+   ```
+
+### 2. Build from Source
+```bash
+git clone https://github.com/CybeDefend/cybedefend-cli.git
+cd cybedefend-cli
+go build -o cybedefend
+mv cybedefend /usr/local/bin
+cybedefend --help
+```
 
 ---
 
-## scan Command
+## Configuration
 
+1. **Config File** (`config.yaml` in `./`, `$HOME/.cybedefend`, or `/etc/cybedefend`):
+   ```yaml
+   api_url: "https://api.cybedefend.com"
+   api_key: "your-api-key"
+   project_id: "your-project-id"
+   ```
+2. **Environment Variables**:
+   - `CYBEDEFEND_API_URL`
+   - `CYBEDEFEND_API_KEY`
+   - `CYBEDEFEND_PROJECT_ID`
+3. **Flags** override these settings:
+   - `--api-url`, `--api-key`, `--project-id`
+
+---
+
+## Commands
+
+### 1. `scan`
 ```bash
 cybedefend scan [flags]
 ```
+- `--dir, -d`: Directory to zip & scan.
+- `--file, -f`: Pre-zipped file to scan.
+- `--project-id`: Associate scan with a project.
+- `--ci`: CI-friendly output (no color/ASCII).
 
-- **--dir, -d**: Directory to scan (zipped before uploading).  
-- **--file, -f**: A pre-zipped file to scan (conflicts with `--dir`).  
-- **--project-id**: Associate scan with an existing CybeDefend project.  
-- **--ci**: Output in CI/CD mode (plain text, no colors).
-
-**Examples**:
+#### Examples
 ```bash
-# Scan a directory locally
-cybedefend scan --dir ./my-project --api-key your-api-key --project-id your-project-id
-
-# Scan a zip
-cybedefend scan --file ./my-project.zip
-
-# CI mode
-cybedefend scan --dir ./my-project --ci
+cybedefend scan --dir ./my-app --api-key your-api-key --project-id your-project-id
+cybedefend scan --file ./my-app.zip
+cybedefend scan --dir ./my-app --ci
 ```
 
-<Note>
-If you haven’t created a project yet, you can specify an existing <strong>Project ID</strong> or let the tool store the ID in a config file for repeated usage.
-</Note>
-
----
-
-## results Command
-
+### 2. `results`
 ```bash
 cybedefend results [flags]
 ```
+- `--project-id`: Project ID to fetch results.
+- `--type, -t`: `sast` (default) or `iac`.
+- `--all, -a`: Fetch all pages.
+- `--output, -o`: `json`, `html`, or `sarif`.
+- `--filename, -f`: Output file name (`results.json` default).
+- `--filepath`: Path to save file (`.` default).
+- `--ci`: CI-friendly mode.
 
-- **--project-id**: Which project to fetch results for.
-- **--type, -t**: SAST or IAC (default SAST).
-- **--all, -a**: Fetch all result pages.
-- **--output, -o**: Output format (json, html, sarif).
-- **--filename, -f**: Output file name (default `results.json`).
-- **--filepath**: Directory to save the file (default current dir).
-- **--ci**: CI-friendly mode.
-
-**Examples**:
+#### Examples
 ```bash
-# Default JSON results
 cybedefend results --project-id your-project-id
-
-# All results in HTML
-cybedefend results --project-id your-project-id --all --output html --filename results.html
-
-# SARIF export in a subdir
-cybedefend results --project-id your-project-id --output sarif --filepath ./reports
-
-# IAC results
-cybedefend results --project-id your-project-id --type iac
-
-# Minimal CI output
-cybedefend results --project-id your-project-id --ci
+cybedefend results --all --output html --filename results.html
+cybedefend results --type iac --output sarif --filepath ./reports
 ```
 
-<Tip>
-Combine <strong>scan</strong> and <strong>results</strong> commands in your pipeline to automate scanning and retrieve immediate feedback.
-</Tip>
+### 3. `version`
+Displays the CLI version:
+```bash
+cybedefend version
+```
+
+### 4. `completion`
+Generates shell autocompletion for bash, zsh, etc.:
+```bash
+cybedefend completion [shell]
+```
+
+---
+
+## CI/CD Integration
+
+Combine the `scan` and `results` commands in your pipelines. For example, GitHub Actions:
+
+```yaml
+- name: Install CybeDefend CLI
+  run: |
+    curl -L https://github.com/CybeDefend/cybedefend-cli/releases/download/v1.0.0/cybedefend-linux-amd64 -o cybedefend
+    chmod +x cybedefend
+    sudo mv cybedefend /usr/local/bin/
+
+- name: Run security scan
+  run: cybedefend scan --dir ./ --ci \
+         --api-key ${{ secrets.CYBEDEFEND_API_KEY }} \
+         --project-id ${{ secrets.CYBEDEFEND_PROJECT_ID }}
+```
+
+Use `--ci` for minimal logs. Fetch detailed results later with `cybedefend results`.
+
+---
+
+## Next Steps
+
+- **License**: Apache 2.0
+- **Support**: [GitHub Issues](https://github.com/CybeDefend/cybedefend-cli/issues) or contact us at support@cybedefend.com
+- **Advanced Topics**: Explore environment variables, config files, and flags to customize your local scanning workflow.
