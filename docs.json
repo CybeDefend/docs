@@ -77,7 +77,7 @@
                   "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-maven",
                   "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-c-cpp",
                   "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-dotnet",
-                  "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-javascala-kotlin",
+                  "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-java-scala-kotlin",
                   "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-node"
                 ]
               },
