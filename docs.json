@@ -21,23 +21,47 @@
         "tab": "Documentation",
         "groups": [
           {
-            "group": "Get Started",
+            "group": "Introduction",
             "pages": [
-              "/get-started/introduction",
+              "/get-started/introduction"
+            ]
+          },
+          {
+            "group": "Platform Overview",
+            "pages": [
               {
-                "group": "General Information",
+                "group": "Key Features",
                 "pages": [
-                  "/get-started/general-information/never-stores-your-code",
-                  "/get-started/general-information/code-repository-scanning",
                   "/get-started/general-information/ai-driven-false-positive-reduction",
                   "/get-started/general-information/dataflow-analysis",
                   "/get-started/general-information/rebac-management",
-                  "/get-started/general-information/scan-parameters",
-                  "/get-started/general-information/free-plan"
+                  "/get-started/relevant-functionalities/ai-powered-vulnerability-detection",
+                  "/get-started/relevant-functionalities/blsa-business-logic-security-analysis",
+                  "/get-started/relevant-functionalities/intelligent-vulnerability-triage",
+                  "/get-started/relevant-functionalities/cross-analysis-results",
+                  "/get-started/relevant-functionalities/fix-analysis",
+                  "/get-started/relevant-functionalities/security-champion"
                 ]
               },
               {
-                "group": "Setting Up Your Account",
+                "group": "Security & Privacy",
+                "pages": [
+                  "/get-started/general-information/never-stores-your-code"
+                ]
+              },
+              {
+                "group": "Plans & Pricing",
+                "pages": [
+                  "/get-started/general-information/free-plan"
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Getting Started",
+            "pages": [
+              {
+                "group": "Account Setup",
                 "pages": [
                   "/get-started/setting-up-account/create-account-organization",
                   "/get-started/setting-up-account/managing-access-org-teams",
@@ -45,40 +69,39 @@
                 ]
               },
               {
-                "group": "Relevant Functionalities",
+                "group": "Project Management",
                 "pages": [
                   "/get-started/relevant-functionalities/global-project-management",
                   "/get-started/relevant-functionalities/create-project",
-                  "/get-started/relevant-functionalities/project-vulnerability-list",
-                  "/get-started/relevant-functionalities/updating-vulnerabilities",
-                  "/get-started/relevant-functionalities/project-overview-stats",
-                  "/get-started/relevant-functionalities/blsa-business-logic-security-analysis",
-                  "/get-started/relevant-functionalities/security-champion",
-                  "/get-started/relevant-functionalities/fix-analysis",
-                  "/get-started/relevant-functionalities/ai-powered-vulnerability-detection",
-                  "/get-started/relevant-functionalities/cross-analysis-results",
-                  "/get-started/relevant-functionalities/intelligent-vulnerability-triage"
+                  "/get-started/relevant-functionalities/project-overview-stats"
                 ]
-              }
-            ]
-          },
-          {
-            "group": "Static Scanning Code Repostory",
-            "pages": [
+              },
               {
                 "group": "Connect Your Source Code",
                 "pages": [
                   "/static-scanning-code-repository/connect-your-source-code/connect-github"
                 ]
+              }
+            ]
+          },
+          {
+            "group": "Code Scanning",
+            "pages": [
+              {
+                "group": "Scanning Options",
+                "pages": [
+                  "/get-started/general-information/code-repository-scanning",
+                  "/get-started/general-information/scan-parameters"
+                ]
               },
               {
-                "group": "Scanning a Project with CybeDefend",
+                "group": "Scanning by Project Type",
                 "pages": [
-                  "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-maven",
-                  "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-c-cpp",
-                  "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-dotnet",
                   "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-java-scala-kotlin",
-                  "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-node"
+                  "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-maven",
+                  "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-node",
+                  "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-dotnet",
+                  "/static-scanning-code-repository/scanning-good-practice/how-to-launch-scan-c-cpp"
                 ]
               },
               {
@@ -88,22 +111,29 @@
                   "/static-scanning-code-repository/local-code-scanning/cli-options",
                   "/static-scanning-code-repository/local-code-scanning/mac-setup",
                   "/static-scanning-code-repository/local-code-scanning/windows-setup",
-                  "/static-scanning-code-repository/local-code-scanning/linux-setup",
-                  {
-                    "group": "CI Integrations",
-                    "pages": [
-                      "/static-scanning-code-repository/local-code-scanning/ci-integrations/gitlab-self-managed-setup",
-                      "/static-scanning-code-repository/local-code-scanning/ci-integrations/azure-devops-server-setup",
-                      "/static-scanning-code-repository/local-code-scanning/ci-integrations/github-action-setup",
-                      "/static-scanning-code-repository/local-code-scanning/ci-integrations/bitbucket-pipeline-setup",
-                      "/static-scanning-code-repository/local-code-scanning/ci-integrations/teamcity-setup",
-                      "/static-scanning-code-repository/local-code-scanning/ci-integrations/jenkins-setup",
-                      "/static-scanning-code-repository/local-code-scanning/ci-integrations/circleci-setup",
-                      "/static-scanning-code-repository/local-code-scanning/ci-integrations/bamboo-setup"
-                    ]
-                  }
+                  "/static-scanning-code-repository/local-code-scanning/linux-setup"
+                ]
+              },
+              {
+                "group": "CI/CD Integrations",
+                "pages": [
+                  "/static-scanning-code-repository/local-code-scanning/ci-integrations/github-action-setup",
+                  "/static-scanning-code-repository/local-code-scanning/ci-integrations/gitlab-self-managed-setup",
+                  "/static-scanning-code-repository/local-code-scanning/ci-integrations/jenkins-setup",
+                  "/static-scanning-code-repository/local-code-scanning/ci-integrations/azure-devops-server-setup",
+                  "/static-scanning-code-repository/local-code-scanning/ci-integrations/bitbucket-pipeline-setup",
+                  "/static-scanning-code-repository/local-code-scanning/ci-integrations/circleci-setup",
+                  "/static-scanning-code-repository/local-code-scanning/ci-integrations/teamcity-setup",
+                  "/static-scanning-code-repository/local-code-scanning/ci-integrations/bamboo-setup"
                 ]
               }
+            ]
+          },
+          {
+            "group": "Managing Vulnerabilities",
+            "pages": [
+              "/get-started/relevant-functionalities/project-vulnerability-list",
+              "/get-started/relevant-functionalities/updating-vulnerabilities"
             ]
           }
         ]
