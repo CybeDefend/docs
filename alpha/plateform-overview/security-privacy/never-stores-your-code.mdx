@@ -1,0 +1,31 @@
+---
+title: "Never Stores Your Code"
+description: "How CybeDefend secures your code and ensures it is not stored post-analysis."
+---
+
+<Tip>
+In short: CybeDefend does not keep your code after the scanning process is complete. We use a container-based workflow for running security checks (SAST, secrets detection, etc.), and once the analysis finishes, all code and containers are securely wiped.
+</Tip>
+
+## Temporary Container Approach
+
+When you connect your repository to CybeDefend, we create a **fresh container** to clone and analyze your code. This container is isolated and used only for your specific scan. Once the scan is done:
+
+- The **container is terminated**.
+- Any **temporary copies of your code** are destroyed immediately.
+
+## The Process at a Glance
+
+CybeDefend securely clones your repository into an isolated container, performs a vulnerability analysis, extracts only security findings, and completely wipes the container and code once the scan is complete.
+
+<Frame>
+  <img src="/images/get-started/general-information/never-stock-code.png" alt="Secure Container Scanning" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+## On-Premise Scanner Option (see [Roadmap](https://cybedefend.featurebase.app/roadmap)). 
+
+If you prefer keeping everything in your own environment, you can explore our **on-premise scanning** option (coming soon). This allows the scanning process to run entirely in your infrastructure, with only the results syncing back to the CybeDefend platform.
+
+<Tip>
+CybeDefend’s container-based approach ensures that your code remains private, isolated, and unexposed once scanning is complete.
+</Tip>
