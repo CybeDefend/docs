@@ -15,20 +15,21 @@ CybeDefend offers two authentication methods for securing API requests:
 
 You can use a JWT token passed as a Bearer token in the Authorization header. JWT tokens are short-lived with a validity period of 15 minutes.
 
-To obtain a JWT token, make a GET request to the `/auth/session` endpoint:
+To obtain a JWT token, make a POST request to the `/renew` endpoint:
 
 ```bash
-GET /auth/session
+POST /renew
 ```
 
-This endpoint requires you to be already authenticated (using session cookies). When successfully called, it returns your session information along with a JWT token that can be used for subsequent API calls:
+This endpoint requires you to be already authenticated (using session cookies). When successfully called, it returns an access token that can be used for subsequent API calls:
 
 ```json
 {
-  "session": { /* session information */ },
-  "jwt": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
 ```
+
+For additional token renewal options, you can also use the `/endpoint/otrenew` endpoint.
 
 Once obtained, include the JWT in the Authorization header:
 
