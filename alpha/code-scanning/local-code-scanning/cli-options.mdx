@@ -37,9 +37,11 @@ Use "cybedefend [command] --help" for more information about a command.
 
 ## Installation
 
+You can install the CybeDefend CLI using one of the following methods:
+
 ### 1. Pre-built Binaries
 
-1. **Download** the release for your platform (e.g., `cybedefend-darwin-amd64`, `cybedefend-linux-amd64`, or `cybedefend-windows-amd64.exe`).
+1. **Download** the latest release for your platform (e.g., `cybedefend-darwin-amd64`, `cybedefend-linux-amd64`, or `cybedefend-windows-amd64.exe`) from the [GitHub Releases page](https://github.com/CybeDefend/cybedefend-cli/releases).
 2. **Make Executable** (Linux/macOS):
    ```bash
    chmod +x cybedefend-<platform>
@@ -55,12 +57,31 @@ Use "cybedefend [command] --help" for more information about a command.
 
 ### 2. Build from Source
 ```bash
+# Ensure you have Go installed
 git clone https://github.com/CybeDefend/cybedefend-cli.git
 cd cybedefend-cli
 go build -o cybedefend
-mv cybedefend /usr/local/bin
-cybedefend --help
+# Move the binary to your PATH
+sudo mv cybedefend /usr/local/bin/
+cybedefend --version
 ```
+
+### 3. Docker Image
+
+A pre-built Docker image containing the CLI is available on GitHub Container Registry. You can pull the latest version or a specific tag (like `v1.0.4`):
+
+```bash
+docker pull ghcr.io/cybedefend/cybedefend-cli:latest
+# Or for a specific version:
+# docker pull ghcr.io/cybedefend/cybedefend-cli:v1.0.4
+
+# Example usage with Docker:
+docker run --rm -v $(pwd):/app -w /app \\
+       -e CYBEDEFEND_API_KEY=$CYBEDEFEND_API_KEY \\
+       -e CYBEDEFEND_PROJECT_ID=$CYBEDEFEND_PROJECT_ID \\
+       ghcr.io/cybedefend/cybedefend-cli:latest scan --dir . --ci
+```
+This mounts your current directory into the container and runs the scan. Ensure your API key and project ID are available as environment variables.
 
 ---
 
@@ -87,16 +108,50 @@ cybedefend --help
 ```bash
 cybedefend scan [flags]
 ```
-- `--dir, -d`: Directory to zip & scan.
-- `--file, -f`: Pre-zipped file to scan.
-- `--project-id`: Associate scan with a project.
-- `--ci`: CI-friendly output (no color/ASCII).
+Starts a new scan by uploading a directory or a pre-zipped file to the CybeDefend platform. By default, the command waits for the scan to complete and displays a summary of findings.
+
+- `--dir, -d`: Directory to zip & scan (cannot be used with `--file`).
+- `--file, -f`: Pre-zipped file to scan (cannot be used with `--dir`).
+- `--project-id`: Associate scan with a specific project ID (required).
+- `--api-key`: Your CybeDefend API Key (can also be set via config or env var).
+- `--wait`: (boolean, default: `true`) Wait for the scan to complete before exiting. If `false`, the command exits after initiating the scan.
+- `--interval`: (duration, default: `5s`) Polling interval to check scan status when `--wait` is `true`.
+- `--break-on-fail`: (boolean, default: `false`) Exit with a non-zero code if the scan itself fails (e.g., due to API errors or processing issues).
+- `--break-on-severity`: (string, default: `none`) Exit with a non-zero code if vulnerabilities of the specified severity *or higher* are found. Vulnerabilities marked as "resolved" or "not_exploitable" are ignored.
+  - Possible values: `critical`, `high`, `medium`, `low`, `none` (disables breaking on severity).
+- `--ci`: CI-friendly output (no color/ASCII art, minimal logging). Useful for automated environments.
+
+After a scan completes (when `--wait` is true), a summary of vulnerabilities found (excluding resolved/not exploitable) is displayed by severity.
 
 #### Examples
 ```bash
-cybedefend scan --dir ./my-app --api-key your-api-key --project-id your-project-id
-cybedefend scan --file ./my-app.zip
-cybedefend scan --dir ./my-app --ci
+# Scan a directory, wait for completion, and show summary (default behavior)
+# Assumes API key and Project ID are set via config or env vars
+cybedefend scan --dir ./my-app --project-id your-project-id
+
+# Scan a pre-zipped file and provide API key via flag
+cybedefend scan --file ./my-app.zip --api-key your-api-key --project-id your-project-id
+
+# Start a scan but don't wait for completion
+cybedefend scan --dir ./my-app --project-id your-project-id --wait=false
+
+# Scan, wait, and fail the CI job if the scan process itself fails
+cybedefend scan --dir ./my-app --project-id your-project-id --break-on-fail
+
+# Scan, wait, and fail the CI job if any CRITICAL vulnerabilities are found
+cybedefend scan --dir ./my-app --project-id your-project-id --break-on-severity critical
+
+# Scan, wait, and fail the CI job if any MEDIUM or higher vulnerabilities are found
+cybedefend scan --dir ./my-app --project-id your-project-id --break-on-severity medium
+
+# Scan, wait, show summary, but explicitly DO NOT fail the job based on severity
+cybedefend scan --dir ./my-app --project-id your-project-id --break-on-severity none
+
+# Scan, wait, and check status every 10 seconds instead of 5
+cybedefend scan --dir ./my-app --project-id your-project-id --interval 10s
+
+# Scan in a CI environment with minimal output
+cybedefend scan --dir ./my-app --project-id your-project-id --ci
 ```
 
 ### 2. `results`
@@ -134,22 +189,38 @@ cybedefend completion [shell]
 
 ## CI/CD Integration
 
-Combine the `scan` and `results` commands in your pipelines. For example, GitHub Actions:
+Combine the `scan` and `results` commands in your pipelines. The `scan` command's `--wait`, `--break-on-fail`, and `--break-on-severity` flags are particularly useful for controlling pipeline flow based on scan outcomes.
+
+For example, in GitHub Actions:
 
 ```yaml
-- name: Install CybeDefend CLI
+- name: Install CybeDefend CLI # Or use the Docker image method
   run: |
-    curl -L https://github.com/CybeDefend/cybedefend-cli/releases/download/v1.0.0/cybedefend-linux-amd64 -o cybedefend
+    # Download commands...
+    curl -L https://github.com/CybeDefend/cybedefend-cli/releases/latest/download/cybedefend-linux-amd64 -o cybedefend
     chmod +x cybedefend
     sudo mv cybedefend /usr/local/bin/
 
-- name: Run security scan
+- name: Run security scan and break on High severity
   run: cybedefend scan --dir ./ --ci \
          --api-key ${{ secrets.CYBEDEFEND_API_KEY }} \
-         --project-id ${{ secrets.CYBEDEFEND_PROJECT_ID }}
+         --project-id ${{ secrets.CYBEDEFEND_PROJECT_ID }} \
+         --break-on-severity high # Fail build if High or Critical vulns found
+
+# Optionally, fetch detailed results artifact if needed, e.g., for reporting
+# This step might only run if the previous one succeeded, depending on workflow setup
+- name: Fetch Detailed Results as SARIF
+  run: cybedefend results --project-id ${{ secrets.CYBEDEFEND_PROJECT_ID }} \
+                          --api-key ${{ secrets.CYBEDEFEND_API_KEY }} \
+                          --output sarif --filename results.sarif --ci
+
+# - name: Upload SARIF results (Example using GitHub action)
+#   uses: github/codeql-action/upload-sarif@v2
+#   with:
+#     sarif_file: results.sarif
 ```
 
-Use `--ci` for minimal logs. Fetch detailed results later with `cybedefend results`.
+Use `--ci` for minimal logs during the scan. The `--break-on-*` flags allow automatic build failure based on your security policies. You can still use `cybedefend results` to fetch detailed reports if the scan passes the break conditions or if you need the data regardless.
 
 ---
 
