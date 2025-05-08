@@ -103,6 +103,7 @@
                       "/alpha/code-scanning/scanning-by-project-type/how-to-launch-scan-maven",
                       "/alpha/code-scanning/scanning-by-project-type/how-to-launch-scan-node",
                       "/alpha/code-scanning/scanning-by-project-type/how-to-launch-scan-dotnet",
+                      "/alpha/code-scanning/scanning-by-project-type/how-to-launch-scan-composer",
                       "/alpha/code-scanning/scanning-by-project-type/how-to-launch-scan-c-cpp"
                     ]
                   },
