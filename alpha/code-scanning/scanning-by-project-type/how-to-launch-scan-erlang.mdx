@@ -1,0 +1,60 @@
+---
+title: "How to Launch a Scan on an Erlang Project"
+description: "Use rebar.lock files to ensure accurate dependency scanning for Erlang projects in CybeDefend."
+---
+
+import UseLockfiles from '/snippets/lockfiles.mdx';
+
+**Erlang** projects managed with Rebar3 use a `rebar.lock` file to pin exact dependency versions. CybeDefend leverages this file to accurately detect vulnerabilities in your Erlang dependencies.
+
+## Recommended Steps
+
+1. **Generate rebar.lock**  
+   Run the following command in your project directory:
+   ```bash
+   rebar3 lock
+   ```
+   
+   This will generate a `rebar.lock` file based on the dependencies defined in your `rebar.config`.
+
+2. **Commit rebar.lock to Your Repository**  
+   Always commit the `rebar.lock` file to ensure all developers and CI systems use identical dependencies.
+
+3. **Keep rebar.lock Updated**  
+   When you update dependencies in your `rebar.config`, regenerate the lockfile with:
+   ```bash
+   # After updating rebar.config
+   rebar3 unlock
+   rebar3 lock
+   
+   # Or to update all dependencies at once
+   rebar3 upgrade
+   ```
+
+<UseLockfiles />
+
+## Understanding rebar.lock
+
+The `rebar.lock` file contains a snapshot of all your project's dependencies with their exact versions and checksums. This ensures:
+
+- Reproducible builds across environments
+- Protection against unexpected dependency changes
+- More accurate security scanning
+
+## Supported Files for Erlang
+
+| File Examples      |
+|-------------------|
+| `rebar.config`, `rebar.lock` |
+
+<Note>
+Without a <code>rebar.lock</code> file, CybeDefend's SCA scanner can only use version constraints from <code>rebar.config</code>, which may not accurately represent the actual dependencies used in your build.
+</Note>
+
+<Warning>
+Never edit <code>rebar.lock</code> manually. Always use Rebar3 commands to manage it.
+</Warning>
+
+<Tip>
+For comprehensive dependency management, combine <code>rebar.lock</code> with <code>rebar3 tree</code> command to visualize your dependency tree and identify any potential security issues.
+</Tip>

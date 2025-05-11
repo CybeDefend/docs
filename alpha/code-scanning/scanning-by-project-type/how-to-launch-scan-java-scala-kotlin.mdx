@@ -10,24 +10,63 @@ For **Gradle-based** projects in Java, Scala, or Kotlin, generating a `gradle.lo
 ## Gradle Lockfiles
 
 1. **Enable Gradle Locking**  
-   In your `gradle.properties`, set:
+   You can enable dependency locking in one of two ways:
 
-```properties
-systemProp.gradle.useLocks=true
-systemProp.gradle.dependencyVerification=strict
-```
+   **Option A**: In your `gradle.properties`, set:
+   ```properties
+   systemProp.gradle.useLocks=true
+   systemProp.gradle.dependencyVerification=strict
+   ```
 
-2. **Generate**  
-   Run `./gradlew dependencies` or `./gradlew --write-locks` to create `gradle.lockfile`.
+   **Option B**: Modify your `build.gradle` file to add:
+   ```groovy
+   configurations.all {
+     resolutionStrategy.activateDependencyLocking()
+   }
+   ```
+   
+   Or for Kotlin DSL projects (`build.gradle.kts`):
+   ```kotlin
+   configurations.all {
+     resolutionStrategy.activateDependencyLocking()
+   }
+   ```
+
+2. **Generate Lockfiles**  
+   Run one of these commands:
+   ```bash
+   ./gradlew dependencies --write-locks
+   ```
+   or
+   ```bash
+   ./gradlew resolveAndLockAll
+   ```
+   
+   This creates lockfiles in the `gradle/dependency-locks` directory.
+
 3. **Commit**  
-   Check in `gradle.lockfile` so that your entire team and CybeDefend sees fixed dependency versions.
+   Check in the lockfiles so that your entire team and CybeDefend sees fixed dependency versions.
 
 <UseLockfiles />
 
 ## SBT Lock for Scala
 
-- **sbt-lock** plugin can generate `.sbt.lock`.  
-- Commit that lockfile to maintain pinned Scala library versions.
+1. **Add the sbt-lock Plugin**  
+   In your `project/plugins.sbt`, add:
+   ```scala
+   addSbtPlugin("software.purpledragon" % "sbt-dependency-lock" % "1.5.1")
+   ```
+
+2. **Generate the Lockfile**  
+   Run:
+   ```bash
+   sbt dependencyLockWrite
+   ```
+   
+   This creates a `build.sbt.lock` or `dependencies.sbt.lock` file.
+
+3. **Commit the Lockfile**  
+   Add this file to your repository to maintain pinned Scala library versions.
 
 ## Supported Files
 
@@ -40,3 +79,7 @@ systemProp.gradle.dependencyVerification=strict
 <Note>
 Some older build tools or frameworks may require additional steps. The primary goal is to produce a stable lock or pinned version set for each submodule.
 </Note>
+
+<Tip>
+For multi-module Gradle projects, run <code>./gradlew :module:dependencies --write-locks</code> for each module to ensure all dependencies are properly locked.
+</Tip>

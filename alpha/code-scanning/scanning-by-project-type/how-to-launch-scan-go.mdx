@@ -1,0 +1,66 @@
+---
+title: "How to Launch a Scan on a Go Project"
+description: "Use go.sum files to ensure accurate dependency scanning for Go projects in CybeDefend."
+---
+
+import UseLockfiles from '/snippets/lockfiles.mdx';
+
+**Go** projects use the `go.sum` file to validate the checksums and versions of dependencies. CybeDefend leverages this file to accurately detect vulnerabilities in your Go dependencies.
+
+## Recommended Steps
+
+1. **Generate go.sum**  
+   Run one of these commands in your project directory:
+   ```bash
+   # Initialize a new module if you don't have a go.mod file
+   go mod init your-module-name
+   
+   # Download dependencies and generate go.sum
+   go mod tidy
+   ```
+
+2. **Commit Both go.mod and go.sum**  
+   Always commit both files to your repository. This ensures that:
+   - Exact versions are used (`go.mod`)
+   - Dependency integrity is verified (`go.sum`)
+
+3. **Keep Dependencies Updated**  
+   To update dependencies, run:
+   ```bash
+   # Update all dependencies
+   go get -u ./...
+   
+   # Update a specific dependency
+   go get -u github.com/example/dependency
+   
+   # Regenerate go.sum with updated dependencies
+   go mod tidy
+   ```
+
+<UseLockfiles />
+
+## Understanding go.sum
+
+Unlike other lockfiles, `go.sum` doesn't just record versions—it stores cryptographic checksums for each dependency version. This ensures:
+
+- Integrity verification of code
+- Protection against dependency tampering
+- Exact reproducibility of builds
+
+## Supported Files for Go
+
+| File Examples     |
+|-------------------|
+| `go.mod`, `go.sum` |
+
+<Note>
+Without a <code>go.sum</code> file, CybeDefend's SCA scanner can only use version constraints from <code>go.mod</code>, which might not provide enough information for accurate vulnerability matching.
+</Note>
+
+<Warning>
+Never edit the <code>go.sum</code> file manually. Always use Go commands to manage it.
+</Warning>
+
+<Tip>
+To ensure your dependencies are secured against supply chain attacks, consider enabling Go's checksum database with <code>GOSUMDB=sum.golang.org</code> and using <code>go mod verify</code> regularly.
+</Tip>

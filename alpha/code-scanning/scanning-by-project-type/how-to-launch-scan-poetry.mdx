@@ -1,0 +1,67 @@
+---
+title: "How to Launch a Scan on a Python Poetry Project"
+description: "Use poetry.lock files to ensure accurate dependency scanning for Python Poetry projects in CybeDefend."
+---
+
+import UseLockfiles from '/snippets/lockfiles.mdx';
+
+**Python** projects managed with Poetry use a `poetry.lock` file to pin exact dependency versions. CybeDefend leverages this file to accurately detect vulnerabilities in your Python dependencies.
+
+## Recommended Steps
+
+1. **Generate poetry.lock**  
+   Run one of these commands in your project directory:
+   ```bash
+   # If you already have a pyproject.toml file
+   poetry lock
+   
+   # If starting a new project
+   poetry init  # Follow the prompts
+   poetry add package_name  # Add dependencies
+   ```
+
+2. **Commit poetry.lock to Your Repository**  
+   Always commit the `poetry.lock` file to ensure all developers and CI systems use identical dependencies.
+
+3. **Keep poetry.lock Updated**  
+   When you update dependencies, regenerate the lockfile with:
+   ```bash
+   # Update all dependencies
+   poetry update
+   
+   # Update a specific dependency
+   poetry update package_name
+   ```
+
+<UseLockfiles />
+
+## Troubleshooting Lockfile Generation
+
+If you encounter Python version compatibility issues when generating a lockfile, try:
+
+```bash
+# Specify a Python version that works with your dependencies
+poetry env use python3.x
+poetry lock
+
+# If you need to ignore certain dependency conflict issues
+poetry lock --no-update
+```
+
+## Supported Files for Python Poetry
+
+| File Examples       |
+|--------------------|
+| `pyproject.toml`, `poetry.lock` |
+
+<Note>
+Without a <code>poetry.lock</code> file, CybeDefend's SCA scanner can only use version constraints from <code>pyproject.toml</code>, which may not accurately represent the actual dependencies used in your application.
+</Note>
+
+<Warning>
+Never edit <code>poetry.lock</code> manually. Always use Poetry commands to manage it.
+</Warning>
+
+<Tip>
+If your project has complex Python version requirements, consider using <code>poetry.lock</code> alongside a <code>.python-version</code> or <code>.tool-versions</code> file to ensure consistent Python versions across environments.
+</Tip>

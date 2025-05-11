@@ -12,23 +12,39 @@ CybeDefend supports scanning C/C++ code for vulnerabilities in your source files
 1. **Adopt Conan (or Another Manager)**  
    If you rely on external libraries, use a package manager like **Conan** that can produce `conan.lock`.
 2. **Generate & Commit conan.lock**  
-   - Run `conan install` (or equivalent) to produce the lockfile.  
+   - Ensure you have a Conan profile set up: `conan profile detect` (if needed)
+   - Run `conan lock create . --lockfile-out=conan.lock` to produce the lockfile.  
+   - Run `conan install` to install dependencies using your lockfile.
    - Commit `conan.lock` so everyone uses the exact same library versions.
 3. **Keep a Clean Codebase**  
    Add any `.deps/` or build artifacts to `.gitignore` so that only the lockfile and source are tracked.
 
 <UseLockfiles />
 
+## Generating a Conan Lockfile
+
+For Conan 2.x projects, use the following command in your project directory:
+
+```bash
+conan lock create . --lockfile-out=conan.lock
+```
+
+For older Conan 1.x projects, use:
+
+```bash
+conan lock create conanfile.py --lockfile=conan.lock
+```
+
 ## Supported Files for C/C++
 
 | File Examples |
 |--------------|
-| `conan.lock`, `CMakeLists.txt`, `.cpp`, `.h` |
+| `conan.lock`, `CMakeLists.txt`, `.cpp`, `.h`, `conanfile.py`, `conanfile.txt` |
 
 <Note>
 CybeDefend can detect vulnerabilities in known C/C++ libraries if your lockfile references them. Without a lockfile, your scanning might be incomplete or prone to version ambiguity.
 </Note>
 
 <Warning>
-Always re-run <strong>conan install</strong> or <strong>conan lock create</strong> after updating library versions, and commit the new lockfile to keep CybeDefend scanning accurate.
+Always re-run <strong>conan lock create</strong> after updating library versions, and commit the new lockfile to keep CybeDefend scanning accurate.
 </Warning>

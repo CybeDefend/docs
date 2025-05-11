@@ -10,13 +10,37 @@ If your PHP application uses **Composer**, CybeDefend can detect vulnerabilities
 ## Recommended Steps
 
 1. **Install Dependencies with Composer**  
-   Run `composer install` to generate a `composer.lock` file if you don't already have one.  
+   Run one of these commands to generate a `composer.lock` file:
+   ```bash
+   # Standard install
+   composer install
+   
+   # If you encounter platform requirement issues
+   composer install --ignore-platform-reqs
+   
+   # If you want to just generate the lockfile without installing
+   composer update --no-scripts --ignore-platform-reqs --lock
+   ```
+
 2. **Commit the Lockfile**  
    Always commit `composer.lock` to your repository. This ensures that the entire team, and CybeDefend, see the exact dependency versions.
+
 3. **Keep Your Lockfile Updated**  
    When you want to update dependencies, use `composer update` or `composer require` and commit the updated lockfile.
 
 <UseLockfiles />
+
+## Troubleshooting Lockfile Generation
+
+If you encounter issues generating a lockfile, try these approaches:
+
+```bash
+# Update dependencies while ignoring platform requirements
+composer update --no-interaction --no-scripts --ignore-platform-reqs
+
+# Force lockfile regeneration
+composer update --no-interaction --no-scripts --ignore-platform-reqs --lock
+```
 
 <Note>
 While CybeDefend can scan projects with only a <code>composer.json</code> file, we strongly recommend generating and committing the <code>composer.lock</code> file for more accurate vulnerability detection.
