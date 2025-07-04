@@ -205,7 +205,7 @@
       "anchors": [
         {
           "anchor": "Dashboard",
-          "href": "https://app-preprod.cybedefend.com/",
+          "href": "https://us.cybedefend.com/",
           "icon": "play"
         },
         {
@@ -235,7 +235,7 @@
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://app-preprod.cybedefend.com/"
+      "href": "https://us.cybedefend.com/"
     }
   },
   "footer": {
