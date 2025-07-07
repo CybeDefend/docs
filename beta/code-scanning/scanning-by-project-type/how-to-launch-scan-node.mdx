@@ -1,0 +1,47 @@
+---
+title: "How to Launch a Scan on a Node Project"
+description: "Use package-lock.json, yarn.lock, or pnpm-lock.yaml to improve security scanning for Node apps in CybeDefend."
+---
+
+import UseLockfiles from '/snippets/lockfiles.mdx';
+
+Node.js offers various package managers—npm, Yarn, PNPM, Bun—that produce lockfiles. CybeDefend's SCA scanner relies on these files to accurately identify your app's dependencies.
+
+## Lockfile Examples
+
+1. **npm**: `package-lock.json` or `npm-shrinkwrap.json`  
+2. **Yarn**: `yarn.lock`  
+3. **PNPM**: `pnpm-lock.yaml`, `pnpm-lock.yml`  
+4. **Bun**: `bun.lock`, `bun.lockb`  
+5. **Deno**: `deno.lock`
+
+<UseLockfiles />
+
+## Recommended Steps
+
+1. **Install Dependencies**  
+   e.g., `npm install`, `yarn install`, `pnpm install`, or `bun install`.  
+2. **Commit the Generated Lockfile**  
+   This ensures your entire dev team and CybeDefend use identical dependencies.  
+3. **Avoid Manual Edits**  
+   Let the package manager handle the lockfile; do not modify it by hand.
+
+## Deno Projects
+
+For **Deno** projects, you can generate a lockfile with:
+
+```bash
+deno cache --lock=deno.lock --lock-write your_script.ts
+```
+
+After generating the lockfile, commit it to your repository for CybeDefend to scan.
+
+## Supported Files for Node
+
+| File Examples                                                                                                                   |
+|-------------------------------------------------------------------------------------------------------------------------------|
+| `npm-shrinkwrap.json`, `yarn.lock`, `pnpm-lock.yaml`, `bun.lock`, `bun.lockb`, `deno.lock`, `libman.json`, `package.json`, `package-lock.json` |
+
+<Tip>
+Pin or lock versions in <strong>dependencies</strong> rather than <strong>devDependencies</strong> if you want to ensure full coverage for production packages.
+</Tip>

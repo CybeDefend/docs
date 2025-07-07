@@ -1,0 +1,65 @@
+---
+title: "Create Account"
+description: "Learn how to create your CybeDefend account, set up an organization, and integrate your code repositories."
+---
+
+CybeDefend simplifies onboarding by allowing you to create an account through **OAuth2** (Google, Microsoft, GitHub, or GitLab). After signing in, you can form an **Organization** to group your projects and manage access. Once your repositories are connected, CybeDefend automatically starts scanning them.
+
+---
+
+## 1. Create an Account via OAuth2
+
+1. **Go to the CybeDefend Registration Page**  
+   Choose the sign-up option of your choice (Google, Microsoft, GitHub, GitLab).
+2. **Authorize Your Credentials**  
+   OAuth2 ensures a secure handshake without requiring you to store new passwords.
+3. **Complete Your Profile**  
+   Provide your name and agree to our Terms of Service to finalize your account creation.
+
+<Frame>
+  <img src="/images/get-started/setting-up-account/create-account-step.png" alt="Create Account Step" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+<Tip>
+Already have an existing OAuth provider account? The sign-up process is near-instant.
+</Tip>
+
+---
+
+## 2. Create Your Organization
+
+1. **Access the Form**  
+   After your first login, you’ll be prompted to create an **Organization**. Alternatively, visit **Organization Settings** → **New Organization**.
+2. **Fill in Details**  
+   Provide an organization name, an optional description, and (if needed) a logo.
+3. **Save & Continue**  
+   This sets up your top-level group where teams and projects will live.
+
+<Frame>
+  <img src="/images/get-started/setting-up-account/organization-creation-step.png" alt="Create Organization Form" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+<Note>
+You can create multiple organizations if you manage different companies, clients, or environments.
+</Note>
+
+---
+
+## 3. Connect Your Repositories
+
+1. **Select Your Version Control Platform**  
+   CybeDefend supports GitHub. Check out our [Detailed Integration Guides](/alpha/get-started/connect-your-source-code/connect-github) for each platform.
+2. **Authorize Access**  
+   Approve read (and optionally write) permissions so we can scan your code.
+3. **Pick Your Repositories**  
+   Choose which repos to include in your **Organization**. You can assign them to specific teams or projects later.
+4. **Instant Scanning**  
+   As soon as you connect a repository, CybeDefend triggers an initial scan, identifying potential vulnerabilities.
+
+<Frame>
+  <img src="/images/get-started/setting-up-account/connect-repo-step.png" alt="Connecting Your Repository" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+<Tip>
+Once your repositories are connected, scans start automatically—no extra steps required.
+</Tip>

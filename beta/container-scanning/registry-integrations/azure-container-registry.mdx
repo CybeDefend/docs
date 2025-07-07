@@ -1,0 +1,241 @@
+---
+title: "Azure Container Registry (ACR)"
+description: "Scan container images stored in Azure Container Registry with secure Azure AD authentication and geo-replication support."
+---
+
+**Azure Container Registry (ACR)** is Microsoft Azure's managed Docker registry service. CybeDefend integrates with ACR to scan your private container images using Azure Active Directory authentication and supports all ACR tiers and features.
+
+<Frame>
+  <img src="/images/container-scanning/integrations/acr.png" alt="Azure Container Registry Integration" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+## Features
+
+- **Azure AD Authentication**: Secure access using Azure AD service principals or managed identities
+- **Multi-Tier Support**: Compatible with Basic, Standard, and Premium ACR tiers
+- **Geo-Replication**: Access images from geo-replicated registries
+- **Azure Services Integration**: Seamless integration with AKS, Container Instances, and App Service
+- **Webhook Support**: Integration with ACR webhooks for automated scanning
+
+## Setup Requirements
+
+To connect your Azure Container Registry:
+
+1. **Azure Subscription**: Active Azure subscription with ACR instance
+2. **Service Principal**: Azure AD service principal with ACR pull permissions
+3. **Registry Access**: Proper RBAC roles for container registry access
+4. **Network Access**: Connectivity to your ACR instance
+
+## Required Azure RBAC Roles
+
+Your service principal needs these roles:
+
+- `AcrPull` - Pull images from the registry
+- `Reader` - Read registry metadata and repositories
+
+## Configuration Steps
+
+<Steps>
+  <Step title="Create Service Principal">
+    Create an Azure AD service principal for CybeDefend access
+  </Step>
+  
+  <Step title="Assign ACR Permissions">
+    Grant the service principal `AcrPull` role on your container registry
+  </Step>
+  
+  <Step title="Generate Client Secret">
+    Create a client secret for the service principal
+  </Step>
+  
+  <Step title="Configure CybeDefend">
+    Add ACR connection with service principal credentials
+  </Step>
+</Steps>
+
+## Registry URL Format
+
+Azure Container Registry URLs follow this pattern:
+
+```
+# Standard format
+<registry-name>.azurecr.io/<repository>:<tag>
+
+# Examples
+myregistry.azurecr.io/myapp:latest
+contoso.azurecr.io/api/userservice:v1.2.0
+```
+
+## Authentication Methods
+
+<Tabs>
+  <Tab title="Service Principal">
+    ```bash
+    # Login with service principal
+    az login --service-principal \
+        --username <app-id> \
+        --password <password> \
+        --tenant <tenant-id>
+    
+    # Docker login
+    az acr login --name myregistry
+    ```
+  </Tab>
+  
+  <Tab title="Managed Identity">
+    ```bash
+    # For Azure resources with managed identity
+    az login --identity
+    az acr login --name myregistry
+    ```
+  </Tab>
+  
+  <Tab title="Admin User">
+    ```bash
+    # Using admin user (not recommended for production)
+    docker login myregistry.azurecr.io \
+        --username myregistry \
+        --password <admin-password>
+    ```
+  </Tab>
+</Tabs>
+
+## Service Principal Creation
+
+Create a service principal for CybeDefend:
+
+```bash
+# Create service principal
+az ad sp create-for-rbac --name cybedefend-scanner --skip-assignment
+
+# Assign ACR pull permissions
+az role assignment create \
+    --assignee <service-principal-id> \
+    --role AcrPull \
+    --scope /subscriptions/<subscription-id>/resourceGroups/<rg-name>/providers/Microsoft.ContainerRegistry/registries/<registry-name>
+```
+
+## Integration with Azure Services
+
+**Azure Kubernetes Service (AKS)**:
+```bash
+# Attach ACR to AKS cluster
+az aks update -n myAKSCluster -g myResourceGroup --attach-acr myregistry
+```
+
+**Azure Container Instances**:
+```bash
+# Deploy container from ACR
+az container create \
+    --resource-group myResourceGroup \
+    --name mycontainer \
+    --image myregistry.azurecr.io/myapp:latest \
+    --registry-login-server myregistry.azurecr.io \
+    --registry-username <service-principal-id> \
+    --registry-password <service-principal-password>
+```
+
+## ACR Premium Features
+
+**Geo-Replication**:
+```bash
+# Enable geo-replication
+az acr replication create \
+    --registry myregistry \
+    --location westeurope
+```
+
+**Private Endpoints**:
+```bash
+# Create private endpoint
+az network private-endpoint create \
+    --name myPrivateEndpoint \
+    --resource-group myResourceGroup \
+    --subnet mySubnet \
+    --private-connection-resource-id /subscriptions/.../registries/myregistry \
+    --group-id registry \
+    --connection-name myConnection
+```
+
+## Webhook Integration
+
+Configure ACR webhooks for automated scanning:
+
+```json
+{
+  "name": "cybedefend-webhook",
+  "location": "eastus",
+  "properties": {
+    "serviceUri": "https://api.cybedefend.com/webhooks/acr",
+    "actions": ["push"],
+    "status": "enabled"
+  }
+}
+```
+
+## Security Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Least Privilege" icon="shield">
+    Grant minimal required permissions to service principals
+  </Card>
+  
+  <Card title="Secret Rotation" icon="rotate">
+    Regularly rotate service principal client secrets
+  </Card>
+  
+  <Card title="Network Security" icon="network-wired">
+    Use private endpoints and VNet integration for enhanced security
+  </Card>
+  
+  <Card title="Audit Logging" icon="file-text">
+    Enable Azure Monitor logs for registry access auditing
+  </Card>
+</CardGroup>
+
+## Registry Tiers
+
+**Basic**: Entry-level registry for development scenarios
+- Limited storage and throughput
+- Basic authentication and RBAC
+
+**Standard**: Production-ready with enhanced performance
+- Increased storage and throughput
+- Webhook support
+- Geo-replication (read-only replicas)
+
+**Premium**: Enterprise-grade with advanced features
+- Maximum storage and throughput
+- Private link support
+- Content trust and image quarantine
+- Advanced geo-replication
+
+## Troubleshooting
+
+**Authentication Failures**:
+- Verify service principal credentials are correct
+- Check if client secret has expired
+- Ensure proper RBAC role assignments
+
+**Network Connectivity**:
+- Verify firewall rules allow access to ACR endpoints
+- Check VNet configuration for private endpoints
+- Ensure DNS resolution for registry FQDN
+
+**Permission Errors**:
+- Confirm service principal has `AcrPull` role
+- Check resource group and subscription permissions
+- Verify the registry exists and is accessible
+
+**Image Not Found**:
+- Ensure repository and tag names are correct
+- Check if image exists in the specified registry
+- Verify access to the specific repository
+
+<Warning>
+Store Azure service principal credentials securely and rotate them regularly. Use managed identities when possible for Azure-hosted applications.
+</Warning>
+
+<Note>
+This integration is currently in development. Full Azure Container Registry support will be available soon.
+</Note>

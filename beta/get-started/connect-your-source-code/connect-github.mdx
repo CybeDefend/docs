@@ -1,0 +1,78 @@
+---
+title: "Connect GitHub Account to CybeDefend"
+description: "Authorize and install the CybeDefend GitHub App to link your repositories for static code scanning."
+---
+
+To begin performing **static code scans** on your GitHub repositories with CybeDefend, you’ll need to **authorize** and **install** our GitHub App. Once installed, your repositories will be accessible when creating new projects in CybeDefend.
+
+<Frame>
+  <img src="/images/static-scanning-code-repository/connect-your-source-code/github-integration-intro.png" alt="GitHub Integration Intro" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+---
+
+## 1. Access Organization Integrations
+
+1. **Navigate to “Integratin Settings”** 
+   Go to your Organization's settings > Integrations.
+2. **Search for “GitHub”** 
+   Within that section, choose the **GitHub** option for installation instructions.
+3. **Click “Install & Authorize”**  
+   You’ll be redirected to GitHub’s official authorization flow.
+
+<Frame>
+  <img src="/images/static-scanning-code-repository/connect-your-source-code/integration-settings.png" alt="Integration Settings Screenshot" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+<Note>
+You must have <strong>Administrator or Manager privileges</strong> in CybeDefend to add integrations.
+</Note>
+
+---
+
+## 2. Install & Authorize CybeDefend on GitHub
+
+When GitHub prompts you to install the **CybeDefend GitHub App**:
+
+1. **Choose Repositories**  
+   Select either all or specific repositories to grant CybeDefend read access.  
+2. **Confirm Permissions**  
+   We need at least read access for scanning. Write access is optional but enables advanced features like **Auto-Fix PRs** (coming soon).
+3. **Complete Installation**  
+   Wait a few seconds for GitHub to finalize authorization.
+
+<Tip>
+If you have organizational policies restricting third-party app installations, contact your GitHub Org Admin to approve CybeDefend’s GitHub App.
+</Tip>
+
+---
+
+## 3. Linking Repositories to Your Projects
+
+After installation, you can associate any authorized repository with a **new project** in CybeDefend:
+
+- **Go to “Create Project”**: Navigate to [Create Project](/alpha/get-started/project-management/create-project).  
+- **Select “Coninue with GitHub”**: Your authorized repos will appear in a dropdown.  
+- **Choose Your Repo**: Pick a repository, assign it to a team, and configure scanning parameters.
+
+<Note>
+If you just installed the app, it may take a few moments before your repositories become visible in the “Create Project” flow.
+</Note>
+
+---
+
+## What’s Next?
+
+With the **GitHub** integration enabled, you’ll be able to:
+
+- **Scan your codebase** automatically for vulnerabilities (SAST).  
+- **Quickly set up** new projects without manual ZIP uploads.  
+- **Prepare for** advanced features like auto-generated PR fixes.
+
+<Warning>
+Future integrations for GitLab, Bitbucket, and more are on the way—keep an eye on our <strong><a href="https://cybedefend.featurebase.app/roadmap">Roadmap</a></strong> for updates.
+</Warning>
+
+<Tip>
+If you face any issues with authorization or repo visibility, check out our FAQ or reach out to <strong>contact@cybedefend.com</strong> for assistance.
+</Tip>

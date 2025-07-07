@@ -18,7 +18,7 @@
   "navigation": {
     "versions": [
       {
-        "version": "Alpha",
+        "version": "Alpha V0.1",
         "tabs": [
           {
             "tab": "Documentation",
@@ -42,7 +42,8 @@
                       "/alpha/plateform-overview/key-features/intelligent-vulnerability-triage",
                       "/alpha/plateform-overview/key-features/cross-analysis-results",
                       "/alpha/plateform-overview/key-features/fix-analysis",
-                      "/alpha/plateform-overview/key-features/security-champion"
+                      "/alpha/plateform-overview/key-features/security-champion",
+                      "/alpha/plateform-overview/key-features/sovereign-data-storage"
                     ]
                   },
                   {
@@ -194,6 +195,209 @@
                   "/alpha/api-reference/endpoint/delete-a-project",
                   "/alpha/api-reference/endpoint/delete-a-team",
                   "/alpha/api-reference/endpoint/remove-a-member-from-a-team"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "version": "Beta V0.2",
+        "tabs": [
+          {
+            "tab": "Documentation",
+            "groups": [
+              {
+                "group": "CybeDefend",
+                "pages": [
+                  "/beta/introduction"
+                ]
+              },
+              {
+                "group": "Platform Overview",
+                "pages": [
+                  {
+                    "group": "Key Features",
+                    "pages": [
+                      "/beta/plateform-overview/key-features/ai-driven-false-positive-reduction",
+                      "/beta/plateform-overview/key-features/dataflow-analysis",
+                      "/beta/plateform-overview/key-features/rebac-management",
+                      "/beta/plateform-overview/key-features/blsa-business-logic-security-analysis",
+                      "/beta/plateform-overview/key-features/intelligent-vulnerability-triage",
+                      "/beta/plateform-overview/key-features/cross-analysis-results",
+                      "/beta/plateform-overview/key-features/fix-analysis",
+                      "/beta/plateform-overview/key-features/security-champion",
+                      "/beta/plateform-overview/key-features/sovereign-data-storage"
+                    ]
+                  },
+                  {
+                    "group": "Security & Privacy",
+                    "pages": [
+                      "/beta/plateform-overview/security-privacy/never-stores-your-code"
+                    ]
+                  },
+                  {
+                    "group": "Plans & Pricing",
+                    "pages": [
+                        "/beta/plateform-overview/plan-&-pricing/free-plan"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Getting Started",
+                "pages": [
+                  {
+                    "group": "Account Setup",
+                    "pages": [
+                      "/beta/get-started/account-setup/create-account-organization",
+                      "/beta/get-started/account-setup/managing-access-org-teams",
+                      "/beta/get-started/account-setup/assigning-roles"
+                    ]
+                  },
+                  {
+                    "group": "Project Management",
+                    "pages": [
+                      "/beta/get-started/project-management/global-project-management",
+                      "/beta/get-started/project-management/create-project",
+                      "/beta/get-started/project-management/project-overview-stats"
+                    ]
+                  },
+                  {
+                    "group": "Connect Your Source Code",
+                    "pages": [
+                      "/beta/get-started/connect-your-source-code/connect-github"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Code Scanning",
+                "pages": [
+                  {
+                    "group": "Scanning Options",
+                    "pages": [
+                      "/beta/code-scanning/scanning-options/code-repository-scanning",
+                      "/beta/code-scanning/scanning-options/scan-parameters"
+                    ]
+                  },
+                  {
+                    "group": "Scanning by Project Type",
+                    "pages": [
+                      "/beta/code-scanning/scanning-by-project-type/how-to-launch-scan-java-scala-kotlin",
+                      "/beta/code-scanning/scanning-by-project-type/how-to-launch-scan-maven",
+                      "/beta/code-scanning/scanning-by-project-type/how-to-launch-scan-node",
+                      "/beta/code-scanning/scanning-by-project-type/how-to-launch-scan-dotnet",
+                      "/beta/code-scanning/scanning-by-project-type/how-to-launch-scan-composer",
+                      "/beta/code-scanning/scanning-by-project-type/how-to-launch-scan-c-cpp"
+                    ]
+                  },
+                  {
+                    "group": "Local Code Scanning",
+                    "pages": [
+                      "/beta/code-scanning/local-code-scanning/introduction-api-key",
+                      "/beta/code-scanning/local-code-scanning/cli-options",
+                      "/beta/code-scanning/local-code-scanning/mac-setup",
+                      "/beta/code-scanning/local-code-scanning/windows-setup",
+                      "/beta/code-scanning/local-code-scanning/linux-setup"
+                    ]
+                  },
+                  {
+                    "group": "CI/CD Integrations",
+                    "pages": [
+                      "/beta/code-scanning/ci-cd-integrations/github-action-setup",
+                      "/beta/code-scanning/ci-cd-integrations/gitlab-self-managed-setup",
+                      "/beta/code-scanning/ci-cd-integrations/jenkins-setup",
+                      "/beta/code-scanning/ci-cd-integrations/azure-devops-server-setup",
+                      "/beta/code-scanning/ci-cd-integrations/bitbucket-pipeline-setup",
+                      "/beta/code-scanning/ci-cd-integrations/circleci-setup",
+                      "/beta/code-scanning/ci-cd-integrations/teamcity-setup",
+                      "/beta/code-scanning/ci-cd-integrations/bamboo-setup"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Container Scanning",
+                "pages": [
+                  "/beta/container-scanning/container-image-scanning",
+                  "/beta/container-scanning/dockerfile-security-scanning",
+                  {
+                    "group": "Registry Integrations",
+                    "pages": [
+                      "/beta/container-scanning/registry-integrations/docker-hub",
+                      "/beta/container-scanning/registry-integrations/gitlab-container-registry",
+                      "/beta/container-scanning/registry-integrations/google-container-registry",
+                      "/beta/container-scanning/registry-integrations/github-container-registry",
+                      "/beta/container-scanning/registry-integrations/amazon-ecr",
+                      "/beta/container-scanning/registry-integrations/azure-container-registry",
+                      "/beta/container-scanning/registry-integrations/red-hat-quay"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Managing Vulnerabilities",
+                "pages": [
+                  "/alpha/managing-vulnerabilities/project-vulnerability-list",
+                  "/alpha/managing-vulnerabilities/updating-vulnerabilities"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "API Reference",
+            "groups": [
+              {
+                "group": "API Documentation",
+                "pages": [
+                  "/beta/api-reference/introduction"
+                ]
+              },
+              {
+                "group": "Endpoints",
+                "pages": [
+                  "/beta/api-reference/endpoint/get-organization-invitations",
+                  "/beta/api-reference/endpoint/get-organizations-of-user",
+                  "/beta/api-reference/endpoint/get-organization-by-id",
+                  "/beta/api-reference/endpoint/get-organization-members",
+                  "/beta/api-reference/endpoint/get-all-projects-of-an-organization-with-pagination",
+                  "/beta/api-reference/endpoint/get-all-projects-of-a-team-with-pagination",
+                  "/beta/api-reference/endpoint/get-a-project",
+                  "/beta/api-reference/endpoint/get-team-by-id",
+                  "/beta/api-reference/endpoint/get-all-teams-of-an-organization",
+                  "/beta/api-reference/endpoint/get-all-members-of-a-team",
+                  "/beta/api-reference/endpoint/get-a-member-of-a-team",
+                  "/beta/api-reference/endpoint/get-a-scan-by-id",
+                  "/beta/api-reference/endpoint/get-all-vulnerabilities-of-a-project-for-sast",
+                  "/beta/api-reference/endpoint/get-all-iac-vulnerabilities-of-a-project",
+                  "/alpha/api-reference/endpoint/get-all-sca-vulnerabilities-of-a-project",
+                  "/beta/api-reference/endpoint/get-all-sca-packages-of-a-project",
+                  "/beta/api-reference/endpoint/get-a-vulnerability-of-a-project-for-sca",
+                  "/beta/api-reference/endpoint/get-a-vulnerability-of-a-project-for-sast",
+                  "/beta/api-reference/endpoint/get-a-vulnerability-of-a-project-for-iac",
+                  "/beta/api-reference/endpoint/get-overview-of-a-project",
+                  "/beta/api-reference/endpoint/get-user-profile-information",
+                  "/beta/api-reference/endpoint/invite-user-to-organization",
+                  "/beta/api-reference/endpoint/accept-invitation-to-organization",
+                  "/beta/api-reference/endpoint/create-organization",
+                  "/beta/api-reference/endpoint/add-member-to-organization",
+                  "/beta/api-reference/endpoint/create-a-project",
+                  "/beta/api-reference/endpoint/create-a-new-team",
+                  "/beta/api-reference/endpoint/add-a-member-to-a-team",
+                  "/beta/api-reference/endpoint/start-a-scan",
+                  "/beta/api-reference/endpoint/update-organization",
+                  "/beta/api-reference/endpoint/update-organization-member-role",
+                  "/beta/api-reference/endpoint/update-a-team",
+                  "/beta/api-reference/endpoint/update-a-project",
+                  "/beta/api-reference/endpoint/update-a-vulnerability-of-a-project",
+                  "/beta/api-reference/endpoint/update-user-profile",
+                  "/beta/api-reference/endpoint/cancel-organization-invitation",
+                  "/beta/api-reference/endpoint/delete-organization",
+                  "/beta/api-reference/endpoint/remove-member-from-organization",
+                  "/beta/api-reference/endpoint/delete-a-project",
+                  "/beta/api-reference/endpoint/delete-a-team",
+                  "/beta/api-reference/endpoint/remove-a-member-from-a-team"
                 ]
               }
             ]

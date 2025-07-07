@@ -1,0 +1,59 @@
+---
+title: "How to Launch a Scan on an Elixir Project"
+description: "Use mix.lock files to ensure accurate dependency scanning for Elixir projects in CybeDefend."
+---
+
+import UseLockfiles from '/snippets/lockfiles.mdx';
+
+**Elixir** projects managed with Mix use a `mix.lock` file to pin exact dependency versions. CybeDefend leverages this file to accurately detect vulnerabilities in your Elixir dependencies.
+
+## Recommended Steps
+
+1. **Generate mix.lock**  
+   Run the following command in your project directory:
+   ```bash
+   mix deps.get
+   ```
+   
+   This will download your dependencies and generate a `mix.lock` file.
+
+2. **Commit mix.lock to Your Repository**  
+   Always commit the `mix.lock` file to ensure all developers and CI systems use identical dependencies.
+
+3. **Keep mix.lock Updated**  
+   When you update dependencies in `mix.exs`, regenerate the lockfile with:
+   ```bash
+   # Update all dependencies
+   mix deps.update --all
+   
+   # Update a specific dependency
+   mix deps.update dependency_name
+   ```
+
+<UseLockfiles />
+
+## Understanding mix.lock
+
+The `mix.lock` file contains a snapshot of all your project's dependencies with their exact versions and checksums. This ensures:
+
+- Reproducible builds across environments
+- Protection against unexpected dependency changes
+- More accurate security scanning
+
+## Supported Files for Elixir
+
+| File Examples      |
+|-------------------|
+| `mix.exs`, `mix.lock` |
+
+<Note>
+Without a <code>mix.lock</code> file, CybeDefend's SCA scanner can only use version constraints from <code>mix.exs</code>, which may not accurately represent the actual dependencies used in your build.
+</Note>
+
+<Warning>
+Never edit <code>mix.lock</code> manually. Always use Mix commands to manage it.
+</Warning>
+
+<Tip>
+For Elixir umbrella applications, ensure each sub-application has its dependencies properly declared and that the root <code>mix.lock</code> file is committed to your repository.
+</Tip>

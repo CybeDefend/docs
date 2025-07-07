@@ -1,0 +1,130 @@
+---
+title: "GitLab Container Registry"
+description: "Scan private container images stored in GitLab's integrated container registry."
+---
+
+**GitLab Container Registry** provides a secure, private space for your organization's Docker images. CybeDefend integrates with GitLab's registry to scan your private containers for vulnerabilities while maintaining security and access controls.
+
+<Frame>
+  <img src="/images/container-scanning/integrations/gitlab.png" alt="GitLab Container Registry Integration" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+## Features
+
+- **Private Repository Access**: Scan images from private GitLab projects
+- **Token Authentication**: Secure access using GitLab personal access tokens
+- **Project Integration**: Seamless integration with GitLab CI/CD pipelines
+- **Group Support**: Access images across GitLab groups and subgroups
+- **Tag Management**: Scan specific image versions and tags
+
+## Setup Requirements
+
+To connect your GitLab Container Registry:
+
+1. **GitLab Access Token**: Personal access token with `read_registry` scope
+2. **Registry URL**: Your GitLab instance registry endpoint
+3. **Project Path**: The GitLab project containing your containers
+4. **Image Permissions**: Read access to the container registry
+
+## Configuration Steps
+
+<Steps>
+  <Step title="Generate Access Token">
+    Create a GitLab personal access token with `read_registry` permissions
+  </Step>
+  
+  <Step title="Add Registry Connection">
+    Configure the GitLab registry connection in CybeDefend settings
+  </Step>
+  
+  <Step title="Verify Access">
+    Test the connection and verify image access permissions
+  </Step>
+  
+  <Step title="Select Images">
+    Browse and select container images to scan from your GitLab projects
+  </Step>
+</Steps>
+
+## Registry URL Format
+
+GitLab Container Registry URLs follow this pattern:
+
+```
+# GitLab.com
+registry.gitlab.com/group/project
+
+# Self-hosted GitLab
+your-gitlab.com:5050/group/project
+
+# With specific image and tag
+registry.gitlab.com/group/project/image:tag
+```
+
+## Integration with GitLab CI/CD
+
+Integrate container scanning into your GitLab pipelines:
+
+```yaml
+# .gitlab-ci.yml example
+container-security-scan:
+  stage: security
+  script:
+    - echo "Triggering CybeDefend container scan"
+    - curl -X POST "$CYBEDEFEND_API/scan" 
+           -H "Authorization: Bearer $CYBEDEFEND_TOKEN"
+           -d "image=$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
+  only:
+    - tags
+```
+
+## Access Control
+
+<CardGroup cols={2}>
+  <Card title="Token Security" icon="key">
+    Use minimal scope tokens and rotate them regularly for security
+  </Card>
+  
+  <Card title="Project Permissions" icon="users">
+    Ensure scanning tokens have only necessary read permissions
+  </Card>
+  
+  <Card title="Network Access" icon="network-wired">
+    Configure network policies for secure registry communication
+  </Card>
+  
+  <Card title="Audit Logging" icon="file-text">
+    Monitor access logs for registry scanning activities
+  </Card>
+</CardGroup>
+
+## Supported GitLab Versions
+
+- **GitLab.com**: Full support for GitLab's SaaS offering
+- **GitLab Self-Hosted**: Compatible with GitLab 13.0+
+- **GitLab Enterprise**: Full feature support with enterprise registries
+
+## Common Issues & Solutions
+
+**Authentication Errors**:
+- Verify token has `read_registry` scope
+- Check token expiration date
+- Ensure registry URL is correct
+
+**Permission Denied**:
+- Confirm project visibility settings
+- Verify user has access to the project
+- Check registry is enabled for the project
+
+**Network Connectivity**:
+- Ensure CybeDefend can reach your GitLab instance
+- Configure firewall rules if using self-hosted GitLab
+- Check SSL certificate validity
+
+<Warning>
+Store your GitLab access tokens securely and avoid committing them to version control. Use environment variables or secure secret management.
+</Warning>
+
+<Note>
+This integration is currently in development. Full GitLab Container Registry support will be available soon.
+</Note>

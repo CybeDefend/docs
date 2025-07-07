@@ -1,0 +1,69 @@
+---
+title: "How to Launch a Scan on a Maven Project"
+description: "Best practices for configuring Maven to be scanned by CybeDefend, with an emphasis on lockfile-like mechanisms."
+---
+
+import UseLockfiles from '/snippets/lockfiles.mdx';
+
+If your Java application uses **Maven**, CybeDefend can detect vulnerabilities in your pom.xml, `.jar`, `.war`, or `.ear` files. However, you'll get the **best** results if you explicitly pin or lock dependencies to stable versions.
+
+## Recommended Steps
+
+1. **Pin Versions in pom.xml**  
+   Make sure each dependency in `<dependencies>` includes a specific version number:
+   ```xml
+   <dependency>
+     <groupId>org.example</groupId>
+     <artifactId>example-library</artifactId>
+     <version>1.2.3</version> <!-- Use exact version, not ranges -->
+   </dependency>
+   ```
+
+2. **Use a Lockfile-Like Approach**  
+   While Maven doesn't have an official universal lockfile, certain plugins or pinned version strategies replicate the effect.
+   - **Dependency Management**: Use `<dependencyManagement>` in your parent pom to centralize version definitions.
+   - **Versions Maven Plugin**: Tools like `versions:lock-snapshots` or `versions:use-releases` can help freeze your dependencies.
+   - **Maven Enforcer**: Consider using the enforcer plugin to ban dependency version ranges.
+
+3. **Generate Flattened POM**  
+   The Maven Flatten Plugin creates a simplified POM with all versions resolved:
+   ```xml
+   <plugin>
+     <groupId>org.codehaus.mojo</groupId>
+     <artifactId>flatten-maven-plugin</artifactId>
+     <version>1.3.0</version>
+     <configuration>
+       <flattenMode>resolveCiFriendliesOnly</flattenMode>
+     </configuration>
+     <executions>
+       <execution>
+         <goals>
+           <goal>flatten</goal>
+         </goals>
+       </execution>
+     </executions>
+   </plugin>
+   ```
+
+4. **Store pom.xml in Repo**  
+   This ensures that the entire team, and CybeDefend, see the exact dependency versions.
+
+<UseLockfiles />
+
+<Note>
+For advanced usage, some teams generate `.flattened-pom.xml` or use ephemeral lock plugins. The key is to produce a stable, pinned set of dependencies that <strong>CybeDefend</strong> can accurately scan.
+</Note>
+
+## Supported Files for Java/Maven
+
+| File Examples      | 
+|--------------------|
+| `pom.xml`, `.jar`, `.war`, `.ear`, `.flattened-pom.xml` |
+
+<Warning>
+Remember to <strong>re-run Maven</strong> and commit any updated metadata or flattened POM files if your plugin of choice modifies them.
+</Warning>
+
+<Tip>
+Once your Maven project is ready, create a new project in CybeDefend referencing this codebase. SCA scanning will detect vulnerabilities in pinned dependencies more accurately.
+</Tip>

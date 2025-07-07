@@ -1,0 +1,71 @@
+---
+title: "How to Launch a Scan on a Ruby Project"
+description: "Use Gemfile.lock files to ensure accurate dependency scanning for Ruby projects in CybeDefend."
+---
+
+import UseLockfiles from '/snippets/lockfiles.mdx';
+
+**Ruby** projects managed with Bundler use a `Gemfile.lock` file to pin exact dependency versions. CybeDefend leverages this file to accurately detect vulnerabilities in your Ruby gems.
+
+## Recommended Steps
+
+1. **Generate Gemfile.lock**  
+   Run one of these commands in your project directory:
+   ```bash
+   # Standard installation and lockfile generation
+   bundle install
+   
+   # If you just want to generate the lockfile without installing
+   bundle lock
+   
+   # If you encounter platform issues
+   bundle lock --add-platform ruby
+   ```
+
+2. **Commit Gemfile.lock to Your Repository**  
+   Always commit the `Gemfile.lock` file to ensure all developers and CI systems use identical dependencies.
+
+3. **Keep Gemfile.lock Updated**  
+   When you update dependencies in your `Gemfile`, regenerate the lockfile with:
+   ```bash
+   # Update all dependencies
+   bundle update
+   
+   # Update a specific dependency
+   bundle update gem_name
+   ```
+
+<UseLockfiles />
+
+## Troubleshooting Lockfile Generation
+
+If you encounter issues generating a lockfile, try these approaches:
+
+```bash
+# Sometimes specifying a platform helps
+bundle lock --add-platform ruby
+
+# If you have ruby version constraints
+bundle update --ruby
+
+# For conservative updates
+bundle update --conservative
+```
+
+## Supported Files for Ruby
+
+| File Examples       |
+|--------------------|
+| `Gemfile`, `Gemfile.lock` |
+
+<Note>
+Without a <code>Gemfile.lock</code> file, CybeDefend's SCA scanner can only use version constraints from <code>Gemfile</code>, which may not accurately represent the actual dependencies used in your application.
+</Note>
+
+<Warning>
+Never edit <code>Gemfile.lock</code> manually. Always use Bundler commands to manage it.
+</Warning>
+
+<Tip>
+If your project has specific Ruby version requirements that cause issues when generating a lockfile, you can temporarily comment out the <code>ruby</code> version line in your Gemfile, generate the lockfile, and then restore the line.
+</Tip>
