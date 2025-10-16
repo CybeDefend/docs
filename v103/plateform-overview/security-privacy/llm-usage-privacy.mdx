@@ -1,0 +1,70 @@
+---
+title: "LLM Usage & Privacy"
+description: "How CybeDefend uses sovereign LLMs with strict privacy guarantees."
+---
+
+CybeDefend leverages advanced Large Language Models (LLMs) to power our AI agents while maintaining the highest standards of data privacy and security.
+
+---
+
+## Our LLM Policy
+
+### Sovereign LLM Infrastructure
+
+All LLMs used by CybeDefend are deployed on **sovereign cloud infrastructure** within your chosen region (EU or US). Your code and vulnerability data never leave your selected geographical boundary.
+
+### No Training or Fine-Tuning
+
+<Warning>
+**CybeDefend has a strict zero-training policy**: Your code, vulnerabilities, and interactions with our AI agents are **never used** for training, fine-tuning, or improving our models.
+</Warning>
+
+This policy ensures:
+
+- **Complete confidentiality**: Your proprietary code remains private
+- **No data leakage**: Your security findings never contribute to model training
+- **Compliance**: Meets the strictest regulatory requirements (GDPR, SOC 2, etc.)
+
+---
+
+## Data Processing
+
+When you use CybeDefend AI features (Cybe Analysis, Cybe AutoFix, Cybe Security Champion):
+
+1. **Your code is parsed** into our proprietary knowledge graph
+2. **Queries are sent** to sovereign LLMs within your chosen region
+3. **Responses are generated** using your specific codebase context
+4. **All data remains** within your regional boundary
+
+<Info>
+LLM inference happens in real-time and is not persisted beyond the immediate request/response cycle.
+</Info>
+
+---
+
+## Regional LLM Deployment
+
+| Region | LLM Location | Compliance |
+|--------|-------------|------------|
+| **Europe** | EU sovereign cloud | GDPR, ANSSI SecNumCloud, BSI C5 |
+| **United States** | US cloud infrastructure | SOC 2, HIPAA, PCI-DSS |
+
+---
+
+## Your Control
+
+You can enable or disable AI features at the project level:
+
+- **Cybe Analysis**: Can be toggled in project settings
+- **Cybe AutoFix**: Requires explicit activation and Git integration
+- **Cybe Security Champion**: Requires Cybe Analysis to be enabled
+
+When AI features are disabled, no code is sent to LLMs.
+
+---
+
+## Learn More
+
+- [Cybe Analysis Configuration](/v103/agent-ai-integration/cybe-analysis-detail)
+- [Data Storage & Privacy](/v103/plateform-overview/security-privacy/never-stores-your-code)
+- [Cloud Region Selection](/v103/get-started/account-setup/create-account-organization)

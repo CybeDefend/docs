@@ -1,0 +1,109 @@
+---
+title: "Scan Project Parameters"
+description: "Configure your scan settings: choose scanner types, enable fast scanning, and set vulnerability severity levels."
+---
+
+In CybeDefend, you can customize your scans by adjusting key parameters in **Project Settings** → **Scanning**. This guide covers the essential scan configuration options.
+
+<Frame>
+  <img src="/images/get-started/general-information/scan-settings-overview.png" alt="Scan Settings Overview" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+---
+
+## Scanner Types
+
+CybeDefend supports multiple security scanning methods. Enable the scanners that match your project needs:
+
+### SAST (Static Application Security Testing)
+
+Analyzes source code for security vulnerabilities before runtime.
+
+### SCA (Software Composition Analysis)
+
+Inspects open-source dependencies and libraries for known vulnerabilities.
+
+### IaC (Infrastructure as Code)
+
+Detects misconfigurations in infrastructure definitions (Terraform, Kubernetes, Docker, etc.).
+
+### Container
+
+Scans container images for vulnerabilities in base images, packages, and configurations.
+
+<Frame>
+  <img src="/images/get-started/general-information/type-of-scanning.png" alt="Scanning Methods" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+<Tip>
+We recommend **enabling all scanners** for comprehensive security coverage across your entire stack.
+</Tip>
+
+---
+
+## Vulnerability Severity Levels
+
+Select which **severity levels** to include in your scan results:
+
+- **Critical**: Immediate security risks requiring urgent action
+- **High**: Serious vulnerabilities that should be prioritized
+- **Medium**: Moderate security issues to address
+- **Low**: Minor vulnerabilities or potential improvements
+
+<Frame>
+  <img src="/images/get-started/general-information/severity-choice.png" alt="Vulnerability Severity Choice" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+Unchecked severity levels will not appear in your results, allowing you to focus on the most critical findings.
+
+<Note>
+This setting filters scan results only—it does not impact scanning time or depth.
+</Note>
+
+---
+
+## SAST Fast Scanning
+
+Enable **Fast Scan** for quicker SAST results during development:
+
+<Frame>
+  <img src="/images/get-started/general-information/fast-sast.png" alt="SAST Fast Scanning" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+**Fast Scan characteristics:**
+- Uses a subset of SAST scanners
+- Reduces scan time significantly
+- May detect fewer vulnerabilities (some deep analysis is skipped)
+- Only applicable when SAST is enabled
+
+<Warning>
+Fast scanning is ideal for **rapid feedback during development**. For production releases or comprehensive audits, use the **full SAST scan**.
+</Warning>
+
+---
+
+## AI-Powered Features
+
+For advanced vulnerability analysis and remediation, CybeDefend offers AI agent features that can be enabled in project settings:
+
+- **Cybe Analysis**: Intelligent false positive detection and vulnerability triage
+- **Cybe AutoFix**: Automated fix generation with pull/merge requests
+- **Cybe Security Champion**: Interactive security guidance and chatbot
+
+<Info>
+Learn more about configuring AI features in the [Agent & AI Integration](/v103/agent-ai-integration/cybe-analysis-detail) section.
+</Info>
+
+---
+
+## Saving Your Configuration
+
+After adjusting scan parameters:
+
+1. **Save your settings** in the project configuration
+2. **Trigger a new scan** manually or wait for automatic scanning
+3. **Review results** in your project dashboard
+
+<Tip>
+Balance **scan coverage** and **speed** based on your development stage. Use fast scanning for rapid iterations, and comprehensive scanning for releases.
+</Tip>

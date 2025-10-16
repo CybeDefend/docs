@@ -1,0 +1,88 @@
+---
+title: "Jenkins Setup for Local Code Scanning"
+description: "Integrate CybeDefend’s local scanning into a Jenkins pipeline without exposing your code externally."
+icon: "jenkins"
+---
+
+**Jenkins** is a widely used CI/CD tool that you can host on-prem or in the cloud. By installing the **CybeDefend CLI** on your Jenkins agent, you can securely run scans locally and upload the results to CybeDefend.
+
+## Requirements
+
+1. **API Key**  
+   Follow [Introduction & API Key Creation](/v103/code-scanning/local-code-scanning/introduction-api-key) to generate and store a key in Jenkins credentials.
+2. **Operating System**  
+   Jenkins agent must be on a supported OS (Linux x86_64, Windows, macOS). For Linux, ensure `glibc >= 2.27`.
+3. **Sufficient Resources**  
+   At least 2–4 GB RAM, plus the recommended disk space for your repo.
+
+<Note>
+By default, we recommend scanning the <strong>main</strong> (or <strong>master</strong>) branch to avoid mixing partial results across multiple branches.
+</Note>
+
+---
+
+## Option 1: Docker-Based Scanning
+
+If your Jenkins agent supports Docker, run the **CybeDefend** scanner image:
+
+1. **Create a New Jenkins Project**  
+   - Choose **Pipeline** or **Freestyle** with a Docker step.
+2. **Configure Docker**  
+   Make sure your agent can run containers.
+3. **Build Step**:
+
+```bash
+docker run --rm \
+  -v $WORKSPACE:/app \
+  -w /app \
+  cybedefend/local-scanner:latest \
+  cybedefend scan . --api-key $CYBEDEFEND_API_KEY --project-id $CYBEDEFEND_PROJECT_ID --ci
+```
+
+### Explanation
+- **-v $WORKSPACE:/app**: Mount your code from Jenkins into `/app`.
+- **cybedefend/local-scanner:latest**: Our Docker image containing the CLI.
+- **--ci**: Outputs minimal logs for a clean pipeline.
+
+<Accordion icon="box" title="Tagging the main branch only">
+  <p>We suggest setting <strong>Branch Specifier</strong> to main or master in your Jenkins job, so scans remain consistent.</p>
+</Accordion>
+
+---
+
+## Option 2: Installing the Binary Directly
+
+1. **Download the Binary**  
+   In a shell build step:
+   ```bash
+   curl -L https://github.com/CybeDefend/cybedefend-cli/releases/download/v1.0.0/cybedefend-linux-amd64 -o cybedefend
+   chmod +x cybedefend
+   sudo mv cybedefend /usr/local/bin/
+   ```
+2. **Run the Scan**  
+   ```bash
+   cybedefend scan . \
+     --api-key $CYBEDEFEND_API_KEY \
+     --project-id $CYBEDEFEND_PROJECT_ID \
+     --ci
+   ```
+
+<Note>
+If this is your first time scanning the repo, a new project is created in CybeDefend. On subsequent scans, results are appended under the same <strong>Project ID</strong>.
+</Note>
+
+---
+
+## Checking Results
+
+- **Jenkins Console Output**: Quick summary of discovered vulnerabilities.  
+- **CybeDefend “results” command**: Add a new step to fetch more detailed results in JSON, HTML, or SARIF.  
+- **CybeDefend Dashboard**: Provides an in-depth view, charts, and historical vulnerability data.
+
+<Warning>
+For large repos, scanning may take a few minutes. Adjust <strong>Timeout</strong> settings accordingly.
+</Warning>
+
+<Tip>
+Consider gating a release by parsing CLI output or exit codes, failing the build if high-severity issues remain.
+</Tip>
