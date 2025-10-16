@@ -1,0 +1,241 @@
+---
+title: "Amazon Elastic Container Registry (ECR)"
+description: "Scan container images stored in Amazon ECR with secure AWS IAM authentication and cross-region support."
+---
+
+**Amazon Elastic Container Registry (ECR)** is AWS's fully managed Docker container registry. CybeDefend integrates with ECR to scan your private container images using AWS IAM authentication, supporting both private and public ECR repositories.
+
+<Frame>
+  <img src="/images/container-scanning/integrations/ecr.png" alt="Amazon ECR Integration" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+## Features
+
+- **AWS IAM Authentication**: Secure access using AWS access keys or IAM roles
+- **Cross-Region Support**: Access ECR repositories across all AWS regions
+- **Public & Private Registries**: Support for both ECR Public and ECR Private
+- **Cross-Account Access**: Scan images from different AWS accounts with proper permissions
+- **AWS Services Integration**: Seamless integration with ECS, EKS, and other AWS services
+
+## Setup Requirements
+
+To connect your Amazon ECR:
+
+1. **AWS Account**: Active AWS account with ECR repositories
+2. **IAM Credentials**: AWS access keys or IAM role with ECR permissions
+3. **ECR Permissions**: `ecr:GetAuthorizationToken`, `ecr:BatchGetImage`, `ecr:GetDownloadUrlForLayer`
+4. **Region Configuration**: Specify the AWS region for your ECR repositories
+
+## Required IAM Permissions
+
+Your AWS IAM user or role needs these permissions:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage",
+        "ecr:DescribeRepositories",
+        "ecr:DescribeImages"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+## Configuration Steps
+
+<Steps>
+  <Step title="Create IAM User/Role">
+    Create an IAM user or role with ECR read permissions
+  </Step>
+  
+  <Step title="Generate Access Keys">
+    Create AWS access keys for the IAM user (if not using roles)
+  </Step>
+  
+  <Step title="Configure CybeDefend">
+    Add ECR connection with AWS credentials and region information
+  </Step>
+  
+  <Step title="Verify Access">
+    Test the connection and verify repository access
+  </Step>
+</Steps>
+
+## Registry URL Formats
+
+Amazon ECR uses region-specific URLs:
+
+```
+# Private ECR
+<account-id>.dkr.ecr.<region>.amazonaws.com/<repository>:<tag>
+
+# Examples
+123456789012.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
+123456789012.dkr.ecr.eu-west-1.amazonaws.com/api-server:v1.0
+
+# Public ECR
+public.ecr.aws/<alias>/<repository>:<tag>
+
+# Example
+public.ecr.aws/lambda/python:3.9
+```
+
+## Authentication Methods
+
+<Tabs>
+  <Tab title="AWS Access Keys">
+    ```bash
+    # Configure AWS credentials
+    aws configure
+    AWS Access Key ID: AKIA...
+    AWS Secret Access Key: ...
+    Default region name: us-east-1
+    
+    # Get ECR login token
+    aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.us-east-1.amazonaws.com
+    ```
+  </Tab>
+  
+  <Tab title="IAM Roles">
+    ```json
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "ec2.amazonaws.com"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Cross-Account Access
+
+For scanning images from different AWS accounts:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowCrossAccountAccess",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::SCANNER-ACCOUNT:user/scanner-user"
+      },
+      "Action": [
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage",
+        "ecr:BatchCheckLayerAvailability"
+      ]
+    }
+  ]
+}
+```
+
+## Integration with AWS Services
+
+**Amazon ECS Integration**:
+```json
+{
+  "taskDefinition": {
+    "family": "my-app",
+    "containerDefinitions": [
+      {
+        "name": "app",
+        "image": "123456789012.dkr.ecr.us-east-1.amazonaws.com/my-app:latest",
+        "memory": 512
+      }
+    ]
+  }
+}
+```
+
+**Amazon EKS Integration**:
+```yaml
+# Kubernetes deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  template:
+    spec:
+      containers:
+      - name: app
+        image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/my-app:latest
+```
+
+## ECR Public Registry
+
+Access public ECR repositories without authentication:
+
+```bash
+# Pull from ECR Public
+docker pull public.ecr.aws/amazonlinux/amazonlinux:latest
+docker pull public.ecr.aws/lambda/python:3.9
+```
+
+## Repository Management
+
+<CardGroup cols={2}>
+  <Card title="Lifecycle Policies" icon="recycle">
+    Configure image lifecycle policies to manage repository size and costs
+  </Card>
+  
+  <Card title="Image Scanning" icon="search">
+    Enable ECR's built-in vulnerability scanning alongside CybeDefend
+  </Card>
+  
+  <Card title="Repository Policies" icon="shield">
+    Set up repository-level permissions and access controls
+  </Card>
+  
+  <Card title="Encryption" icon="lock">
+    Use KMS encryption for images at rest in ECR
+  </Card>
+</CardGroup>
+
+## Common Issues & Solutions
+
+**Authentication Errors**:
+- Verify AWS credentials are valid and not expired
+- Check IAM permissions for ECR access
+- Ensure correct region configuration
+
+**Repository Not Found**:
+- Confirm repository name and region are correct
+- Check if repository exists in the specified account
+- Verify cross-account permissions if applicable
+
+**Image Pull Errors**:
+- Ensure the image tag exists
+- Check network connectivity to ECR endpoints
+- Verify VPC endpoint configuration if using private subnets
+
+**Rate Limiting**:
+- ECR has service quotas for API calls
+- Implement exponential backoff for retries
+- Consider using ECR Public for frequently accessed base images
+
+<Warning>
+Store AWS credentials securely and follow AWS security best practices. Use IAM roles when possible instead of long-term access keys.
+</Warning>
+
+<Note>
+This integration is currently in development. Full Amazon ECR support will be available soon.
+</Note>

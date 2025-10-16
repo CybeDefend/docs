@@ -1,0 +1,126 @@
+---
+title: "Create Account"
+description: "Learn how to create your CybeDefend account, set up an organization, and integrate your code repositories."
+---
+
+CybeDefend simplifies onboarding by allowing you to create an account through **OAuth2** (Google, Microsoft, GitHub, or GitLab). After signing in, you can form an **Organization** to group your projects and manage access. Once your repositories are connected, CybeDefend automatically starts scanning them.
+
+---
+
+## 1. Create an Account via OAuth2
+
+1. **Go to the CybeDefend Registration Page**  
+   Choose the sign-up option of your choice (Google, Microsoft, GitHub, GitLab).
+
+2. **Select Your Cloud Region**  
+   CybeDefend offers two sovereign cloud options to meet your compliance and performance needs:
+   
+   <Tabs>
+     <Tab title="Europe Cloud">
+       **Optimized for GDPR compliance and data sovereignty**
+       
+       <Frame>
+         <img src="/images/get-started/setting-up-account/create-account-step-eu.png" alt="Select Europe Cloud" style={{ borderRadius: '0.5rem' }} />
+       </Frame>
+       
+       **Certifications & Compliance:**
+       - CISPE
+       - ANSSI SecNumCloud
+       - G-Cloud UK
+       - ACN (Italy)
+       - ENS (Spain)
+       - GDPR
+       - BSI KRITIS
+       - BSI C5
+       - ISO 27001/17/18
+       - ISO 27701
+       
+       <Note>
+       Choose Europe for full GDPR compliance and European data sovereignty requirements.
+       </Note>
+     </Tab>
+     
+     <Tab title="United States Cloud">
+       **Optimized for low latency in North America**
+       
+       <Frame>
+         <img src="/images/get-started/setting-up-account/create-account-step-usa.png" alt="Select US Cloud" style={{ borderRadius: '0.5rem' }} />
+       </Frame>
+       
+       **Certifications & Compliance:**
+       - SOC 2
+       - ISO 27001/17/18
+       - ISO 27701
+       - HIPAA
+       - PCI-DSS
+       
+       <Note>
+       Choose United States for lowest latency in North America.
+       </Note>
+     </Tab>
+   </Tabs>
+   
+   <Info>
+   Your region selection binds IAM/Gateway endpoints at runtime. Deep links are preserved during region switching, and you can change regions later if needed.
+   </Info>
+
+3. **Authorize Your Credentials**  
+   OAuth2 ensures a secure handshake without requiring you to store new passwords.
+
+4. **Complete Your Profile**  
+   Provide your name and agree to our Terms of Service to finalize your account creation.
+
+<Tip>
+Already have an existing OAuth provider account? The sign-up process is near-instant.
+</Tip>
+
+---
+
+### Security Fundamentals
+
+All CybeDefend cloud regions implement enterprise-grade security:
+
+- **TLS 1.3** — In-transit encryption
+- **Encryption at rest** — All data encrypted at storage layer
+- **OAuth2** — Secure authentication without password storage
+- **Region-scoped endpoints** — Data residency guarantees
+
+---
+
+## 2. Create Your Organization
+
+1. **Access the Form**  
+   After your first login, you’ll be prompted to create an **Organization**. Alternatively, visit **Organization Settings** → **New Organization**.
+2. **Fill in Details**  
+   Provide an organization name, an optional description, and (if needed) a logo.
+3. **Save & Continue**  
+   This sets up your top-level group where teams and projects will live.
+
+<Frame>
+  <img src="/images/get-started/setting-up-account/organization-creation-step.png" alt="Create Organization Form" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+<Note>
+You can create multiple organizations if you manage different companies, clients, or environments.
+</Note>
+
+---
+
+## 3. Connect Your Repositories
+
+1. **Select Your Version Control Platform**  
+   CybeDefend supports GitHub. Check out our [Detailed Integration Guides](/v103/get-started/connect-your-source-code/connect-github) for each platform.
+2. **Authorize Access**  
+   Approve read (and optionally write) permissions so we can scan your code.
+3. **Pick Your Repositories**  
+   Choose which repos to include in your **Organization**. You can assign them to specific teams or projects later.
+4. **Instant Scanning**  
+   As soon as you connect a repository, CybeDefend triggers an initial scan, identifying potential vulnerabilities.
+
+<Frame>
+  <img src="/images/get-started/setting-up-account/connect-repo-step.png" alt="Connecting Your Repository" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+<Tip>
+Once your repositories are connected, scans start automatically—no extra steps required.
+</Tip>

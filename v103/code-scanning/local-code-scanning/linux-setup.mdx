@@ -1,0 +1,58 @@
+---
+title: "Linux Setup for Local Code Scanning"
+description: "Install the CybeDefend CLI on various Linux distributions for local or CI-based security scans."
+icon: "linux"
+---
+
+CybeDefend’s CLI offers support for a wide range of Linux distributions. Install the CLI, provide your API key, and scan code right from your terminal or Docker-based environments.
+
+## Requirements
+
+- **Linux** (32-bit or 64-bit).  
+- [API Key](/v103/code-scanning/local-code-scanning/introduction-api-key) from your CybeDefend account.
+- Basic terminal knowledge.
+
+---
+
+## Installation Steps
+
+1. **Download the Binary**  
+   From [Releases](https://github.com/CybeDefend/cybedefend-cli/releases), pick `cybedefend-linux-amd64` (64-bit) or `cybedefend-linux-386` (32-bit).
+2. **Make Executable**  
+   ```bash
+   chmod +x cybedefend-linux-amd64
+   ```
+3. **Move to PATH**  
+   ```bash
+   sudo mv cybedefend-linux-amd64 /usr/local/bin/cybedefend
+   ```
+4. **Test**  
+   ```bash
+   cybedefend --version
+   ```
+
+<Note>
+If you’re running Alpine or a musl-based distro, ensure compatibility or build from source using <strong>go build</strong>.
+</Note>
+
+---
+
+## Scanning Your Project
+
+1. **In Terminal**  
+   ```bash
+   cd ~/my-app
+   cybedefend scan --dir . --api-key YOUR_API_KEY --project-id YOUR_PROJECT_ID
+   ```
+2. **Check Results**  
+   ```bash
+   cybedefend results --project-id YOUR_PROJECT_ID --all --output json
+   ```
+
+<Accordion icon="info" title="Integration with Docker">
+  <p>If you run scans inside Docker, mount your source directory as a volume and run <code>cybedefend</code> commands with the <strong>--api-key</strong> as an environment variable.</p>
+</Accordion>
+
+<Tip>
+This process easily integrates into <strong>Jenkins</strong>, <strong>GitLab CI</strong>, or <strong>GitHub Actions</strong> running on Linux hosts.
+</Tip>

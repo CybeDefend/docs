@@ -1,0 +1,207 @@
+---
+title: "GitHub Container Registry"
+description: "Scan container images stored in GitHub Container Registry (GHCR) with secure GitHub token authentication."
+---
+
+**GitHub Container Registry (GHCR)** is GitHub's modern container registry that provides secure, scalable storage for Docker images. CybeDefend integrates with GHCR to scan both public and private container images using GitHub personal access tokens.
+
+<Frame>
+  <img src="/images/container-scanning/integrations/github.png" alt="GitHub Container Registry Integration" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+## Features
+
+- **GitHub Token Authentication**: Secure access using GitHub personal access tokens
+- **Public & Private Images**: Scan both public and private container repositories
+- **Organization Support**: Access images from GitHub organizations and personal accounts
+- **Package Permissions**: Fine-grained access control with GitHub Packages
+- **GitHub Actions Integration**: Seamless CI/CD pipeline integration
+
+## Setup Requirements
+
+To connect your GitHub Container Registry:
+
+1. **GitHub Account**: Access to GitHub with container packages
+2. **Personal Access Token**: Token with `read:packages` scope
+3. **Package Permissions**: Read access to the container packages
+4. **Repository Access**: Access to repositories containing the packages
+
+## Required Token Scopes
+
+Your GitHub personal access token needs these scopes:
+
+- `read:packages` - Read access to GitHub Packages
+- `repo` - Repository access (for private repositories)
+
+## Configuration Steps
+
+<Steps>
+  <Step title="Generate Access Token">
+    Create a GitHub personal access token with `read:packages` scope
+  </Step>
+  
+  <Step title="Configure Registry Connection">
+    Add GitHub Container Registry connection in CybeDefend with your token
+  </Step>
+  
+  <Step title="Verify Permissions">
+    Test access to your container packages and repositories
+  </Step>
+  
+  <Step title="Select Images">
+    Browse and select container images to scan from your GitHub packages
+  </Step>
+</Steps>
+
+## Registry URL Format
+
+GitHub Container Registry uses this URL pattern:
+
+```
+# Public packages
+ghcr.io/username/package:tag
+ghcr.io/organization/package:tag
+
+# Examples
+ghcr.io/microsoft/dotnet:6.0
+ghcr.io/actions/runner:latest
+ghcr.io/myorg/myapp:v1.0.0
+```
+
+## Authentication
+
+<Tabs>
+  <Tab title="Personal Access Token">
+    ```bash
+    # Docker login with PAT
+    echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
+    
+    # Pull image
+    docker pull ghcr.io/username/package:tag
+    ```
+  </Tab>
+  
+  <Tab title="GitHub Actions">
+    ```yaml
+    # In GitHub Actions workflow
+    - name: Login to GHCR
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    ```
+  </Tab>
+</Tabs>
+
+## Integration with GitHub Actions
+
+Automate container scanning in your GitHub workflows:
+
+```yaml
+name: Container Security Scan
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Build container
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}:${{ github.sha }} .
+      
+      - name: Push to GHCR
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
+      
+      - name: Trigger CybeDefend Scan
+        run: |
+          curl -X POST "${{ secrets.CYBEDEFEND_API }}/scan" \
+               -H "Authorization: Bearer ${{ secrets.CYBEDEFEND_TOKEN }}" \
+               -d "image=ghcr.io/${{ github.repository }}:${{ github.sha }}"
+```
+
+## Package Visibility
+
+GitHub Container Registry supports different visibility levels:
+
+<CardGroup cols={2}>
+  <Card title="Public Packages" icon="globe">
+    Accessible to everyone, no authentication required for pulling
+  </Card>
+  
+  <Card title="Private Packages" icon="lock">
+    Restricted access, requires authentication and proper permissions
+  </Card>
+  
+  <Card title="Internal Packages" icon="building">
+    Accessible to organization members only
+  </Card>
+  
+  <Card title="Repository-linked" icon="link">
+    Inherits visibility from the linked repository
+  </Card>
+</CardGroup>
+
+## Package Management
+
+**Linking Packages to Repositories**:
+```dockerfile
+# Link package to repository using labels
+LABEL org.opencontainers.image.source=https://github.com/username/repository
+```
+
+**Package Permissions**:
+- Repository admins can manage package permissions
+- Fine-grained personal access tokens provide specific access
+- Organization settings control package visibility
+
+## Common Use Cases
+
+**Open Source Projects**: Scan public container images from OSS projects
+```bash
+ghcr.io/actions/runner:latest
+ghcr.io/github/super-linter:latest
+```
+
+**Private Applications**: Secure scanning of internal application containers
+```bash
+ghcr.io/myorg/api-server:v2.1.0
+ghcr.io/myorg/frontend:latest
+```
+
+**CI/CD Integration**: Automated scanning as part of deployment pipelines
+
+## Troubleshooting
+
+**Authentication Issues**:
+- Verify personal access token has `read:packages` scope
+- Check token expiration date
+- Ensure username is correct for authentication
+
+**Permission Errors**:
+- Confirm access to the repository containing the package
+- Check package visibility settings
+- Verify organization membership for internal packages
+
+**Package Not Found**:
+- Ensure package name and tag are correct
+- Check if package exists and is accessible
+- Verify the repository has published packages
+
+<Warning>
+Keep your GitHub personal access tokens secure and rotate them regularly. Never commit tokens to version control.
+</Warning>
+
+<Note>
+This integration is currently in development. Full GitHub Container Registry support will be available soon.
+</Note>

@@ -1,0 +1,126 @@
+---
+title: "Code Repository Scanning"
+description: "Discover how the CybeDefend Engine unifies results from multiple scanners."
+---
+
+CybeDefend offers a **multi-layered security** solution across your codebase, infrastructure, and third-party dependencies. We combine:
+
+1. **CybeDefend Engine** – Aggregates and cross-references results from multiple open-source and proprietary scanners, minimizing duplicates and noise.  
+
+<Frame>
+  <img src="/images/get-started/general-information/multi-layer.png" alt="CybeDefend Multi-Layer Security" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+---
+
+## Why Use CybeDefend?
+
+- **Unified Scanning**: The CybeDefend Engine merges findings from different tools into a single, concise view.  
+- **Reduced Noise**: Duplicate or overlapping vulnerabilities are identified and consolidated, preventing alert overload.  
+
+<Tip>
+Want to see how to turn on AI Mode or watch a live code scan? Check our [Scanning Demonstration](https://calendly.com/axel-paulin-cybedefend/30min?month=2025-04).
+</Tip>
+
+---
+
+## 1. Static Application Security Testing (SAST)
+
+**SAST** inspects your **source code** to catch vulnerabilities early in the development process. CybeDefend unifies open-source scanners (e.g., **Semgrep**) under the **CybeDefend Engine**.
+
+### Supported Languages
+
+| Language       | Primary Scanners        |
+|----------------|-------------------------|
+| **Go**         | CybeDefend Engine & Rules + Opengrep |
+| **Python**     | CybeDefend Engine & Rules + Opengrep | 
+| **Java**       | CybeDefend Engine & Rules + Opengrep | 
+| **JavaScript** | CybeDefend Engine & Rules + Opengrep | 
+| **C**          | CybeDefend Engine & Rules + Opengrep |
+| **C++**        | CybeDefend Engine & Rules + Opengrep |
+| **C#**         | CybeDefend Engine & Rules + Opengrep | 
+| **PHP**        | CybeDefend Engine & Rules + Opengrep | 
+| **Ruby**       | CybeDefend Engine & Rules + Opengrep | 
+| **Rust**       | CybeDefend Engine & Rules + Opengrep |
+
+<Frame>
+  <img src="/images/get-started/general-information/sast.png" alt="IAC Security Analysis" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+---
+
+## 2. Infrastructure as Code (IAC) Security
+
+IAC scanning ensures that **cloud** and **container** configurations adhere to best practices. The **CybeDefend Engine** works with scanners like **Checkov**, **Trivy**, and **KICS** to identify misconfigurations. Unlike SAST, enabling AI Mode for IAC does **not** provide line-level dataflow (which is primarily for code), but the Engine still handles **intelligent vulnerability matching** and deduplication.
+
+### Supported Technologies
+
+| Category                 | IAC Types                                                     | Scanning Tools                               |
+|--------------------------|---------------------------------------------------------------|----------------------------------------------|
+| **Cloud Configurations** | Terraform, CloudFormation, AWS CDK, Azure RM, Helm, Kubernetes | CybeDefend Engine + Checkov, KICS, Trivy      |
+| **Serverless Security**  | AWS Lambda, Azure Functions                                  | CybeDefend Engine + Checkov, KICS            |
+| **Container Security**   | Dockerfiles, Docker Compose                                  | CybeDefend Engine + Trivy, KICS              |
+| **OpenAPI / gRPC**       | .json, .yaml, .proto                                         | CybeDefend Engine + KICS                     |
+
+<Frame>
+  <img src="/images/get-started/general-information/iac.png" alt="IAC Security Analysis" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+<Warning>
+IAC misconfigurations can lead to severe breaches. The CybeDefend Engine identifies issues in your code, saving you from manually piecing together results from multiple scanners.
+</Warning>
+
+---
+
+## 3. Software Composition Analysis (SCA)
+
+SCA detects vulnerabilities in **third-party libraries** and **open-source dependencies**. CybeDefend uses the **CybeDefend Engine** combined with **GitHub Advisories** to identify known flaws in your dependencies.
+
+### SCA Scanning Tools
+
+| Engine                       | External Advisory Source |
+|-----------------------------|--------------------------|
+| **CybeDefend Engine**       | GitHub Advisories        |
+
+### Files & Package Managers
+
+Below is a non-exhaustive list of **key files** we inspect:
+
+| Language/Framework  | File Examples                                                                                                      |
+|---------------------|--------------------------------------------------------------------------------------------------------------------|
+| **Node**            | `npm-shrinkwrap.json`, `yarn.lock`, `pnpm-lock.yaml`, `pnpm-lock.yml`, `bun.lock`, `bun.lockb`, `deno.lock`, `libman.json`, `package.json`, `package-lock.json` |
+| **Java**            | `gradle.lockfile`, `build.gradle`, `.jar`, `.war`, `.ear`, `pom.xml`                                               |
+| **Swift**           | `Package.resolved`, `Podfile.lock`                                                                                 |
+| **.NET (NuGet)**    | `.deps.json`, `packages.lock.json`, `Packages.props`                                                               |
+| **Kotlin**          | `gradle.lockfile`                                                                                                   |
+| **Elixir**          | `mix.lock`                                                                                                          |
+| **C/C++**           | `conan.lock`                                                                                                        |
+| **Scala**           | `build.sbt`, `plugins.sbt`, `dependencies.scala`, `libraries.scala`, `.sbt.lock`                                    |
+| **Clojure**         | `deps.edn`                                                                                                          |
+| **Generic**         | `composer.json`, `requirements.txt`, `Pipfile`, `Pipfile.lock`, `poetry.lock`, `pyproject.toml`, `Gemfile`, `Gemfile.lock`, `Cargo.toml`, `Cargo.lock`, `go.mod`, `pubspec.yaml`, `pubspec.lock`, `packages.config`, `Package.swift`, `rebar.config`, `rebar3.config`, `rebar.lock`, `rebar3.lock`, `.gemspec`, `.csproj`, `.nuspec`, `.yml`, `.yaml` |
+
+<Note>
+If you use special file names or custom project layouts, you can configure <strong>file-patterns</strong> in the <strong>CybeDefend dashboard</strong> to ensure they are recognized and scanned.
+</Note>
+
+---
+
+## Next Steps
+
+  <Card
+    href="https://calendly.com/axel-paulin-cybedefend/30min?month=2025-04"
+    title="Scanning Demonstration"
+  >
+    Learn how to configure your scans, enable AI Mode for code analysis, and see real-time feedback on vulnerabilities.
+  </Card>
+
+  <Card
+    href="https://www.cybedefend.com/pricing"
+    title="Free Plan"
+  >
+    Try CybeDefend at no cost
+  </Card>
+
+<Tip>
+Need help customizing scans? Contact us via email <strong>contact@cybedefend.com</strong>.
+</Tip>

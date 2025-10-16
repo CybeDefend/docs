@@ -1,0 +1,246 @@
+---
+title: "Red Hat Quay"
+description: "Scan container images stored in Red Hat Quay registry with secure token authentication and enterprise features support."
+---
+
+**Red Hat Quay** is an enterprise-grade container registry that provides security, scalability, and advanced features for container image management. CybeDefend integrates with both Quay.io (SaaS) and self-hosted Quay instances to scan your container images for vulnerabilities.
+
+<Frame>
+  <img src="/images/container-scanning/integrations/quay.png" alt="Red Hat Quay Integration" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+## Features
+
+- **OAuth2 Authentication**: Secure access using Quay application tokens
+- **Public & Private Repositories**: Scan both public and private container repositories
+- **Organization Support**: Access images from Quay organizations and teams
+- **Self-Hosted Support**: Compatible with on-premises Quay installations
+- **Robot Accounts**: Use Quay robot accounts for automated access
+
+## Setup Requirements
+
+To connect your Red Hat Quay registry:
+
+1. **Quay Account**: Access to Quay.io or self-hosted Quay instance
+2. **Application Token**: OAuth2 application token or robot account credentials
+3. **Repository Access**: Read permissions for target repositories
+4. **API Access**: Access to Quay API endpoints
+
+## Authentication Methods
+
+**Robot Accounts** (Recommended):
+- Create robot accounts for automated access
+- Generate credentials with specific repository permissions
+- More secure than personal account tokens
+
+**OAuth2 Application Tokens**:
+- Personal or organization-level access tokens
+- Full account permissions (use with caution)
+
+## Configuration Steps
+
+<Steps>
+  <Step title="Create Robot Account">
+    Create a robot account in your Quay organization with read permissions
+  </Step>
+  
+  <Step title="Generate Credentials">
+    Download the robot account credentials (username and token)
+  </Step>
+  
+  <Step title="Configure Registry Access">
+    Grant the robot account access to specific repositories
+  </Step>
+  
+  <Step title="Setup CybeDefend">
+    Configure Quay connection in CybeDefend with robot credentials
+  </Step>
+</Steps>
+
+## Registry URL Formats
+
+Quay registries use these URL patterns:
+
+```
+# Quay.io (SaaS)
+quay.io/organization/repository:tag
+quay.io/username/repository:tag
+
+# Self-hosted Quay
+your-quay.company.com/organization/repository:tag
+
+# Examples
+quay.io/redhat/ubi8:latest
+quay.io/biocontainers/samtools:1.15
+your-registry.com/myorg/myapp:v1.0.0
+```
+
+## Robot Account Setup
+
+Creating a robot account in Quay:
+
+1. **Navigate** to your organization settings
+2. **Go to** Robot Accounts section
+3. **Create** a new robot account
+4. **Assign** read permissions to required repositories
+5. **Download** the credentials file
+
+Example robot credentials:
+```json
+{
+  "auths": {
+    "quay.io": {
+      "auth": "base64-encoded-credentials",
+      "email": ""
+    }
+  }
+}
+```
+
+## Repository Permissions
+
+<CardGroup cols={2}>
+  <Card title="Public Repositories" icon="globe">
+    No authentication required for pulling public images
+  </Card>
+  
+  <Card title="Private Repositories" icon="lock">
+    Requires authentication and proper read permissions
+  </Card>
+  
+  <Card title="Organization Repositories" icon="building">
+    Access controlled by organization membership and teams
+  </Card>
+  
+  <Card title="Team-Based Access" icon="users">
+    Fine-grained permissions through Quay teams
+  </Card>
+</CardGroup>
+
+## Docker Integration
+
+Authenticate with Quay for Docker operations:
+
+```bash
+# Login with robot account
+docker login quay.io -u "myorg+myrobot" -p "robot-token"
+
+# Pull image
+docker pull quay.io/myorg/myapp:latest
+
+# Using credentials file
+docker login --username="myorg+myrobot" --password-stdin quay.io < robot-token.txt
+```
+
+## Webhook Integration
+
+Configure Quay webhooks for automated scanning:
+
+```json
+{
+  "config": {
+    "url": "https://api.cybedefend.com/webhooks/quay",
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer your-webhook-token"
+    }
+  },
+  "event_config": {
+    "vulnerability_found": true,
+    "repo_push": true
+  }
+}
+```
+
+## Enterprise Features
+
+**Vulnerability Scanning**:
+- Native Quay vulnerability scanning
+- Integration with CybeDefend for enhanced analysis
+- Historical vulnerability tracking
+
+**Security Scanning**:
+- Malware detection capabilities
+- License scanning and compliance
+- Supply chain security analysis
+
+**Compliance & Governance**:
+- Image signing and verification
+- Policy enforcement
+- Audit logging and reporting
+
+## Self-Hosted Quay
+
+For on-premises Quay installations:
+
+```yaml
+# quay-config.yaml
+FEATURE_SECURITY_SCANNER: true
+SECURITY_SCANNER_ENDPOINT: "http://clair:6060"
+FEATURE_VULNERABILITY_NOTIFICATIONS: true
+
+# External scanner integration
+EXTERNAL_SCANNER_ENDPOINTS:
+  - url: "https://api.cybedefend.com/scanner"
+    auth_header: "Bearer your-token"
+```
+
+## API Integration
+
+Access Quay API for automation:
+
+```bash
+# List repositories
+curl -H "Authorization: Bearer $QUAY_TOKEN" \
+     "https://quay.io/api/v1/repository?namespace=myorg"
+
+# Get repository tags
+curl -H "Authorization: Bearer $QUAY_TOKEN" \
+     "https://quay.io/api/v1/repository/myorg/myapp/tag/"
+```
+
+## Common Use Cases
+
+**Open Source Projects**: Scan public container images from the community
+```bash
+quay.io/prometheus/prometheus:latest
+quay.io/coreos/etcd:v3.5.0
+```
+
+**Enterprise Applications**: Secure scanning of internal application containers
+```bash
+quay.io/myorg/api-server:v2.1.0
+quay.io/myorg/frontend:latest
+```
+
+**CI/CD Integration**: Automated scanning in deployment pipelines
+
+## Troubleshooting
+
+**Authentication Issues**:
+- Verify robot account credentials are correct
+- Check if robot account has expired
+- Ensure proper repository permissions
+
+**Repository Access**:
+- Confirm repository exists and spelling is correct
+- Check organization membership and team permissions
+- Verify repository visibility settings
+
+**Network Connectivity**:
+- Ensure firewall allows HTTPS traffic to Quay endpoints
+- Check network policies for self-hosted instances
+- Verify SSL certificate validity
+
+**API Rate Limits**:
+- Quay has rate limits for API calls
+- Implement exponential backoff for retries
+- Consider upgrading to higher tier plans for increased limits
+
+<Warning>
+Store your Quay robot account credentials securely and rotate them regularly. Avoid using personal account tokens for automated systems.
+</Warning>
+
+<Note>
+This integration is currently in development. Full Red Hat Quay support will be available soon.
+</Note>
