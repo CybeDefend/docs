@@ -82,18 +82,6 @@ Once configured, Cybe Analysis automatically:
 3. **Adds detailed comments** to vulnerabilities like a security expert would
 4. **Updates vulnerability status** (confirmed, false positive, etc.)
 
-### False Positive Detection
-
-<Frame>
-  <img src="/images/agent-ai/false-positive-detection.png" alt="Cybe Analysis False Positive Detection" style={{ borderRadius: '0.5rem' }} />
-</Frame>
-
-When Cybe Analysis identifies a false positive:
-
-- **Status is automatically updated** to "False Positive"
-- **Detailed explanation** is added as a comment
-- **Reasoning is provided** based on code context and data flow analysis
-
 ### Priority Assignment
 
 If **vulnerability triage** is enabled in settings:
@@ -111,12 +99,11 @@ If **vulnerability triage** is enabled in settings:
 
 ### Vulnerability Comments
 
-Each analyzed vulnerability receives a comment from Cybe explaining:
+Each analyzed vulnerability receives a comment from Cybe
 
-- **What was found**: Clear description of the security issue
-- **Context analysis**: How the vulnerability exists in your code
-- **Risk assessment**: Real-world exploitability evaluation
-- **Recommendation**: Whether it's a true positive, false positive, or requires review
+<Frame>
+  <img src="/images/agent-ai/false-positive-detection.png" alt="Cybe Analysis False Positive Detection" style={{ borderRadius: '0.5rem' }} />
+</Frame>
 
 ---
 
