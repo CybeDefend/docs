@@ -111,7 +111,8 @@
                     "group": "Scanning Options",
                     "pages": [
                       "/v103/code-scanning/scanning-options/code-repository-scanning",
-                      "/v103/code-scanning/scanning-options/scan-parameters"
+                      "/v103/code-scanning/scanning-options/scan-parameters",
+                      "/v103/code-scanning/scanning-options/cybedefend-ignore-file"
                     ]
                   },
                   {

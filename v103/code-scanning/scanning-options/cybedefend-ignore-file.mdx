@@ -1,0 +1,205 @@
+---
+title: '.cybedefend Ignore File'
+description: 'Filter vulnerabilities using a .cybedefend file with gitignore syntax'
+---
+
+## Overview
+
+The `.cybedefend` file allows you to exclude specific files or directories from SAST vulnerability reports. It uses the same syntax as `.gitignore`, making it familiar and easy to use.
+
+## How It Works
+
+Create a `.cybedefend` file in your project's root directory to define exclusion patterns. Vulnerabilities found in matching files will be automatically filtered from scan results.
+
+## Usage
+
+### Creating a .cybedefend File
+
+Create a file named `.cybedefend` in your project root:
+
+```bash
+# Ignore test files
+**/test/**
+**/tests/**
+**/*_test.py
+**/*_test.go
+
+# Ignore dependencies
+node_modules/
+vendor/
+.venv/
+
+# Ignore specific directories
+**/examples/**
+**/demo/**
+
+# Ignore by extension
+*.min.js
+*.log
+```
+
+### Supported Patterns
+
+The syntax is identical to `.gitignore`:
+
+| Pattern | Description | Example |
+|---------|-------------|---------|
+| `file.txt` | Ignore specific file | `secrets.txt` |
+| `*.ext` | Ignore by extension | `*.log` |
+| `dir/` | Ignore directory | `node_modules/` |
+| `**/pattern` | Recursive matching | `**/bad/**` |
+| `!file.txt` | Negation (don't ignore) | `!important.log` |
+| `#comment` | Comment line | `# This is a comment` |
+
+## Common Use Cases
+
+### Ignore Test Code
+
+```
+# .cybedefend
+**/test/**
+**/tests/**
+**/__tests__/**
+*.spec.js
+*.test.js
+**/*_test.py
+```
+
+### Ignore Third-Party Code
+
+```
+# .cybedefend
+node_modules/
+vendor/
+third_party/
+.venv/
+```
+
+### Ignore Demo/Example Code
+
+```
+# .cybedefend
+**/examples/**
+**/demo/**
+**/samples/**
+docs/code-examples/**
+```
+
+### Ignore Configuration Templates
+
+```
+# .cybedefend
+*.example.yml
+*.template.json
+config/sample_*.py
+```
+
+## Best Practices
+
+<Warning>
+Use `.cybedefend` responsibly. Don't ignore real vulnerabilities in production code.
+</Warning>
+
+### Document Your Exclusions
+
+Always add comments explaining why files are excluded:
+
+```
+# .cybedefend
+
+# DEPENDENCIES
+# Third-party code managed by maintainers
+node_modules/
+vendor/
+
+# TEST CODE  
+# Tests intentionally contain unsafe code for testing
+**/test/**
+
+# KNOWN FALSE POSITIVES
+# Ticket #123: Custom validation used
+src/legacy/auth_handler.py
+```
+
+### Include in Code Reviews
+
+- Add `.cybedefend` to your repository
+- Review changes in pull requests
+- Regularly audit exclusion patterns
+
+### Monitor Impact
+
+Check scan logs to see how many vulnerabilities are filtered:
+
+```
+Filtered out 12 vulnerabilities based on .cybedefend patterns
+After filtering: 45 vulnerabilities to report
+```
+
+## Troubleshooting
+
+### Patterns Not Matching
+
+- Use `**/` for recursive matching: `**/bad/**`
+- Ensure correct path separators (always `/`)
+- Check that `.cybedefend` is in the project root
+- Review scan logs for path details
+
+### File Not Found
+
+- Verify `.cybedefend` is included in your repository
+- Check file permissions
+- Ensure the file is at the project root level
+
+## Example Configuration
+
+Here's a comprehensive example:
+
+```
+# .cybedefend
+
+# ============================================
+# THIRD-PARTY DEPENDENCIES
+# ============================================
+node_modules/
+vendor/
+.venv/
+third_party/
+
+# ============================================
+# TEST CODE
+# ============================================
+**/test/**
+**/tests/**
+**/__tests__/**
+**/*_test.py
+**/*_test.go
+*.spec.js
+*.test.js
+
+# ============================================
+# EXAMPLES & DOCUMENTATION
+# ============================================
+**/examples/**
+**/demo/**
+docs/vulnerable_examples/**
+
+# ============================================
+# BUILD ARTIFACTS
+# ============================================
+dist/
+build/
+*.min.js
+*.bundle.js
+
+# ============================================
+# CONFIGURATION TEMPLATES
+# ============================================
+*.example.yml
+*.template.json
+config/sample_*.py
+```
+
+<Info>
+The `.cybedefend` file is processed during scanning. Excluded vulnerabilities won't appear in your reports or affect your project metrics.
+</Info>
