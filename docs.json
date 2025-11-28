@@ -18,7 +18,7 @@
   "navigation": {
     "versions": [
       {
-        "version": "V0.3",
+        "version": "latest",
         "tabs": [
           {
             "tab": "Documentation",
@@ -183,49 +183,117 @@
                 ]
               },
               {
-                "group": "Endpoints",
+                "group": "Organization",
                 "pages": [
-                  "/v103/api-reference/endpoint/get-organization-invitations",
-                  "/v103/api-reference/endpoint/get-organizations-of-user",
-                  "/v103/api-reference/endpoint/get-organization-by-id",
-                  "/v103/api-reference/endpoint/get-organization-members",
-                  "/v103/api-reference/endpoint/get-all-projects-of-an-organization-with-pagination",
-                  "/v103/api-reference/endpoint/get-all-projects-of-a-team-with-pagination",
-                  "/v103/api-reference/endpoint/get-a-project",
-                  "/v103/api-reference/endpoint/get-team-by-id",
-                  "/v103/api-reference/endpoint/get-all-teams-of-an-organization",
-                  "/v103/api-reference/endpoint/get-all-members-of-a-team",
-                  "/v103/api-reference/endpoint/get-a-member-of-a-team",
-                  "/v103/api-reference/endpoint/get-a-scan-by-id",
-                  "/v103/api-reference/endpoint/get-all-vulnerabilities-of-a-project-for-sast",
-                  "/v103/api-reference/endpoint/get-all-iac-vulnerabilities-of-a-project",
-                  "/v103/api-reference/endpoint/get-all-sca-vulnerabilities-of-a-project",
-                  "/v103/api-reference/endpoint/get-all-sca-packages-of-a-project",
-                  "/v103/api-reference/endpoint/get-a-vulnerability-of-a-project-for-sca",
-                  "/v103/api-reference/endpoint/get-a-vulnerability-of-a-project-for-sast",
-                  "/v103/api-reference/endpoint/get-a-vulnerability-of-a-project-for-iac",
-                  "/v103/api-reference/endpoint/get-overview-of-a-project",
-                  "/v103/api-reference/endpoint/get-user-profile-information",
-                  "/v103/api-reference/endpoint/invite-user-to-organization",
-                  "/v103/api-reference/endpoint/accept-invitation-to-organization",
-                  "/v103/api-reference/endpoint/create-organization",
-                  "/v103/api-reference/endpoint/add-member-to-organization",
-                  "/v103/api-reference/endpoint/create-a-project",
-                  "/v103/api-reference/endpoint/create-a-new-team",
-                  "/v103/api-reference/endpoint/add-a-member-to-a-team",
-                  "/v103/api-reference/endpoint/start-a-scan",
-                  "/v103/api-reference/endpoint/update-organization",
-                  "/v103/api-reference/endpoint/update-organization-member-role",
-                  "/v103/api-reference/endpoint/update-a-team",
-                  "/v103/api-reference/endpoint/update-a-project",
-                  "/v103/api-reference/endpoint/update-a-vulnerability-of-a-project",
-                  "/v103/api-reference/endpoint/update-user-profile",
-                  "/v103/api-reference/endpoint/cancel-organization-invitation",
-                  "/v103/api-reference/endpoint/delete-organization",
-                  "/v103/api-reference/endpoint/remove-member-from-organization",
-                  "/v103/api-reference/endpoint/delete-a-project",
-                  "/v103/api-reference/endpoint/delete-a-team",
-                  "/v103/api-reference/endpoint/remove-a-member-from-a-team"
+                  "/v103/api-reference/endpoint/organization/get-organizations-of-user",
+                  "/v103/api-reference/endpoint/organization/get-organization-by-id",
+                  "/v103/api-reference/endpoint/organization/create-organization",
+                  "/v103/api-reference/endpoint/organization/update-organization",
+                  "/v103/api-reference/endpoint/organization/delete-organization",
+                  "/v103/api-reference/endpoint/organization/get-organization-members",
+                  "/v103/api-reference/endpoint/organization/invite-user-to-organization",
+                  "/v103/api-reference/endpoint/organization/get-organization-invitations",
+                  "/v103/api-reference/endpoint/organization/accept-invitation-to-organization",
+                  "/v103/api-reference/endpoint/organization/cancel-organization-invitation",
+                  "/v103/api-reference/endpoint/organization/update-organization-member-role",
+                  "/v103/api-reference/endpoint/organization/remove-member-from-organization"
+                ]
+              },
+              {
+                "group": "Project",
+                "pages": [
+                  "/v103/api-reference/endpoint/project/get-all-projects-of-an-organization-with-pagination",
+                  "/v103/api-reference/endpoint/project/get-all-projects-of-a-team-with-pagination",
+                  "/v103/api-reference/endpoint/project/get-a-project",
+                  "/v103/api-reference/endpoint/project/create-a-project",
+                  "/v103/api-reference/endpoint/project/update-a-project",
+                  "/v103/api-reference/endpoint/project/delete-a-project"
+                ]
+              },
+              {
+                "group": "Team",
+                "pages": [
+                  "/v103/api-reference/endpoint/team/get-all-teams-of-an-organization",
+                  "/v103/api-reference/endpoint/team/get-team-by-id",
+                  "/v103/api-reference/endpoint/team/create-a-new-team",
+                  "/v103/api-reference/endpoint/team/update-a-team",
+                  "/v103/api-reference/endpoint/team/delete-a-team",
+                  "/v103/api-reference/endpoint/team/get-all-members-of-a-team",
+                  "/v103/api-reference/endpoint/team/get-a-member-of-a-team",
+                  "/v103/api-reference/endpoint/team/add-a-member-to-a-team",
+                  "/v103/api-reference/endpoint/team/update-a-member-role-in-a-team",
+                  "/v103/api-reference/endpoint/team/remove-a-member-from-a-team"
+                ]
+              },
+              {
+                "group": "Scan",
+                "pages": [
+                  "/v103/api-reference/endpoint/scan/get-scan-by-id",
+                  "/v103/api-reference/endpoint/scan/start-a-security-scan",
+                  "/v103/api-reference/endpoint/scan/start-a-container-scan"
+                ]
+              },
+              {
+                "group": "Results & Vulnerabilities",
+                "pages": [
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/get-overview-of-a-project",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/get-aggregated-overview-statistics-for-an-organization",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/get-all-vulnerabilities-of-a-project-for-sast",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/get-all-iac-vulnerabilities-of-a-project",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/get-all-sca-vulnerabilities-of-a-project",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/get-all-sca-packages-of-a-project",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-sast",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-iac",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-sca",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/update-a-vulnerability-of-a-project",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/get-all-container-images-of-a-project",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/get-all-container-packages-of-a-project",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/get-all-container-vulnerabilities-of-a-project",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/get-a-container-vulnerability-by-id",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/generate-a-security-report-for-a-project",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/generate-cwe-top-25-2024-report-for-a-project",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/generate-aggregated-security-report-for-an-organization",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/generate-aggregated-security-report-for-a-team",
+                  "/v103/api-reference/endpoint/results-&-vulnerabilities/get-sbom-report-for-a-project"
+                ]
+              },
+              {
+                "group": "AI Agent",
+                "pages": [
+                  "/v103/api-reference/endpoint/ai-agent/start-autofix-workflow",
+                  "/v103/api-reference/endpoint/ai-agent/create-security-champion-conversation",
+                  "/v103/api-reference/endpoint/ai-agent/stream-security-champion-messages",
+                  "/v103/api-reference/endpoint/ai-agent/list-user-conversations",
+                  "/v103/api-reference/endpoint/ai-agent/get-conversation-messages",
+                  "/v103/api-reference/endpoint/ai-agent/delete-conversation",
+                  "/v103/api-reference/endpoint/ai-agent/stop-conversation-generation"
+                ]
+              },
+              {
+                "group": "User",
+                "pages": [
+                  "/v103/api-reference/endpoint/user/get-user-profile",
+                  "/v103/api-reference/endpoint/user/update-user-profile"
+                ]
+              },
+              {
+                "group": "GitHub Integration",
+                "pages": [
+                  "/v103/api-reference/endpoint/github-integration/get-github-installation-for-organization",
+                  "/v103/api-reference/endpoint/github-integration/get-github-repositories",
+                  "/v103/api-reference/endpoint/github-integration/link-github-repository-to-project",
+                  "/v103/api-reference/endpoint/github-integration/unlink-github-repository-from-project",
+                  "/v103/api-reference/endpoint/github-integration/start-github-repository-scan"
+                ]
+              },
+              {
+                "group": "GitLab Integration",
+                "pages": [
+                  "/v103/api-reference/endpoint/gitlab-integration/get-gitlab-installation-details",
+                  "/v103/api-reference/endpoint/gitlab-integration/get-gitlab-repositories",
+                  "/v103/api-reference/endpoint/gitlab-integration/link-gitlab-repository-to-project",
+                  "/v103/api-reference/endpoint/gitlab-integration/unlink-gitlab-repository-from-project",
+                  "/v103/api-reference/endpoint/gitlab-integration/start-gitlab-repository-scan"
                 ]
               }
             ]
