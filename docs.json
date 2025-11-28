@@ -183,12 +183,6 @@
                 ]
               },
               {
-                "group": "Version",
-                "pages": [
-                  "/v103/api-reference/endpoint/version/get-api-version-and-commit-hash"
-                ]
-              },
-              {
                 "group": "Organization",
                 "pages": [
                   "/v103/api-reference/endpoint/organization/get-organizations-of-user",
@@ -256,12 +250,10 @@
                   "/v103/api-reference/endpoint/results-&-vulnerabilities/get-all-container-packages-of-a-project",
                   "/v103/api-reference/endpoint/results-&-vulnerabilities/get-all-container-vulnerabilities-of-a-project",
                   "/v103/api-reference/endpoint/results-&-vulnerabilities/get-a-container-vulnerability-by-id",
-                  "/v103/api-reference/endpoint/results-&-vulnerabilities/delete-a-scanned-container-image-from-a-project",
                   "/v103/api-reference/endpoint/results-&-vulnerabilities/generate-a-security-report-for-a-project",
                   "/v103/api-reference/endpoint/results-&-vulnerabilities/generate-cwe-top-25-2024-report-for-a-project",
                   "/v103/api-reference/endpoint/results-&-vulnerabilities/generate-aggregated-security-report-for-an-organization",
                   "/v103/api-reference/endpoint/results-&-vulnerabilities/generate-aggregated-security-report-for-a-team",
-                  "/v103/api-reference/endpoint/results-&-vulnerabilities/generate-report-for-a-manual-selection-of-projects",
                   "/v103/api-reference/endpoint/results-&-vulnerabilities/get-sbom-report-for-a-project"
                 ]
               },
