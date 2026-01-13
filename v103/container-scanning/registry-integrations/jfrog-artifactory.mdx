@@ -1,28 +1,21 @@
 ---
-title: "JFrog Artifactory Container Registry"
-description: "Scan container images stored in JFrog Artifactory with secure token authentication and enterprise features support."
+title: "JFrog Artifactory"
+description: "Scan container images stored in JFrog Artifactory."
 ---
 
-**JFrog Artifactory** is a universal artifact repository manager that supports Docker registries among many other package formats. CybeDefend integrates with JFrog Artifactory to scan your container images for vulnerabilities using access token authentication.
+**JFrog Artifactory** is a universal artifact repository manager that supports Docker registries. CybeDefend integrates with JFrog Artifactory to scan your container images using access token authentication.
 
-## Features
+## CybeDefend Configuration
 
-- **Access Token Authentication**: Secure access using JFrog access tokens
-- **Docker Repository Support**: Scan images from Docker-type repositories
-- **Cloud & Self-Hosted**: Compatible with JFrog Cloud and on-premises Artifactory
-- **Multi-Repository Access**: Scan images from multiple Docker repositories
-- **Fine-Grained Permissions**: Leverage Artifactory permission targets for security
+| Field | Description | Example |
+|-------|-------------|---------|
+| **JFrog Artifactory URL** | Full URL of your JFrog instance | `https://company.jfrog.io` |
+| **Docker Repository Key** | Docker repository key name | `docker-local` |
+| **Username** | Artifactory username | `admin` |
+| **Access Token** | Access token for authentication | `*****` |
+| **Description** | Optional description | `Production JFrog Artifactory Registry` |
 
-## Setup Requirements
-
-To connect your JFrog Artifactory Container Registry:
-
-1. **JFrog Artifactory Instance**: Access to JFrog Artifactory (Cloud or self-hosted)
-2. **Docker Repository**: A Docker-type repository configured in Artifactory
-3. **Access Token**: Access token with read permissions on Docker repositories
-4. **Network Access**: Connectivity to your Artifactory instance
-
-## Configuration Steps
+## How to Configure JFrog Artifactory Container Registry
 
 <Steps>
   <Step title="Access Artifactory">
@@ -42,244 +35,37 @@ To connect your JFrog Artifactory Container Registry:
   </Step>
 </Steps>
 
-## CybeDefend Configuration
-
-When connecting your JFrog Artifactory registry in CybeDefend, you'll need to provide:
-
-| Field | Description | Example |
-|-------|-------------|---------|
-| **URL JFrog Artifactory** | Full URL of your JFrog instance | `https://company.jfrog.io` |
-| **Clé du dépôt Docker** | Docker repository key name | `docker-local` |
-| **Nom d'utilisateur** | Artifactory username | `admin` |
-| **Token d'accès** | Access token for authentication | `*****` |
-| **Description** | Optional description | `Registry JFrog Artifactory de production` |
-
-## Registry URL Format
-
-JFrog Artifactory Docker registries use this URL pattern:
-
-```
-# JFrog Cloud
-<instance>.jfrog.io/<repository-key>/<image>:<tag>
-
-# Self-hosted Artifactory
-<artifactory-url>/<repository-key>/<image>:<tag>
-
-# Examples
-company.jfrog.io/docker-local/myapp:latest
-artifactory.mycompany.com/docker-prod/api:v2.1.0
-acme.jfrog.io/docker-virtual/frontend:1.0.0
-```
-
-## Access Token Setup
-
-### Creating an Access Token in JFrog
-
-1. **Navigate** to **User Management** → **Access Tokens**
-2. **Click** "Generate Admin Token" or "Generate Token"
-3. **Configure** the token settings:
-
-```yaml
-Token Name: cybedefend-scanner
-Description: Token for CybeDefend container scanning
-Expiration: Set appropriate expiration (recommended: 1 year or less)
-Scope: Read access to Docker repositories
-```
-
-4. **Generate** and securely store the token
-
 <Warning>
 Access tokens are only displayed once. Make sure to copy and store the token securely before closing the dialog.
 </Warning>
 
-## Authentication Methods
-
-<Tabs>
-  <Tab title="Access Token">
-    ```bash
-    # Login with access token
-    docker login company.jfrog.io \
-      -u "username" \
-      -p "access-token-here"
-    
-    # Pull image
-    docker pull company.jfrog.io/docker-local/myapp:latest
-    ```
-  </Tab>
-  
-  <Tab title="API Key (Legacy)">
-    ```bash
-    # Login with API key
-    docker login company.jfrog.io \
-      -u "username" \
-      -p "api-key-here"
-    ```
-  </Tab>
-</Tabs>
-
-## Repository Types
-
-JFrog Artifactory supports several Docker repository types:
+## Security Best Practices
 
 <CardGroup cols={2}>
-  <Card title="Local Repository" icon="database">
-    Store and manage your own Docker images
+  <Card title="Use Access Tokens" icon="key">
+    Prefer access tokens over API keys for better security.
   </Card>
-  
-  <Card title="Remote Repository" icon="cloud-download">
-    Proxy and cache images from external registries
+  <Card title="Minimal Permissions" icon="shield-halved">
+    Grant only read access to Docker repositories for scanning.
   </Card>
-  
-  <Card title="Virtual Repository" icon="layer-group">
-    Aggregate multiple repositories into a single endpoint
+  <Card title="Set Expiration" icon="calendar-xmark">
+    Configure token expiration dates to limit exposure window.
   </Card>
-  
-  <Card title="Federated Repository" icon="network-wired">
-    Replicate repositories across multiple Artifactory instances
+  <Card title="Rotate Tokens" icon="rotate">
+    Rotate access tokens regularly (every 90 days recommended).
   </Card>
 </CardGroup>
 
-## Required Permissions
-
-Your access token or user needs these permissions:
-
-| Permission | Description |
-|------------|-------------|
-| **Read** | Pull images and list repositories |
-| **Annotate** | Add metadata to artifacts (optional) |
-| **Deploy** | Push images (not required for scanning) |
-
-### Permission Target Example
-
-```json
-{
-  "name": "cybedefend-scanner-permissions",
-  "repo": {
-    "include-patterns": ["**"],
-    "exclude-patterns": [],
-    "repositories": ["docker-local", "docker-prod"],
-    "actions": {
-      "users": {
-        "scanner-user": ["read"]
-      }
-    }
-  }
-}
-```
-
-## Integration with CI/CD
-
-### Jenkins Pipeline Example
-
-```groovy
-pipeline {
-    agent any
-    
-    environment {
-        JFROG_URL = 'https://company.jfrog.io'
-        DOCKER_REPO = 'docker-local'
-    }
-    
-    stages {
-        stage('Build & Push') {
-            steps {
-                script {
-                    docker.withRegistry("${JFROG_URL}", 'jfrog-credentials') {
-                        def image = docker.build("${DOCKER_REPO}/myapp:${BUILD_NUMBER}")
-                        image.push()
-                    }
-                }
-            }
-        }
-        
-        stage('Security Scan') {
-            steps {
-                sh '''
-                    curl -X POST "$CYBEDEFEND_API/scan" \
-                      -H "Authorization: Bearer $CYBEDEFEND_TOKEN" \
-                      -d "image=${JFROG_URL}/${DOCKER_REPO}/myapp:${BUILD_NUMBER}"
-                '''
-            }
-        }
-    }
-}
-```
-
-### GitHub Actions Example
-
-```yaml
-name: Build and Scan Container
-
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  build-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Login to JFrog
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ secrets.JFROG_URL }}
-          username: ${{ secrets.JFROG_USER }}
-          password: ${{ secrets.JFROG_TOKEN }}
-      
-      - name: Build and Push
-        run: |
-          docker build -t ${{ secrets.JFROG_URL }}/docker-local/myapp:${{ github.sha }} .
-          docker push ${{ secrets.JFROG_URL }}/docker-local/myapp:${{ github.sha }}
-      
-      - name: Trigger CybeDefend Scan
-        run: |
-          curl -X POST "${{ secrets.CYBEDEFEND_API }}/scan" \
-            -H "Authorization: Bearer ${{ secrets.CYBEDEFEND_TOKEN }}" \
-            -d "image=${{ secrets.JFROG_URL }}/docker-local/myapp:${{ github.sha }}"
-```
-
-## JFrog Xray Integration
-
-If you're using JFrog Xray alongside CybeDefend:
-
-- **JFrog Xray**: Real-time scanning integrated into Artifactory
-- **CybeDefend**: Comprehensive vulnerability analysis with AI-powered remediation
-
-Both tools can complement each other for a complete security strategy.
-
-## Security Best Practices
-
-<Warning>
-- **Token rotation**: Regularly rotate access tokens (recommended every 90 days)
-- **Minimal permissions**: Create tokens with only required permissions
-- **Secure storage**: Use secret management tools for storing credentials
-- **HTTPS only**: Always use TLS for Artifactory connections
-- **Audit access**: Monitor and review access logs regularly
-</Warning>
-
 ## Troubleshooting
 
-**Authentication Failed**:
-- Verify the access token is still valid (not expired)
-- Check username and token combination
-- Ensure the user has access to the Docker repository
-
-**Repository Not Found**:
-- Verify the Docker repository key is correct
-- Check the repository type (should be Docker)
-- Ensure repository is not disabled
-
-**Permission Denied**:
-- Review permission targets assigned to the user/token
-- Verify read permissions on the specific repository
-- Check if the repository is accessible to the user
-
-**Connection Issues**:
-- Verify Artifactory URL is accessible
-- Check firewall rules and network policies
-- Confirm SSL certificate validity
-
----
-
-**Related:** [Container Image Scanning](/v103/container-scanning/container-image-scanning) · [Docker Hub](/v103/container-scanning/registry-integrations/docker-hub) · [Harbor](/v103/container-scanning/registry-integrations/harbor)
+<AccordionGroup>
+  <Accordion title="Authentication Failed" icon="circle-exclamation">
+    - Verify username and access token are correct
+    - Check if the token has expired
+    - Ensure the Artifactory URL is correct
+  </Accordion>
+  <Accordion title="Repository Not Found" icon="folder-xmark">
+    - Verify the Docker repository key is correct
+    - Check if the repository is of type Docker
+  </Accordion>
+</AccordionGroup>

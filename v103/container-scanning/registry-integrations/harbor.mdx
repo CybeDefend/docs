@@ -1,30 +1,21 @@
 ---
 title: "Harbor Container Registry"
-description: "Scan container images stored in Harbor, the open-source enterprise container registry with security features."
+description: "Scan container images stored in Harbor registry."
 ---
 
-**Harbor** is an open-source, enterprise-grade container registry that provides security, identity management, and management features for cloud-native applications. CybeDefend integrates with Harbor to scan your container images for vulnerabilities using robot account authentication.
+**Harbor** is an open-source enterprise container registry. CybeDefend integrates with Harbor to scan your container images using robot account authentication.
 
-## Features
+## CybeDefend Configuration
 
-- **Robot Account Authentication**: Secure access using Harbor robot accounts
-- **Project-Based Access**: Access images from specific Harbor projects
-- **Self-Hosted Support**: Full support for on-premises Harbor installations
-- **Fine-Grained Permissions**: Configure precise access controls per repository
-- **Audit Logging**: Complete tracking of all registry access activities
-
-## Setup Requirements
-
-To connect your Harbor Container Registry:
-
-1. **Harbor Instance**: Access to a Harbor instance (v2.0+)
-2. **Robot Account**: Robot account with read permissions
-3. **Project Access**: Access to the Harbor project containing your images
-4. **Network Access**: Connectivity to your Harbor instance
+| Field | Description | Example |
+|-------|-------------|---------|
+| **Harbor URL** | Full URL of your Harbor instance | `https://harbor.example.com` |
+| **Harbor Project** | Name of the Harbor project | `my-project` |
+| **Robot Username** | Robot account username | `robot$my-project+deploy` |
+| **Robot Token** | Robot account token | `*****` |
+| **Description** | Optional description | `Production Harbor Registry` |
 
 ## Required Robot Account Permissions
-
-Configure the following permissions for your robot account:
 
 | Resource | Permission |
 |----------|------------|
@@ -34,7 +25,7 @@ Configure the following permissions for your robot account:
 | **Repository** | List, Pull, Read |
 | **Tag** | List |
 
-## Configuration Steps
+## How to Configure Harbor Container Registry
 
 <Steps>
   <Step title="Access Harbor">
@@ -58,169 +49,37 @@ Configure the following permissions for your robot account:
   </Step>
 </Steps>
 
-## CybeDefend Configuration
-
-When connecting your Harbor registry in CybeDefend, you'll need to provide:
-
-| Field | Description | Example |
-|-------|-------------|---------|
-| **URL Harbor** | Full URL of your Harbor instance | `https://harbor.example.com` |
-| **Projet Harbor** | Name of the Harbor project | `mon-projet` |
-| **Nom d'utilisateur Robot** | Robot account username | `robot$mon-projet+deploy` |
-| **Token du Robot** | Robot account token | `*****` |
-| **Description** | Optional description | `Registry Harbor de production` |
-
-## Registry URL Format
-
-Harbor registries use this URL pattern:
-
-```
-# Standard format
-<harbor-url>/<project>/<repository>:<tag>
-
-# Examples
-harbor.example.com/myproject/myapp:latest
-harbor.mycompany.io/production/api-server:v1.2.0
-registry.internal/library/nginx:1.25
-```
-
-## Robot Account Setup
-
-### Creating a Robot Account in Harbor
-
-1. **Navigate** to your Harbor project
-2. **Go to** Robot Accounts in the left sidebar
-3. **Click** "+ New Robot Account"
-4. **Configure** the robot account:
-
-```yaml
-Name: deploy_robot
-Description: CybeDefend scanner robot account
-Permissions:
-  - Artifact: List, Read
-  - Label: List, Read
-  - Project: Read
-  - Repository: List, Pull, Read
-  - Tag: List
-Expiration: Set appropriate expiration or never
-```
-
-5. **Save** and copy the generated credentials
-
-### Robot Account Naming
-
-Harbor robot accounts follow this naming convention:
-```
-robot$<project>+<robot-name>
-
-# Examples
-robot$myproject+deploy
-robot$production+scanner
-robot$staging+cybedefend
-```
-
-## Authentication
-
-```bash
-# Login with robot account
-docker login harbor.example.com \
-  -u "robot\$myproject+deploy" \
-  -p "robot-token-here"
-
-# Pull image
-docker pull harbor.example.com/myproject/myapp:latest
-```
-
-<Note>
-Note the backslash before `$` when using the robot username in bash to escape the special character.
-</Note>
-
-## Project Permissions
-
-<CardGroup cols={2}>
-  <Card title="Public Projects" icon="globe">
-    No authentication required for pulling images
-  </Card>
-  
-  <Card title="Private Projects" icon="lock">
-    Requires robot account or user authentication
-  </Card>
-  
-  <Card title="Project Members" icon="users">
-    Access controlled by project membership
-  </Card>
-  
-  <Card title="Robot Accounts" icon="robot">
-    Automated access with fine-grained permissions
-  </Card>
-</CardGroup>
-
-## Integration with CI/CD
-
-### GitLab CI/CD Example
-
-```yaml
-# .gitlab-ci.yml
-container-scan:
-  stage: security
-  script:
-    - docker login harbor.example.com -u "$HARBOR_ROBOT_USER" -p "$HARBOR_ROBOT_TOKEN"
-    - |
-      curl -X POST "$CYBEDEFEND_API/scan" \
-        -H "Authorization: Bearer $CYBEDEFEND_TOKEN" \
-        -d "image=harbor.example.com/$CI_PROJECT_NAME/$CI_COMMIT_REF_SLUG:$CI_COMMIT_SHA"
-```
-
-### GitHub Actions Example
-
-```yaml
-name: Container Scan
-on: [push]
-
-jobs:
-  scan:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Login to Harbor
-        uses: docker/login-action@v2
-        with:
-          registry: harbor.example.com
-          username: ${{ secrets.HARBOR_ROBOT_USER }}
-          password: ${{ secrets.HARBOR_ROBOT_TOKEN }}
-      
-      - name: Trigger CybeDefend Scan
-        run: |
-          curl -X POST "${{ secrets.CYBEDEFEND_API }}/scan" \
-            -H "Authorization: Bearer ${{ secrets.CYBEDEFEND_TOKEN }}" \
-            -d "image=harbor.example.com/project/app:${{ github.sha }}"
-```
+<Warning>
+The robot token is only displayed once when created. Make sure to copy it immediately before closing the dialog.
+</Warning>
 
 ## Security Best Practices
 
-<Warning>
-- **Rotate tokens regularly**: Set appropriate expiration dates for robot accounts
-- **Minimal permissions**: Grant only the permissions required for scanning
-- **Secure storage**: Never commit robot tokens to version control
-- **Use HTTPS**: Always use TLS for Harbor connections
-</Warning>
+<CardGroup cols={2}>
+  <Card title="Use Robot Accounts" icon="robot">
+    Prefer robot accounts over personal credentials for automated scanning.
+  </Card>
+  <Card title="Minimal Permissions" icon="shield-halved">
+    Grant only the required permissions listed above for security.
+  </Card>
+  <Card title="Set Expiration" icon="calendar-xmark">
+    Configure robot account expiration dates to limit exposure.
+  </Card>
+  <Card title="Use HTTPS" icon="lock">
+    Always use TLS for Harbor connections to encrypt data in transit.
+  </Card>
+</CardGroup>
 
 ## Troubleshooting
 
-**Authentication Failed**:
-- Verify robot account username includes the project prefix
-- Check token hasn't expired
-- Ensure robot account has the required permissions
-
-**Connection Refused**:
-- Verify Harbor URL is accessible from CybeDefend
-- Check firewall rules and network policies
-- Confirm Harbor instance is running
-
-**Permission Denied**:
-- Review robot account permissions
-- Ensure robot account is assigned to the correct project
-- Verify project visibility settings
-
----
-
-**Related:** [Container Image Scanning](/v103/container-scanning/container-image-scanning) · [Docker Hub](/v103/container-scanning/registry-integrations/docker-hub) · [Red Hat Quay](/v103/container-scanning/registry-integrations/red-hat-quay)
+<AccordionGroup>
+  <Accordion title="Authentication Failed" icon="circle-exclamation">
+    - Verify robot username format: `robot$project+name`
+    - Check if the robot account has expired
+    - Ensure the Harbor URL is correct
+  </Accordion>
+  <Accordion title="Permission Denied" icon="ban">
+    - Verify robot account has the required permissions
+    - Check project visibility settings
+  </Accordion>
+</AccordionGroup>
