@@ -3,39 +3,48 @@ title: "Docker Hub Integration"
 description: "Connect and scan container images from Docker Hub, the world's largest public container registry."
 ---
 
-**Docker Hub** is the default registry for Docker containers and hosts millions of public images. CybeDefend's Docker Hub integration allows you to scan any public image for vulnerabilities without requiring authentication or special configuration.
-
-<Frame>
-  <img src="/images/container-scanning/integrations/dockerhub.png" alt="Docker Hub Integration" style={{ borderRadius: '0.5rem' }} />
-</Frame>
+**Docker Hub** is the default registry for Docker containers and hosts millions of public images. CybeDefend's Docker Hub integration allows you to scan both public and private images using Personal Access Token authentication.
 
 ## Features
 
-- **Public Image Access**: Scan any publicly available image from Docker Hub
+- **Public & Private Images**: Scan both public and private Docker Hub repositories
+- **Personal Access Token**: Secure authentication with Docker Hub PAT
 - **Official Images**: Access to Docker's official maintained images
 - **Community Images**: Scan community-contributed containers
-- **No Authentication Required**: Direct access to public repositories
 - **Tag Support**: Scan specific versions or latest tags
 
-## How to Scan Docker Hub Images
+## CybeDefend Configuration
+
+When connecting your Docker Hub registry in CybeDefend, you'll need to provide:
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| **Nom d'utilisateur DockerHub** | Your Docker Hub username | `username` |
+| **Personal Access Token** | Docker Hub Personal Access Token | `dckr_pat_xxxxxxxxxxxx` |
+
+## How to Create a Personal Access Token
 
 <Steps>
-  <Step title="Select Docker Hub">
-    Choose Docker Hub as your image source in the container scanning interface
+  <Step title="Access Docker Hub Settings">
+    Go to Docker Hub → **Account Settings** → **Security** → **Access Tokens**
   </Step>
   
-  <Step title="Enter Image Details">
-    Specify the image name and tag (e.g., `nginx:latest`, `node:18-alpine`)
+  <Step title="Create New Token">
+    Create a new Access Token with a description (e.g., `cybedefend-scanner`)
   </Step>
   
-  <Step title="Initiate Scan">
-    Click scan to pull and analyze the container image
+  <Step title="Select Permissions">
+    Select **Read-only** permission (recommended for scanning)
   </Step>
   
-  <Step title="Review Results">
-    Access detailed vulnerability reports for the scanned image
+  <Step title="Copy Token">
+    Copy the token immediately and paste it in CybeDefend (you won't see it again!)
   </Step>
 </Steps>
+
+<Warning>
+The Personal Access Token is only displayed once when created. Make sure to copy it immediately before closing the dialog.
+</Warning>
 
 ## Image Naming Convention
 

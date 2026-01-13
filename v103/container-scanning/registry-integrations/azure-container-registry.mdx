@@ -5,10 +5,6 @@ description: "Scan container images stored in Azure Container Registry with secu
 
 **Azure Container Registry (ACR)** is Microsoft Azure's managed Docker registry service. CybeDefend integrates with ACR to scan your private container images using Azure Active Directory authentication and supports all ACR tiers and features.
 
-<Frame>
-  <img src="/images/container-scanning/integrations/acr.png" alt="Azure Container Registry Integration" style={{ borderRadius: '0.5rem' }} />
-</Frame>
-
 ## Features
 
 - **Azure AD Authentication**: Secure access using Azure AD service principals or managed identities
@@ -26,32 +22,56 @@ To connect your Azure Container Registry:
 3. **Registry Access**: Proper RBAC roles for container registry access
 4. **Network Access**: Connectivity to your ACR instance
 
-## Required Azure RBAC Roles
+## CybeDefend Configuration
 
-Your service principal needs these roles:
+When connecting your Azure Container Registry in CybeDefend, you'll need to provide:
 
-- `AcrPull` - Pull images from the registry
-- `Reader` - Read registry metadata and repositories
+| Field | Description | Example |
+|-------|-------------|---------|
+| **Serveur de connexion** | Your ACR login server URL | `myregistry.azurecr.io` |
+| **Service Principal App ID** | Application (client) ID of the service principal | `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` |
+| **Mot de passe du Service Principal** | Service principal password/secret | `*****` |
+| **Description** | Optional description for the registry | `Production ACR registry` |
 
-## Configuration Steps
+## How to Get Azure Container Registry Credentials
+
+You have two options to authenticate with Azure Container Registry:
+
+### Option A: Admin User (Quick Setup)
+
+<Steps>
+  <Step title="Access Azure Portal">
+    Go to Azure Portal → **Container Registries** → Select your registry
+  </Step>
+  
+  <Step title="Enable Admin User">
+    Go to **Settings** → **Access keys** → Enable **Admin user**
+  </Step>
+  
+  <Step title="Copy Credentials">
+    Copy the **username** and **password** provided
+  </Step>
+</Steps>
+
+### Option B: Service Principal (Recommended for Production)
 
 <Steps>
   <Step title="Create Service Principal">
-    Create an Azure AD service principal for CybeDefend access
+    Create a Service Principal with the **AcrPull** or **AcrPush** role
   </Step>
   
-  <Step title="Assign ACR Permissions">
-    Grant the service principal `AcrPull` role on your container registry
+  <Step title="Assign Role">
+    Assign the Service Principal to your ACR with appropriate permissions
   </Step>
   
-  <Step title="Generate Client Secret">
-    Create a client secret for the service principal
-  </Step>
-  
-  <Step title="Configure CybeDefend">
-    Add ACR connection with service principal credentials
+  <Step title="Enter Credentials">
+    Enter the Service Principal App ID and password in CybeDefend
   </Step>
 </Steps>
+
+<Warning>
+Using Admin User is convenient for testing but Service Principal is recommended for production environments for better security and access control.
+</Warning>
 
 ## Registry URL Format
 

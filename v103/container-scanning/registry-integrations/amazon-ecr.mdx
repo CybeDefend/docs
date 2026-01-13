@@ -5,10 +5,6 @@ description: "Scan container images stored in Amazon ECR with secure AWS IAM aut
 
 **Amazon Elastic Container Registry (ECR)** is AWS's fully managed Docker container registry. CybeDefend integrates with ECR to scan your private container images using AWS IAM authentication, supporting both private and public ECR repositories.
 
-<Frame>
-  <img src="/images/container-scanning/integrations/ecr.png" alt="Amazon ECR Integration" style={{ borderRadius: '0.5rem' }} />
-</Frame>
-
 ## Features
 
 - **AWS IAM Authentication**: Secure access using AWS access keys or IAM roles
@@ -22,53 +18,45 @@ description: "Scan container images stored in Amazon ECR with secure AWS IAM aut
 To connect your Amazon ECR:
 
 1. **AWS Account**: Active AWS account with ECR repositories
-2. **IAM Credentials**: AWS access keys or IAM role with ECR permissions
-3. **ECR Permissions**: `ecr:GetAuthorizationToken`, `ecr:BatchGetImage`, `ecr:GetDownloadUrlForLayer`
+2. **IAM Credentials**: AWS access keys with ECR permissions
+3. **ECR Permissions**: `AmazonEC2ContainerRegistryReadOnly` policy (or `AmazonEC2ContainerRegistryFullAccess` for write)
 4. **Region Configuration**: Specify the AWS region for your ECR repositories
 
-## Required IAM Permissions
+## CybeDefend Configuration
 
-Your AWS IAM user or role needs these permissions:
+When connecting your Amazon ECR in CybeDefend, you'll need to provide:
 
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ecr:GetAuthorizationToken",
-        "ecr:BatchCheckLayerAvailability",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:BatchGetImage",
-        "ecr:DescribeRepositories",
-        "ecr:DescribeImages"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-```
+| Field | Description | Example |
+|-------|-------------|---------|
+| **AWS Account ID** | Your 12-digit AWS account ID | `123456789012` |
+| **Région AWS** | AWS region where your ECR is located | `US East (N. Virginia) (us-east-1)` |
+| **Access Key ID** | AWS IAM access key ID | `AKIAIOSFODNN7EXAMPLE` |
+| **Secret Access Key** | AWS IAM secret access key | `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY` |
+| **Description** | Optional description for the registry | `Production ECR registry` |
 
-## Configuration Steps
+## How to Create IAM Credentials for ECR
 
 <Steps>
-  <Step title="Create IAM User/Role">
-    Create an IAM user or role with ECR read permissions
+  <Step title="Access AWS Console">
+    Go to AWS Console → **IAM** → **Users** → **Create user**
   </Step>
   
-  <Step title="Generate Access Keys">
-    Create AWS access keys for the IAM user (if not using roles)
+  <Step title="Attach Policy">
+    Attach the policy `AmazonEC2ContainerRegistryReadOnly` (or `AmazonEC2ContainerRegistryFullAccess` for write access)
   </Step>
   
-  <Step title="Configure CybeDefend">
-    Add ECR connection with AWS credentials and region information
+  <Step title="Create Access Key">
+    Go to **Security credentials** → **Create access key** → Select **Application running outside AWS**
   </Step>
   
-  <Step title="Verify Access">
-    Test the connection and verify repository access
+  <Step title="Copy Credentials">
+    Copy the **Access Key ID** and **Secret Access Key** and paste them in CybeDefend
   </Step>
 </Steps>
+
+<Warning>
+The Secret Access Key is only displayed once when created. Make sure to copy it immediately before closing the dialog.
+</Warning>
 
 ## Registry URL Formats
 

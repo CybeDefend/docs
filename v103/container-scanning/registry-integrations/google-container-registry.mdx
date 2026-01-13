@@ -5,10 +5,6 @@ description: "Scan container images stored in Google Container Registry with sec
 
 **Google Container Registry (GCR)** is Google Cloud's managed Docker registry service. CybeDefend integrates with GCR to scan your private container images for vulnerabilities using secure service account authentication.
 
-<Frame>
-  <img src="/images/container-scanning/integrations/gcr.png" alt="Google Container Registry Integration" style={{ borderRadius: '0.5rem' }} />
-</Frame>
-
 ## Features
 
 - **Service Account Authentication**: Secure access using Google Cloud service accounts
@@ -26,40 +22,52 @@ To connect your Google Container Registry:
 3. **JSON Key File**: Service account credentials in JSON format
 4. **Registry Access**: Proper IAM permissions for registry access
 
-## Required IAM Permissions
+## CybeDefend Configuration
 
-Your service account needs these permissions:
+When connecting your Google Container Registry in CybeDefend, you'll need to provide:
 
-```json
-{
-  "bindings": [
-    {
-      "role": "roles/storage.objectViewer",
-      "members": ["serviceAccount:your-scanner@project.iam.gserviceaccount.com"]
-    }
-  ]
-}
-```
+| Field | Description | Example |
+|-------|-------------|---------|
+| **ID du projet GCP** | Your Google Cloud project ID | `my-gcp-project-123` |
+| **Nom d'hôte du registre** | GCR hostname for your region | `gcr.io (Global/US)` |
+| **Clé du compte de service (JSON)** | Full JSON content of service account key | `{"type": "service_account", ...}` |
 
-## Configuration Steps
+### Available Registry Hostnames
+
+| Hostname | Region |
+|----------|--------|
+| `gcr.io` | Global / United States |
+| `us.gcr.io` | United States |
+| `eu.gcr.io` | Europe |
+| `asia.gcr.io` | Asia |
+
+## How to Create a Service Account Key
 
 <Steps>
-  <Step title="Create Service Account">
-    Create a new service account in your Google Cloud Console
+  <Step title="Access GCP Console">
+    Go to GCP Console → **IAM & Admin** → **Service Accounts**
   </Step>
   
-  <Step title="Assign Permissions">
-    Grant the service account `Storage Object Viewer` role for the registry buckets
+  <Step title="Create or Select Account">
+    Create a new service account or select an existing one
   </Step>
   
-  <Step title="Generate Key">
-    Download the service account JSON key file
+  <Step title="Assign Role">
+    Grant the role **Storage Object Viewer** (read access) or **Storage Admin** (read/write)
   </Step>
   
-  <Step title="Configure CybeDefend">
-    Upload the JSON key and configure GCR connection in CybeDefend
+  <Step title="Create Key">
+    Create a new key in **JSON format** and download it
+  </Step>
+  
+  <Step title="Paste JSON Content">
+    Paste the complete JSON content in CybeDefend
   </Step>
 </Steps>
+
+<Warning>
+The service account key JSON file contains sensitive credentials. Store it securely and never commit it to version control.
+</Warning>
 
 ## Registry URL Formats
 

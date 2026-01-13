@@ -159,7 +159,15 @@
                   {
                     "group": "Registry Integrations",
                     "pages": [
-                      "/v103/container-scanning/registry-integrations/docker-hub"
+                      "/v103/container-scanning/registry-integrations/docker-hub",
+                      "/v103/container-scanning/registry-integrations/github-container-registry",
+                      "/v103/container-scanning/registry-integrations/gitlab-container-registry",
+                      "/v103/container-scanning/registry-integrations/amazon-ecr",
+                      "/v103/container-scanning/registry-integrations/azure-container-registry",
+                      "/v103/container-scanning/registry-integrations/google-container-registry",
+                      "/v103/container-scanning/registry-integrations/red-hat-quay",
+                      "/v103/container-scanning/registry-integrations/harbor",
+                      "/v103/container-scanning/registry-integrations/jfrog-artifactory"
                     ]
                   }
                 ]

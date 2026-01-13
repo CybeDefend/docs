@@ -5,10 +5,6 @@ description: "Scan container images stored in GitHub Container Registry (GHCR) w
 
 **GitHub Container Registry (GHCR)** is GitHub's modern container registry that provides secure, scalable storage for Docker images. CybeDefend integrates with GHCR to scan both public and private container images using GitHub personal access tokens.
 
-<Frame>
-  <img src="/images/container-scanning/integrations/github.png" alt="GitHub Container Registry Integration" style={{ borderRadius: '0.5rem' }} />
-</Frame>
-
 ## Features
 
 - **GitHub Token Authentication**: Secure access using GitHub personal access tokens
@@ -22,36 +18,45 @@ description: "Scan container images stored in GitHub Container Registry (GHCR) w
 To connect your GitHub Container Registry:
 
 1. **GitHub Account**: Access to GitHub with container packages
-2. **Personal Access Token**: Token with `read:packages` scope
+2. **Personal Access Token (Classic)**: Token with `read:packages` scope
 3. **Package Permissions**: Read access to the container packages
 4. **Repository Access**: Access to repositories containing the packages
 
-## Required Token Scopes
+## CybeDefend Configuration
 
-Your GitHub personal access token needs these scopes:
+When connecting your GitHub Container Registry in CybeDefend, you'll need to provide:
 
-- `read:packages` - Read access to GitHub Packages
-- `repo` - Repository access (for private repositories)
+| Field | Description | Example |
+|-------|-------------|---------|
+| **Nom d'utilisateur GitHub** | Your GitHub username or organization | `myorg` |
+| **Personal Access Token** | GitHub PAT with `read:packages` scope | `ghp_xxxxxxxxxxxx` |
+| **Description** | Optional description for the registry | `Registry GitHub de production` |
 
-## Configuration Steps
+## How to Create a Personal Access Token (PAT)
 
 <Steps>
-  <Step title="Generate Access Token">
-    Create a GitHub personal access token with `read:packages` scope
+  <Step title="Access GitHub Settings">
+    Go to GitHub → **Settings** → **Developer settings** → **Personal access tokens** → **Tokens (classic)**
   </Step>
   
-  <Step title="Configure Registry Connection">
-    Add GitHub Container Registry connection in CybeDefend with your token
+  <Step title="Generate New Token">
+    Click **Generate new token** and select **Generate new token (classic)**
   </Step>
   
-  <Step title="Verify Permissions">
-    Test access to your container packages and repositories
+  <Step title="Select Scopes">
+    Select the required scopes:
+    - `read:packages` (read access)
+    - or `write:packages` (read/write access)
   </Step>
   
-  <Step title="Select Images">
-    Browse and select container images to scan from your GitHub packages
+  <Step title="Copy Token">
+    Copy the generated token and paste it in CybeDefend
   </Step>
 </Steps>
+
+<Warning>
+The Personal Access Token is only displayed once when created. Make sure to copy it immediately before leaving the page.
+</Warning>
 
 ## Registry URL Format
 

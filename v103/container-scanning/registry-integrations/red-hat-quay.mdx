@@ -5,10 +5,6 @@ description: "Scan container images stored in Red Hat Quay registry with secure 
 
 **Red Hat Quay** is an enterprise-grade container registry that provides security, scalability, and advanced features for container image management. CybeDefend integrates with both Quay.io (SaaS) and self-hosted Quay instances to scan your container images for vulnerabilities.
 
-<Frame>
-  <img src="/images/container-scanning/integrations/quay.png" alt="Red Hat Quay Integration" style={{ borderRadius: '0.5rem' }} />
-</Frame>
-
 ## Features
 
 - **OAuth2 Authentication**: Secure access using Quay application tokens
@@ -22,40 +18,45 @@ description: "Scan container images stored in Red Hat Quay registry with secure 
 To connect your Red Hat Quay registry:
 
 1. **Quay Account**: Access to Quay.io or self-hosted Quay instance
-2. **Application Token**: OAuth2 application token or robot account credentials
+2. **Robot Account**: Robot account with repository read access
 3. **Repository Access**: Read permissions for target repositories
 4. **API Access**: Access to Quay API endpoints
 
-## Authentication Methods
+## CybeDefend Configuration
 
-**Robot Accounts** (Recommended):
-- Create robot accounts for automated access
-- Generate credentials with specific repository permissions
-- More secure than personal account tokens
+When connecting your Red Hat Quay registry in CybeDefend, you'll need to provide:
 
-**OAuth2 Application Tokens**:
-- Personal or organization-level access tokens
-- Full account permissions (use with caution)
+| Field | Description | Example |
+|-------|-------------|---------|
+| **Hôte Quay** | Quay hostname | `quay.io` |
+| **Namespace** | Organization or username | `myorganization` |
+| **Nom d'utilisateur du compte robot** | Robot account username | `myorganization+deploy_robot` |
+| **Jeton du compte robot** | Robot account token | `*****` |
+| **Description** | Optional description | `Production Quay registry` |
 
-## Configuration Steps
+## How to Configure Quay.io Container Registry
 
 <Steps>
+  <Step title="Access Quay.io">
+    Connect to your Quay.io account and navigate to your repository
+  </Step>
+  
   <Step title="Create Robot Account">
-    Create a robot account in your Quay organization with read permissions
+    Go to **Repository Settings** → **Robot Accounts** and create a new robot account
   </Step>
   
-  <Step title="Generate Credentials">
-    Download the robot account credentials (username and token)
+  <Step title="Grant Read Access">
+    Grant the robot account **read access** to your repository
   </Step>
   
-  <Step title="Configure Registry Access">
-    Grant the robot account access to specific repositories
-  </Step>
-  
-  <Step title="Setup CybeDefend">
-    Configure Quay connection in CybeDefend with robot credentials
+  <Step title="Copy Credentials">
+    Copy the robot username and token and paste them in CybeDefend
   </Step>
 </Steps>
+
+<Warning>
+The robot token is only displayed once when created. Make sure to copy it immediately before closing the dialog.
+</Warning>
 
 ## Registry URL Formats
 

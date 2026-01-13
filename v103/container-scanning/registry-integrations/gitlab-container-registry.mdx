@@ -5,10 +5,6 @@ description: "Scan private container images stored in GitLab's integrated contai
 
 **GitLab Container Registry** provides a secure, private space for your organization's Docker images. CybeDefend integrates with GitLab's registry to scan your private containers for vulnerabilities while maintaining security and access controls.
 
-<Frame>
-  <img src="/images/container-scanning/integrations/gitlab.png" alt="GitLab Container Registry Integration" style={{ borderRadius: '0.5rem' }} />
-</Frame>
-
 ## Features
 
 - **Private Repository Access**: Scan images from private GitLab projects
@@ -21,30 +17,56 @@ description: "Scan private container images stored in GitLab's integrated contai
 
 To connect your GitLab Container Registry:
 
-1. **GitLab Access Token**: Personal access token with `read_registry` scope
+1. **GitLab Project Access Token**: Project access token with `read_api` and `read_registry` scopes
 2. **Registry URL**: Your GitLab instance registry endpoint
-3. **Project Path**: The GitLab project containing your containers
-4. **Image Permissions**: Read access to the container registry
+3. **Project ID**: The GitLab project ID
+4. **Project Path**: The GitLab project path (username/project or group/project)
+5. **Image Permissions**: Read access to the container registry
 
-## Configuration Steps
+## CybeDefend Configuration
+
+When connecting your GitLab Container Registry in CybeDefend, you'll need to provide:
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| **ID du Projet GitLab** | Numeric project ID in GitLab | `12345` |
+| **URL du Registry** | GitLab registry URL | `registry.gitlab.com` |
+| **Chemin du Projet** | Project path in GitLab | `username/project` or `group/project` |
+| **Project Access Token** | GitLab project access token | `glpat-xxxxxxxxxxxx` |
+
+## How to Create a Project Access Token
 
 <Steps>
-  <Step title="Generate Access Token">
-    Create a GitLab personal access token with `read_registry` permissions
+  <Step title="Access GitLab Project">
+    Go to your GitLab project → **Settings** → **Access Tokens**
   </Step>
   
-  <Step title="Add Registry Connection">
-    Configure the GitLab registry connection in CybeDefend settings
+  <Step title="Create Token">
+    Create a new token with a name (e.g., `CybeDefend Scanner`)
   </Step>
   
-  <Step title="Verify Access">
-    Test the connection and verify image access permissions
+  <Step title="Select Role">
+    Select the role: **Reporter** (minimum) or **Developer**
   </Step>
   
-  <Step title="Select Images">
-    Browse and select container images to scan from your GitLab projects
+  <Step title="Select Scopes">
+    Select the required scopes:
+    - `read_api` (required to list images)
+    - `read_registry` (required to access the registry)
+  </Step>
+  
+  <Step title="Create and Copy">
+    Click **Create project access token** and copy it immediately (you won't see it again!)
+  </Step>
+  
+  <Step title="Configure CybeDefend">
+    Paste the credentials with your project information in CybeDefend
   </Step>
 </Steps>
+
+<Warning>
+The Project Access Token is only displayed once when created. Make sure to copy it immediately before closing the dialog.
+</Warning>
 
 ## Registry URL Format
 
