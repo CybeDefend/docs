@@ -1,0 +1,85 @@
+---
+title: "Harbor Container Registry"
+description: "Scan container images stored in Harbor registry."
+---
+
+**Harbor** is an open-source enterprise container registry. CybeDefend integrates with Harbor to scan your container images using robot account authentication.
+
+## CybeDefend Configuration
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| **Harbor URL** | Full URL of your Harbor instance | `https://harbor.example.com` |
+| **Harbor Project** | Name of the Harbor project | `my-project` |
+| **Robot Username** | Robot account username | `robot$my-project+deploy` |
+| **Robot Token** | Robot account token | `*****` |
+| **Description** | Optional description | `Production Harbor Registry` |
+
+## Required Robot Account Permissions
+
+| Resource | Permission |
+|----------|------------|
+| **Artifact** | List, Read |
+| **Label** | List, Read |
+| **Project** | Read |
+| **Repository** | List, Pull, Read |
+| **Tag** | List |
+
+## How to Configure Harbor Container Registry
+
+<Steps>
+  <Step title="Access Harbor">
+    Connect to your Harbor instance and navigate to your project
+  </Step>
+  
+  <Step title="Create Robot Account">
+    Go to **Robot Accounts** and create a new robot account with read access
+  </Step>
+  
+  <Step title="Set Permissions">
+    Configure the robot account permissions as listed above for scanning access
+  </Step>
+  
+  <Step title="Copy Credentials">
+    Copy the robot username (e.g., `robot$project+name`) and the generated token
+  </Step>
+  
+  <Step title="Configure CybeDefend">
+    Enter your Harbor URL, project name, robot username, and token in CybeDefend
+  </Step>
+</Steps>
+
+<Warning>
+The robot token is only displayed once when created. Make sure to copy it immediately before closing the dialog.
+</Warning>
+
+## Security Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use Robot Accounts" icon="robot">
+    Prefer robot accounts over personal credentials for automated scanning.
+  </Card>
+  <Card title="Minimal Permissions" icon="shield-halved">
+    Grant only the required permissions listed above for security.
+  </Card>
+  <Card title="Set Expiration" icon="calendar-xmark">
+    Configure robot account expiration dates to limit exposure.
+  </Card>
+  <Card title="Use HTTPS" icon="lock">
+    Always use TLS for Harbor connections to encrypt data in transit.
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Authentication Failed" icon="circle-exclamation">
+    - Verify robot username format: `robot$project+name`
+    - Check if the robot account has expired
+    - Ensure the Harbor URL is correct
+  </Accordion>
+  <Accordion title="Permission Denied" icon="ban">
+    - Verify robot account has the required permissions
+    - Check project visibility settings
+  </Accordion>
+</AccordionGroup>
