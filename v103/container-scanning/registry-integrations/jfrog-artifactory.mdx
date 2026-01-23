@@ -1,0 +1,71 @@
+---
+title: "JFrog Artifactory"
+description: "Scan container images stored in JFrog Artifactory."
+---
+
+**JFrog Artifactory** is a universal artifact repository manager that supports Docker registries. CybeDefend integrates with JFrog Artifactory to scan your container images using access token authentication.
+
+## CybeDefend Configuration
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| **JFrog Artifactory URL** | Full URL of your JFrog instance | `https://company.jfrog.io` |
+| **Docker Repository Key** | Docker repository key name | `docker-local` |
+| **Username** | Artifactory username | `admin` |
+| **Access Token** | Access token for authentication | `*****` |
+| **Description** | Optional description | `Production JFrog Artifactory Registry` |
+
+## How to Configure JFrog Artifactory Container Registry
+
+<Steps>
+  <Step title="Access Artifactory">
+    Connect to your JFrog Artifactory instance
+  </Step>
+  
+  <Step title="Navigate to Tokens">
+    Go to **User Management** → **Access Tokens** and create a new token
+  </Step>
+  
+  <Step title="Set Permissions">
+    Ensure the token has read access to your Docker repositories
+  </Step>
+  
+  <Step title="Configure CybeDefend">
+    Enter your Artifactory URL, Docker repository key, username, and access token
+  </Step>
+</Steps>
+
+<Warning>
+Access tokens are only displayed once. Make sure to copy and store the token securely before closing the dialog.
+</Warning>
+
+## Security Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use Access Tokens" icon="key">
+    Prefer access tokens over API keys for better security.
+  </Card>
+  <Card title="Minimal Permissions" icon="shield-halved">
+    Grant only read access to Docker repositories for scanning.
+  </Card>
+  <Card title="Set Expiration" icon="calendar-xmark">
+    Configure token expiration dates to limit exposure window.
+  </Card>
+  <Card title="Rotate Tokens" icon="rotate">
+    Rotate access tokens regularly (every 90 days recommended).
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Authentication Failed" icon="circle-exclamation">
+    - Verify username and access token are correct
+    - Check if the token has expired
+    - Ensure the Artifactory URL is correct
+  </Accordion>
+  <Accordion title="Repository Not Found" icon="folder-xmark">
+    - Verify the Docker repository key is correct
+    - Check if the repository is of type Docker
+  </Accordion>
+</AccordionGroup>

@@ -1,61 +1,69 @@
 ---
-title: "Docker Hub Integration"
-description: "Connect and scan container images from Docker Hub, the world's largest public container registry."
+title: "Docker Hub"
+description: "Connect and scan container images from Docker Hub."
 ---
 
-**Docker Hub** is the default registry for Docker containers and hosts millions of public images. CybeDefend's Docker Hub integration allows you to scan any public image for vulnerabilities without requiring authentication or special configuration.
+**Docker Hub** is the default registry for Docker containers. CybeDefend allows you to scan both public and private images using Personal Access Token authentication.
 
-<Frame>
-  <img src="/images/container-scanning/integrations/dockerhub.png" alt="Docker Hub Integration" style={{ borderRadius: '0.5rem' }} />
-</Frame>
+## CybeDefend Configuration
 
-## Features
+| Field | Description | Example |
+|-------|-------------|---------|
+| **DockerHub Username** | Your Docker Hub username | `username` |
+| **Personal Access Token** | Docker Hub Personal Access Token | `dckr_pat_xxxxxxxxxxxx` |
 
-- **Public Image Access**: Scan any publicly available image from Docker Hub
-- **Official Images**: Access to Docker's official maintained images
-- **Community Images**: Scan community-contributed containers
-- **No Authentication Required**: Direct access to public repositories
-- **Tag Support**: Scan specific versions or latest tags
-
-## How to Scan Docker Hub Images
+## How to Create a Personal Access Token in DockerHub
 
 <Steps>
-  <Step title="Select Docker Hub">
-    Choose Docker Hub as your image source in the container scanning interface
+  <Step title="Access Docker Hub Settings">
+    Go to Docker Hub → **Account Settings** → **Security** → **Access Tokens**
   </Step>
   
-  <Step title="Enter Image Details">
-    Specify the image name and tag (e.g., `nginx:latest`, `node:18-alpine`)
+  <Step title="Create New Token">
+    Create a new Access Token with a description (e.g., `cybedefend-scanner`)
   </Step>
   
-  <Step title="Initiate Scan">
-    Click scan to pull and analyze the container image
+  <Step title="Select Permissions">
+    Select **Read-only** permission (recommended for scanning)
   </Step>
   
-  <Step title="Review Results">
-    Access detailed vulnerability reports for the scanned image
+  <Step title="Copy Token">
+    Copy the token immediately and paste it in CybeDefend (you won't see it again!)
   </Step>
 </Steps>
 
-## Image Naming Convention
-
-When scanning Docker Hub images, use the standard naming format:
-
-- **Official Images**: `image:tag` (e.g., `nginx:latest`)
-- **User Images**: `username/image:tag` (e.g., `library/hello-world`)
-- **Organization Images**: `organization/image:tag`
-
-## Best Practices
-
-1. **Regular Scanning**: Scan base images regularly as new vulnerabilities are discovered
-2. **Tag Specificity**: Use specific version tags instead of `latest` for reproducible builds
-3. **Layer Analysis**: Review which layers introduce vulnerabilities
-4. **Alternative Images**: Consider using Alpine-based images for smaller attack surfaces
-
 <Warning>
-Docker Hub has rate limits for anonymous pulls. For high-volume scanning, consider using authenticated access or Docker Hub Pro accounts.
+The Personal Access Token is only displayed once when created. Make sure to copy it immediately before closing the dialog.
 </Warning>
 
----
+## Security Best Practices
 
-**Related:** [Container Image Scanning](/v103/container-scanning/container-image-scanning) · [Registry Integrations](/v103/container-scanning/registry-integrations/amazon-ecr) · [Scan Parameters](/v103/code-scanning/scanning-options/scan-parameters)
+<CardGroup cols={2}>
+  <Card title="Use Read-Only Tokens" icon="shield-check">
+    Create tokens with minimal permissions required for scanning operations only.
+  </Card>
+  <Card title="Rotate Tokens Regularly" icon="rotate">
+    Change your access tokens periodically to minimize security risks.
+  </Card>
+  <Card title="Never Commit Tokens" icon="lock">
+    Store tokens in environment variables or secret managers, never in code.
+  </Card>
+  <Card title="Use Dedicated Accounts" icon="user-shield">
+    Create a separate Docker Hub account for automated scanning.
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Authentication Failed" icon="circle-exclamation">
+    - Verify username and token are correct
+    - Check if the token has expired
+    - Ensure the token has the required permissions
+  </Accordion>
+  <Accordion title="Rate Limit Exceeded" icon="gauge-high">
+    - Docker Hub has pull rate limits for free accounts
+    - Consider upgrading to Docker Hub Pro for higher limits
+    - Use authenticated pulls to get higher rate limits
+  </Accordion>
+</AccordionGroup>

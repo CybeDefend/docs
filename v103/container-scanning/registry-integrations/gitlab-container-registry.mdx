@@ -1,130 +1,81 @@
 ---
 title: "GitLab Container Registry"
-description: "Scan private container images stored in GitLab's integrated container registry."
+description: "Scan container images stored in GitLab's integrated container registry."
 ---
 
-**GitLab Container Registry** provides a secure, private space for your organization's Docker images. CybeDefend integrates with GitLab's registry to scan your private containers for vulnerabilities while maintaining security and access controls.
+**GitLab Container Registry** provides a secure space for your Docker images. CybeDefend integrates with GitLab's registry to scan your containers for vulnerabilities.
 
-<Frame>
-  <img src="/images/container-scanning/integrations/gitlab.png" alt="GitLab Container Registry Integration" style={{ borderRadius: '0.5rem' }} />
-</Frame>
+## CybeDefend Configuration
 
-## Features
+| Field | Description | Example |
+|-------|-------------|---------|
+| **GitLab Project ID** | Numeric project ID in GitLab | `12345` |
+| **Registry URL** | GitLab registry URL | `registry.gitlab.com` |
+| **Project Path** | Project path in GitLab | `username/project` or `group/project` |
+| **Project Access Token** | GitLab project access token | `glpat-xxxxxxxxxxxx` |
 
-- **Private Repository Access**: Scan images from private GitLab projects
-- **Token Authentication**: Secure access using GitLab personal access tokens
-- **Project Integration**: Seamless integration with GitLab CI/CD pipelines
-- **Group Support**: Access images across GitLab groups and subgroups
-- **Tag Management**: Scan specific image versions and tags
-
-## Setup Requirements
-
-To connect your GitLab Container Registry:
-
-1. **GitLab Access Token**: Personal access token with `read_registry` scope
-2. **Registry URL**: Your GitLab instance registry endpoint
-3. **Project Path**: The GitLab project containing your containers
-4. **Image Permissions**: Read access to the container registry
-
-## Configuration Steps
+## How to Create a Project Access Token in GitLab
 
 <Steps>
-  <Step title="Generate Access Token">
-    Create a GitLab personal access token with `read_registry` permissions
+  <Step title="Access GitLab Project">
+    Go to your GitLab project → **Settings** → **Access Tokens**
   </Step>
   
-  <Step title="Add Registry Connection">
-    Configure the GitLab registry connection in CybeDefend settings
+  <Step title="Create Token">
+    Create a new token with a name (e.g., `CybeDefend Scanner`)
   </Step>
   
-  <Step title="Verify Access">
-    Test the connection and verify image access permissions
+  <Step title="Select Role">
+    Select the role: **Reporter** (minimum) or **Developer**
   </Step>
   
-  <Step title="Select Images">
-    Browse and select container images to scan from your GitLab projects
+  <Step title="Select Scopes">
+    Select the required scopes:
+    - `read_api` (required to list images)
+    - `read_registry` (required to access the registry)
+  </Step>
+  
+  <Step title="Create and Copy">
+    Click **Create project access token** and copy it immediately (you won't see it again!)
+  </Step>
+  
+  <Step title="Configure CybeDefend">
+    Paste the credentials with your project information in CybeDefend
   </Step>
 </Steps>
 
-## Registry URL Format
+<Warning>
+The Project Access Token is only displayed once when created. Make sure to copy it immediately before closing the dialog.
+</Warning>
 
-GitLab Container Registry URLs follow this pattern:
-
-```
-# GitLab.com
-registry.gitlab.com/group/project
-
-# Self-hosted GitLab
-your-gitlab.com:5050/group/project
-
-# With specific image and tag
-registry.gitlab.com/group/project/image:tag
-```
-
-## Integration with GitLab CI/CD
-
-Integrate container scanning into your GitLab pipelines:
-
-```yaml
-# .gitlab-ci.yml example
-container-security-scan:
-  stage: security
-  script:
-    - echo "Triggering CybeDefend container scan"
-    - curl -X POST "$CYBEDEFEND_API/scan" 
-           -H "Authorization: Bearer $CYBEDEFEND_TOKEN"
-           -d "image=$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
-  only:
-    - tags
-```
-
-## Access Control
+## Security Best Practices
 
 <CardGroup cols={2}>
-  <Card title="Token Security" icon="key">
-    Use minimal scope tokens and rotate them regularly for security
+  <Card title="Use Project Tokens" icon="folder-tree">
+    Prefer project access tokens over personal tokens for better security isolation.
   </Card>
-  
-  <Card title="Project Permissions" icon="users">
-    Ensure scanning tokens have only necessary read permissions
+  <Card title="Minimal Scopes" icon="shield-halved">
+    Only grant `read_api` and `read_registry` scopes for scanning.
   </Card>
-  
-  <Card title="Network Access" icon="network-wired">
-    Configure network policies for secure registry communication
+  <Card title="Set Expiration" icon="calendar-xmark">
+    Always set an expiration date for your tokens to limit exposure.
   </Card>
-  
-  <Card title="Audit Logging" icon="file-text">
-    Monitor access logs for registry scanning activities
+  <Card title="Reporter Role" icon="user-check">
+    Use Reporter role instead of Developer when only read access is needed.
   </Card>
 </CardGroup>
 
-## Supported GitLab Versions
+## Troubleshooting
 
-- **GitLab.com**: Full support for GitLab's SaaS offering
-- **GitLab Self-Hosted**: Compatible with GitLab 13.0+
-- **GitLab Enterprise**: Full feature support with enterprise registries
-
-## Common Issues & Solutions
-
-**Authentication Errors**:
-- Verify token has `read_registry` scope
-- Check token expiration date
-- Ensure registry URL is correct
-
-**Permission Denied**:
-- Confirm project visibility settings
-- Verify user has access to the project
-- Check registry is enabled for the project
-
-**Network Connectivity**:
-- Ensure CybeDefend can reach your GitLab instance
-- Configure firewall rules if using self-hosted GitLab
-- Check SSL certificate validity
-
-<Warning>
-Store your GitLab access tokens securely and avoid committing them to version control. Use environment variables or secure secret management.
-</Warning>
-
----
-
-**Related:** [Connect GitLab](/v103/get-started/connect-your-source-code/connect-gitlab) · [Container Image Scanning](/v103/container-scanning/container-image-scanning) · [Amazon ECR](/v103/container-scanning/registry-integrations/amazon-ecr)
+<AccordionGroup>
+  <Accordion title="Authentication Failed" icon="circle-exclamation">
+    - Verify token has both `read_api` and `read_registry` scopes
+    - Check if the token has expired
+    - Ensure the registry URL is correct
+  </Accordion>
+  <Accordion title="Permission Denied" icon="ban">
+    - Verify the project ID is correct
+    - Check project visibility settings
+    - Ensure registry is enabled for the project
+  </Accordion>
+</AccordionGroup>

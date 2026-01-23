@@ -1,182 +1,82 @@
 ---
-title: "Google Container Registry (GCR)"
-description: "Scan container images stored in Google Container Registry with secure authentication and access controls."
+title: "Google Container Registry"
+description: "Scan container images stored in Google Container Registry."
 ---
 
-**Google Container Registry (GCR)** is Google Cloud's managed Docker registry service. CybeDefend integrates with GCR to scan your private container images for vulnerabilities using secure service account authentication.
+**Google Container Registry (GCR)** is Google Cloud's managed Docker registry service. CybeDefend integrates with GCR to scan your container images using service account authentication.
 
-<Frame>
-  <img src="/images/container-scanning/integrations/gcr.png" alt="Google Container Registry Integration" style={{ borderRadius: '0.5rem' }} />
-</Frame>
+## CybeDefend Configuration
 
-## Features
+| Field | Description | Example |
+|-------|-------------|---------|
+| **GCP Project ID** | Your Google Cloud project ID | `my-gcp-project-123` |
+| **Registry Hostname** | GCR hostname for your region | `gcr.io (Global/US)` |
+| **Service Account Key (JSON)** | Full JSON content of service account key | `{"type": "service_account", ...}` |
 
-- **Service Account Authentication**: Secure access using Google Cloud service accounts
-- **Multi-Region Support**: Access images from all GCR regions (gcr.io, us.gcr.io, eu.gcr.io, asia.gcr.io)
-- **IAM Integration**: Leverage Google Cloud IAM for fine-grained access control
-- **Project Isolation**: Scan images from specific Google Cloud projects
-- **Artifact Registry Support**: Compatible with the newer Google Artifact Registry
+### Available Registry Hostnames
 
-## Setup Requirements
+| Hostname | Region |
+|----------|--------|
+| `gcr.io` | Global / United States |
+| `us.gcr.io` | United States |
+| `eu.gcr.io` | Europe |
+| `asia.gcr.io` | Asia |
 
-To connect your Google Container Registry:
-
-1. **Google Cloud Project**: Active GCP project with Container Registry enabled
-2. **Service Account**: Service account with `Storage Object Viewer` role
-3. **JSON Key File**: Service account credentials in JSON format
-4. **Registry Access**: Proper IAM permissions for registry access
-
-## Required IAM Permissions
-
-Your service account needs these permissions:
-
-```json
-{
-  "bindings": [
-    {
-      "role": "roles/storage.objectViewer",
-      "members": ["serviceAccount:your-scanner@project.iam.gserviceaccount.com"]
-    }
-  ]
-}
-```
-
-## Configuration Steps
+## How to Create a Service Account Key in GCP
 
 <Steps>
-  <Step title="Create Service Account">
-    Create a new service account in your Google Cloud Console
+  <Step title="Access GCP Console">
+    Go to GCP Console → **IAM & Admin** → **Service Accounts**
   </Step>
   
-  <Step title="Assign Permissions">
-    Grant the service account `Storage Object Viewer` role for the registry buckets
+  <Step title="Create or Select Account">
+    Create a new service account or select an existing one
   </Step>
   
-  <Step title="Generate Key">
-    Download the service account JSON key file
+  <Step title="Assign Role">
+    Grant the role **Storage Object Viewer** (read access) or **Storage Admin** (read/write)
   </Step>
   
-  <Step title="Configure CybeDefend">
-    Upload the JSON key and configure GCR connection in CybeDefend
+  <Step title="Create Key">
+    Create a new key in **JSON format** and download it
+  </Step>
+  
+  <Step title="Paste JSON Content">
+    Paste the complete JSON content in CybeDefend
   </Step>
 </Steps>
 
-## Registry URL Formats
-
-GCR supports multiple regional endpoints:
-
-```
-# Global registry
-gcr.io/project-id/image:tag
-
-# Regional registries
-us.gcr.io/project-id/image:tag    # United States
-eu.gcr.io/project-id/image:tag    # Europe
-asia.gcr.io/project-id/image:tag  # Asia
-```
-
-## Authentication Methods
-
-<Tabs>
-  <Tab title="Service Account Key">
-    ```json
-    {
-      "type": "service_account",
-      "project_id": "your-project-id",
-      "private_key_id": "key-id",
-      "private_key": "-----BEGIN PRIVATE KEY-----\n...",
-      "client_email": "scanner@your-project.iam.gserviceaccount.com",
-      "client_id": "client-id",
-      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-      "token_uri": "https://oauth2.googleapis.com/token"
-    }
-    ```
-  </Tab>
-  
-  <Tab title="Application Default Credentials">
-    For GCP-hosted environments, use Application Default Credentials:
-    ```bash
-    gcloud auth application-default login
-    ```
-  </Tab>
-</Tabs>
-
-## Google Artifact Registry
-
-For newer Google Artifact Registry repositories:
-
-```
-# Artifact Registry format
-region-docker.pkg.dev/project-id/repository/image:tag
-
-# Example
-us-central1-docker.pkg.dev/my-project/my-repo/app:latest
-```
-
-## Integration with Google Cloud Build
-
-Scan images built with Google Cloud Build:
-
-```yaml
-# cloudbuild.yaml
-steps:
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/my-app:$SHORT_SHA', '.']
-  
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/my-app:$SHORT_SHA']
-  
-  # Trigger CybeDefend scan
-  - name: 'gcr.io/cloud-builders/curl'
-    args: 
-      - '-X'
-      - 'POST'
-      - '$_CYBEDEFEND_WEBHOOK'
-      - '-d'
-      - 'image=gcr.io/$PROJECT_ID/my-app:$SHORT_SHA'
-```
+<Warning>
+The service account key JSON file contains sensitive credentials. Store it securely and never commit it to version control.
+</Warning>
 
 ## Security Best Practices
 
 <CardGroup cols={2}>
-  <Card title="Least Privilege" icon="shield">
-    Grant minimal required permissions to service accounts
+  <Card title="Least Privilege" icon="shield-halved">
+    Use `Storage Object Viewer` role for read-only access to images.
   </Card>
-  
-  <Card title="Key Rotation" icon="rotate">
-    Regularly rotate service account keys for security
+  <Card title="Rotate Keys" icon="rotate">
+    Rotate service account keys regularly to minimize security risks.
   </Card>
-  
-  <Card title="Audit Logging" icon="clipboard-list">
-    Enable Cloud Audit Logs for registry access monitoring
+  <Card title="Use Workload Identity" icon="google">
+    Prefer Workload Identity over service account keys when possible.
   </Card>
-  
-  <Card title="Network Security" icon="lock">
-    Use VPC Service Controls for additional network isolation
+  <Card title="Audit Access" icon="chart-line">
+    Enable Cloud Audit Logs for monitoring and compliance.
   </Card>
 </CardGroup>
 
 ## Troubleshooting
 
-**Authentication Failures**:
-- Verify service account key is valid and not expired
-- Check that the service account has proper IAM roles
-- Ensure the project ID matches your registry
-
-**Permission Errors**:
-- Confirm `Storage Object Viewer` role is assigned
-- Check if Container Registry API is enabled
-- Verify project-level permissions
-
-**Network Issues**:
-- Ensure firewall allows HTTPS traffic to gcr.io
-- Check VPC configurations for outbound connectivity
-- Verify DNS resolution for GCR endpoints
-
-<Warning>
-Store your service account JSON keys securely and never commit them to version control. Use secret management systems for production environments.
-</Warning>
-
----
-
-**Related:** [Container Image Scanning](/v103/container-scanning/container-image-scanning) · [Azure ACR](/v103/container-scanning/registry-integrations/azure-container-registry) · [Amazon ECR](/v103/container-scanning/registry-integrations/amazon-ecr)
+<AccordionGroup>
+  <Accordion title="Authentication Failed" icon="circle-exclamation">
+    - Verify the JSON key is valid and complete
+    - Check if the service account has been deleted or disabled
+    - Ensure the project ID matches your registry
+  </Accordion>
+  <Accordion title="Permission Denied" icon="ban">
+    - Verify the service account has `Storage Object Viewer` role
+    - Check if Container Registry API is enabled
+  </Accordion>
+</AccordionGroup>
