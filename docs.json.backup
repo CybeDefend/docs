@@ -5,6 +5,14 @@
   "openapi": [
     "v103/api-reference/openapi.json"
   ],
+  "api": {
+    "mdx": {
+      "auth": {
+        "method": "key",
+        "name": "X-API-Key"
+      }
+    }
+  },
   "colors": {
     "primary": "#af93ff",
     "light": "#fca5ff",
@@ -257,8 +265,7 @@
                     "group": "SAST (Code)",
                     "pages": [
                       "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-vulnerabilities-of-a-project-for-sast",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-sast",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-sast-vulnerabilities-grouped-by-rule-id"
+                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-sast"
                     ]
                   },
                   {
@@ -266,11 +273,7 @@
                     "pages": [
                       "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-sca-vulnerabilities-of-a-project",
                       "v103/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-sca",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-sca-packages-of-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-sca-vulnerabilities-grouped-by-cve-+-package-name",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/analyze-sca-vulnerabilities-for-autofix-candidates",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-sca-autofix-job-status",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-sca-autofix-job-results"
+                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-sca-packages-of-a-project"
                     ]
                   },
                   {
@@ -279,40 +282,34 @@
                       "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-container-vulnerabilities-of-a-project",
                       "v103/api-reference/endpoint/results-&-vulnerabilities/get-a-container-vulnerability-by-id",
                       "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-container-images-of-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-container-packages-of-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/delete-a-scanned-container-image-from-a-project"
+                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-container-packages-of-a-project"
                     ]
                   },
                   {
                     "group": "IaC (Infrastructure as Code)",
                     "pages": [
                       "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-iac-vulnerabilities-of-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-iac",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-iac-vulnerabilities-grouped-by-rule-id"
+                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-iac"
                     ]
                   },
                   {
                     "group": "CI/CD",
                     "pages": [
                       "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-cicd-vulnerabilities-of-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-cicd",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-cicd-vulnerabilities-grouped-by-rule-id"
+                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-cicd"
                     ]
                   },
                   {
                     "group": "Secrets",
                     "pages": [
                       "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-secret-vulnerabilities-of-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-secret",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-secret-vulnerabilities-grouped-by-rule-id"
+                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-secret"
                     ]
                   },
                   {
                     "group": "Manage",
                     "pages": [
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/update-a-vulnerability-of-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-vulnerability-by-id-with-similar-occurrences",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-branches-from-vulnerability-detections"
+                      "v103/api-reference/endpoint/results-&-vulnerabilities/update-a-vulnerability-of-a-project"
                     ]
                   }
                 ]
@@ -328,8 +325,7 @@
                       "v103/api-reference/endpoint/results-&-vulnerabilities/generate-a-security-report-for-a-project",
                       "v103/api-reference/endpoint/results-&-vulnerabilities/generate-cwe-top-25-2024-report-for-a-project",
                       "v103/api-reference/endpoint/results-&-vulnerabilities/generate-aggregated-security-report-for-an-organization",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/generate-aggregated-security-report-for-a-team",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/generate-report-for-a-manual-selection-of-projects"
+                      "v103/api-reference/endpoint/results-&-vulnerabilities/generate-aggregated-security-report-for-a-team"
                     ]
                   },
                   {
@@ -346,8 +342,7 @@
                   {
                     "group": "Autofix",
                     "pages": [
-                      "v103/api-reference/endpoint/ai-agent/start-autofix-workflow",
-                      "v103/api-reference/endpoint/ai-agent/start-batch-autofix-workflow"
+                      "v103/api-reference/endpoint/ai-agent/start-autofix-workflow"
                     ]
                   },
                   {
@@ -398,7 +393,6 @@
                     "pages": [
                       "v103/api-reference/endpoint/dockerhub-container-registry/store-dockerhub-container-registry-credentials",
                       "v103/api-reference/endpoint/dockerhub-container-registry/list-dockerhub-credentials",
-                      "v103/api-reference/endpoint/dockerhub-container-registry/get-dockerhub-credential-details",
                       "v103/api-reference/endpoint/dockerhub-container-registry/delete-dockerhub-credentials",
                       "v103/api-reference/endpoint/dockerhub-container-registry/list-dockerhub-images",
                       "v103/api-reference/endpoint/dockerhub-container-registry/list-dockerhub-image-tags",
@@ -422,7 +416,6 @@
                     "pages": [
                       "v103/api-reference/endpoint/gitlab-container-registry/store-gitlab-container-registry-credentials",
                       "v103/api-reference/endpoint/gitlab-container-registry/list-gitlab-container-registry-credentials",
-                      "v103/api-reference/endpoint/gitlab-container-registry/get-gitlab-container-registry-credential-details",
                       "v103/api-reference/endpoint/gitlab-container-registry/delete-gitlab-container-registry-credentials",
                       "v103/api-reference/endpoint/gitlab-container-registry/list-docker-images-from-gitlab-container-registry",
                       "v103/api-reference/endpoint/gitlab-container-registry/list-docker-image-tags-from-gitlab-container-registry",
@@ -434,7 +427,6 @@
                     "pages": [
                       "v103/api-reference/endpoint/gcr-container-registry/store-gcr-container-registry-credentials",
                       "v103/api-reference/endpoint/gcr-container-registry/list-stored-gcr-container-registry-credentials",
-                      "v103/api-reference/endpoint/gcr-container-registry/get-gcr-container-registry-credential-details",
                       "v103/api-reference/endpoint/gcr-container-registry/delete-gcr-container-registry-credentials",
                       "v103/api-reference/endpoint/gcr-container-registry/list-container-images-from-gcrartifact-registry",
                       "v103/api-reference/endpoint/gcr-container-registry/list-tags-for-a-container-image",
@@ -446,7 +438,6 @@
                     "pages": [
                       "v103/api-reference/endpoint/ecr-container-registry/store-ecr-container-registry-credentials",
                       "v103/api-reference/endpoint/ecr-container-registry/list-ecr-credentials",
-                      "v103/api-reference/endpoint/ecr-container-registry/get-ecr-credential-details",
                       "v103/api-reference/endpoint/ecr-container-registry/delete-ecr-credentials",
                       "v103/api-reference/endpoint/ecr-container-registry/list-ecr-images",
                       "v103/api-reference/endpoint/ecr-container-registry/list-ecr-image-tags",
@@ -458,7 +449,6 @@
                     "pages": [
                       "v103/api-reference/endpoint/acr-container-registry/store-acr-container-registry-credentials",
                       "v103/api-reference/endpoint/acr-container-registry/list-acr-credentials",
-                      "v103/api-reference/endpoint/acr-container-registry/get-acr-credential-details",
                       "v103/api-reference/endpoint/acr-container-registry/delete-acr-credentials",
                       "v103/api-reference/endpoint/acr-container-registry/list-acr-images",
                       "v103/api-reference/endpoint/acr-container-registry/list-acr-image-tags",
@@ -470,7 +460,6 @@
                     "pages": [
                       "v103/api-reference/endpoint/quay-container-registry/store-quay-container-registry-credentials",
                       "v103/api-reference/endpoint/quay-container-registry/list-quay-container-registry-credentials",
-                      "v103/api-reference/endpoint/quay-container-registry/get-quay-container-registry-credential-details",
                       "v103/api-reference/endpoint/quay-container-registry/delete-quay-container-registry-credentials",
                       "v103/api-reference/endpoint/quay-container-registry/list-container-images-from-quay-registry",
                       "v103/api-reference/endpoint/quay-container-registry/list-container-image-tags-from-quay-registry",
@@ -482,7 +471,6 @@
                     "pages": [
                       "v103/api-reference/endpoint/harbor-container-registry/store-harbor-container-registry-credentials",
                       "v103/api-reference/endpoint/harbor-container-registry/list-stored-harbor-credentials",
-                      "v103/api-reference/endpoint/harbor-container-registry/get-harbor-credential-details",
                       "v103/api-reference/endpoint/harbor-container-registry/delete-harbor-credentials",
                       "v103/api-reference/endpoint/harbor-container-registry/list-harbor-projects",
                       "v103/api-reference/endpoint/harbor-container-registry/list-docker-images-from-harbor",
@@ -495,7 +483,6 @@
                     "pages": [
                       "v103/api-reference/endpoint/jfrog-container-registry/store-jfrog-container-registry-credentials",
                       "v103/api-reference/endpoint/jfrog-container-registry/list-jfrog-container-registry-credentials",
-                      "v103/api-reference/endpoint/jfrog-container-registry/get-jfrog-credential-details",
                       "v103/api-reference/endpoint/jfrog-container-registry/delete-jfrog-container-registry-credentials",
                       "v103/api-reference/endpoint/jfrog-container-registry/list-jfrog-artifactory-docker-repositories",
                       "v103/api-reference/endpoint/jfrog-container-registry/list-docker-images-in-jfrog-artifactory-repository",
