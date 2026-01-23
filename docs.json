@@ -217,11 +217,11 @@
                 "group": "Project",
                 "pages": [
                   "v103/api-reference/endpoint/project/create-a-project",
-                  "v103/api-reference/endpoint/project/get-all-projects-of-an-organization-with-pagination",
-                  "v103/api-reference/endpoint/project/get-all-projects-of-a-team-with-pagination",
+                  "v103/api-reference/endpoint/project/delete-a-project",
                   "v103/api-reference/endpoint/project/get-a-project",
-                  "v103/api-reference/endpoint/project/update-a-project",
-                  "v103/api-reference/endpoint/project/delete-a-project"
+                  "v103/api-reference/endpoint/project/get-all-projects-of-a-team-with-pagination",
+                  "v103/api-reference/endpoint/project/get-all-projects-of-an-organization-with-pagination",
+                  "v103/api-reference/endpoint/project/update-a-project"
                 ]
               },
               {
@@ -254,8 +254,8 @@
               {
                 "group": "Scanning",
                 "pages": [
-                  "v103/api-reference/endpoint/scan/start-a-scan",
-                  "v103/api-reference/endpoint/scan/get-a-scan-by-id"
+                  "v103/api-reference/endpoint/scan/get-a-scan-by-id",
+                  "v103/api-reference/endpoint/scan/start-a-scan"
                 ]
               },
               {
@@ -374,6 +374,7 @@
               {
                 "group": "Source Code Integrations",
                 "pages": [
+                  "v103/api-reference/endpoint/integrations/get-integration-overview-for-organization",
                   {
                     "group": "GitHub",
                     "pages": [
@@ -393,8 +394,7 @@
                       "v103/api-reference/endpoint/gitlab-integration/unlink-gitlab-repository-from-project",
                       "v103/api-reference/endpoint/gitlab-integration/start-gitlab-repository-scan"
                     ]
-                  },
-                  "v103/api-reference/endpoint/integrations/get-integration-overview-for-organization"
+                  }
                 ]
               },
               {

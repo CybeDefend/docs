@@ -467,27 +467,39 @@ function cleanOpenAPI() {
 function regenerateMDX() {
     log.step('2/5', 'Régénération des fichiers MDX...');
     
+    const rootDir = path.join(__dirname, '..');
+    const relativeOpenapiPath = 'v103/api-reference/openapi.json';
+    const relativeEndpointDir = 'v103/api-reference/endpoint';
+    
     // Supprimer l'ancien dossier
     if (fs.existsSync(CONFIG.endpointDir)) {
         fs.rmSync(CONFIG.endpointDir, { recursive: true, force: true });
         log.detail('Ancien dossier endpoint supprimé');
     }
     
-    // Régénérer avec Mintlify
+    // Régénérer avec Mintlify (utiliser chemins relatifs)
     try {
         execSync(
-            `npx @mintlify/scraping@latest openapi-file ${CONFIG.openapiPath} -o ${CONFIG.endpointDir}`,
-            { cwd: path.join(__dirname, '..'), stdio: 'pipe' }
+            `npx @mintlify/scraping@latest openapi-file ${relativeOpenapiPath} -o ${relativeEndpointDir}`,
+            { cwd: rootDir, stdio: 'inherit', shell: true }
         );
-        log.success('Fichiers MDX générés avec succès');
     } catch (error) {
-        // Mintlify retourne un code d'erreur même en cas de succès
-        if (fs.existsSync(CONFIG.endpointDir)) {
-            log.success('Fichiers MDX générés avec succès');
-        } else {
-            throw new Error(`Erreur Mintlify: ${error.message}`);
+        // Mintlify peut retourner un code d'erreur même en cas de succès
+        log.detail('Mintlify terminé');
+    }
+    
+    // Vérifier que le dossier a été créé
+    if (fs.existsSync(CONFIG.endpointDir)) {
+        const folders = fs.readdirSync(CONFIG.endpointDir).filter(f => 
+            fs.statSync(path.join(CONFIG.endpointDir, f)).isDirectory()
+        );
+        if (folders.length > 0) {
+            log.success(`Fichiers MDX générés avec succès (${folders.length} dossiers)`);
+            return true;
         }
     }
+    
+    throw new Error('Impossible de générer les fichiers MDX. Lancez manuellement: npx @mintlify/scraping@latest openapi-file v103/api-reference/openapi.json -o v103/api-reference/endpoint');
 }
 
 // ============================================
@@ -499,23 +511,27 @@ function scanGeneratedEndpoints() {
     
     const endpoints = {};
     
-    function scanDir(dir, folderName = '') {
-        if (!fs.existsSync(dir)) return;
+    if (!fs.existsSync(CONFIG.endpointDir)) {
+        log.error('Dossier endpoint non trouvé!');
+        return endpoints;
+    }
+    
+    // Scanner les sous-dossiers du dossier endpoint
+    const folders = fs.readdirSync(CONFIG.endpointDir);
+    
+    for (const folder of folders) {
+        const folderPath = path.join(CONFIG.endpointDir, folder);
+        const stat = fs.statSync(folderPath);
         
-        const items = fs.readdirSync(dir);
-        for (const item of items) {
-            const fullPath = path.join(dir, item);
-            if (fs.statSync(fullPath).isDirectory()) {
-                scanDir(fullPath, item);
-            } else if (item.endsWith('.mdx')) {
-                const name = item.replace('.mdx', '');
-                if (!endpoints[folderName]) endpoints[folderName] = [];
-                endpoints[folderName].push(name);
+        if (stat.isDirectory()) {
+            const files = fs.readdirSync(folderPath);
+            const mdxFiles = files.filter(f => f.endsWith('.mdx')).map(f => f.replace('.mdx', ''));
+            
+            if (mdxFiles.length > 0) {
+                endpoints[folder] = mdxFiles;
             }
         }
     }
-    
-    scanDir(CONFIG.endpointDir);
     
     let total = 0;
     for (const [folder, files] of Object.entries(endpoints)) {
