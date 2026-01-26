@@ -32,20 +32,20 @@ const CONFIG = {
     openapiPath: path.join(__dirname, '..', 'v103', 'api-reference', 'openapi.json'),
     endpointDir: path.join(__dirname, '..', 'v103', 'api-reference', 'endpoint'),
     docsJsonPath: path.join(__dirname, '..', 'docs.json'),
-    
+
     // Structure de la documentation API (mapping des dossiers vers la structure)
     apiStructure: {
         // Groupe "Getting Started"
         "Getting Started": {
             pages: ["/v103/api-reference/introduction"]
         },
-        
+
         // Groupe "Organization" avec sous-groupes
         "Organization": {
             folder: "organization",
             mainPages: [
                 "create-organization",
-                "get-organizations-of-user", 
+                "get-organizations-of-user",
                 "get-organization-by-id",
                 "update-organization",
                 "delete-organization"
@@ -64,13 +64,13 @@ const CONFIG = {
                 ]
             }
         },
-        
+
         // Groupe "Project"
         "Project": {
             folder: "project",
             allPages: true
         },
-        
+
         // Groupe "Team" avec sous-groupe
         "Team": {
             folder: "team",
@@ -91,20 +91,20 @@ const CONFIG = {
                 ]
             }
         },
-        
+
         // Groupe "User"
         "User": {
             folder: "user",
             allPages: true
         },
-        
+
         // Groupe "Scanning"
         "Scanning": {
             folder: "scan",
             allPages: true,
             exclude: ["patch-project-scan"] // Endpoints internes à exclure
         },
-        
+
         // Groupe "Vulnerabilities" avec sous-groupes par type
         "Vulnerabilities": {
             subgroups: {
@@ -172,7 +172,7 @@ const CONFIG = {
                 }
             }
         },
-        
+
         // Groupe "Reports & Statistics"
         "Reports & Statistics": {
             folder: "results-&-vulnerabilities",
@@ -193,7 +193,7 @@ const CONFIG = {
                 ]
             }
         },
-        
+
         // Groupe "AI Agent"
         "AI Agent": {
             subgroups: {
@@ -217,7 +217,7 @@ const CONFIG = {
                 }
             }
         },
-        
+
         // Groupe "Source Code Integrations"
         "Source Code Integrations": {
             mainPages: ["v103/api-reference/endpoint/integrations/get-integration-overview-for-organization"],
@@ -244,7 +244,7 @@ const CONFIG = {
                 }
             }
         },
-        
+
         // Groupe "Container Registries"
         "Container Registries": {
             mainPages: ["v103/api-reference/endpoint/container-registry-credentials/get-all-container-registry-credentials-for-a-project"],
@@ -362,7 +362,7 @@ const CONFIG = {
             }
         }
     },
-    
+
     // Endpoints à TOUJOURS exclure (internes, sensibles)
     globalExclusions: [
         /billing/i,
@@ -410,12 +410,12 @@ const log = {
 
 function cleanOpenAPI() {
     log.step('1/5', 'Nettoyage du fichier OpenAPI...');
-    
+
     const content = fs.readFileSync(CONFIG.openapiPath, 'utf8');
     const openapi = JSON.parse(content);
-    
+
     let stats = { duplicatesRemoved: 0, nestedArraysFixed: 0, endpointsCount: 0 };
-    
+
     // Supprimer les paramètres dupliqués
     for (const [pathKey, methods] of Object.entries(openapi.paths)) {
         stats.endpointsCount++;
@@ -434,7 +434,7 @@ function cleanOpenAPI() {
             }
         }
     }
-    
+
     // Corriger les arrays imbriqués
     function fixNestedArrays(obj, depth = 0) {
         if (typeof obj !== 'object' || obj === null || depth > 50) return;
@@ -450,13 +450,13 @@ function cleanOpenAPI() {
         }
     }
     fixNestedArrays(openapi);
-    
+
     fs.writeFileSync(CONFIG.openapiPath, JSON.stringify(openapi, null, 2));
-    
+
     log.success(`${stats.endpointsCount} endpoints dans OpenAPI`);
     log.success(`${stats.duplicatesRemoved} paramètres dupliqués supprimés`);
     log.success(`${stats.nestedArraysFixed} arrays imbriqués corrigés`);
-    
+
     return openapi;
 }
 
@@ -466,17 +466,17 @@ function cleanOpenAPI() {
 
 function regenerateMDX() {
     log.step('2/5', 'Régénération des fichiers MDX...');
-    
+
     const rootDir = path.join(__dirname, '..');
     const relativeOpenapiPath = 'v103/api-reference/openapi.json';
     const relativeEndpointDir = 'v103/api-reference/endpoint';
-    
+
     // Supprimer l'ancien dossier
     if (fs.existsSync(CONFIG.endpointDir)) {
         fs.rmSync(CONFIG.endpointDir, { recursive: true, force: true });
         log.detail('Ancien dossier endpoint supprimé');
     }
-    
+
     // Régénérer avec Mintlify (utiliser chemins relatifs)
     try {
         execSync(
@@ -487,10 +487,10 @@ function regenerateMDX() {
         // Mintlify peut retourner un code d'erreur même en cas de succès
         log.detail('Mintlify terminé');
     }
-    
+
     // Vérifier que le dossier a été créé
     if (fs.existsSync(CONFIG.endpointDir)) {
-        const folders = fs.readdirSync(CONFIG.endpointDir).filter(f => 
+        const folders = fs.readdirSync(CONFIG.endpointDir).filter(f =>
             fs.statSync(path.join(CONFIG.endpointDir, f)).isDirectory()
         );
         if (folders.length > 0) {
@@ -498,7 +498,7 @@ function regenerateMDX() {
             return true;
         }
     }
-    
+
     throw new Error('Impossible de générer les fichiers MDX. Lancez manuellement: npx @mintlify/scraping@latest openapi-file v103/api-reference/openapi.json -o v103/api-reference/endpoint');
 }
 
@@ -508,38 +508,38 @@ function regenerateMDX() {
 
 function scanGeneratedEndpoints() {
     log.step('3/5', 'Scan des endpoints générés...');
-    
+
     const endpoints = {};
-    
+
     if (!fs.existsSync(CONFIG.endpointDir)) {
         log.error('Dossier endpoint non trouvé!');
         return endpoints;
     }
-    
+
     // Scanner les sous-dossiers du dossier endpoint
     const folders = fs.readdirSync(CONFIG.endpointDir);
-    
+
     for (const folder of folders) {
         const folderPath = path.join(CONFIG.endpointDir, folder);
         const stat = fs.statSync(folderPath);
-        
+
         if (stat.isDirectory()) {
             const files = fs.readdirSync(folderPath);
             const mdxFiles = files.filter(f => f.endsWith('.mdx')).map(f => f.replace('.mdx', ''));
-            
+
             if (mdxFiles.length > 0) {
                 endpoints[folder] = mdxFiles;
             }
         }
     }
-    
+
     let total = 0;
     for (const [folder, files] of Object.entries(endpoints)) {
         total += files.length;
         log.detail(`${folder}: ${files.length} endpoints`);
     }
     log.success(`${total} fichiers MDX trouvés dans ${Object.keys(endpoints).length} dossiers`);
-    
+
     return endpoints;
 }
 
@@ -549,28 +549,28 @@ function scanGeneratedEndpoints() {
 
 function buildNavigation(generatedEndpoints) {
     log.step('4/5', 'Construction de la navigation...');
-    
+
     const apiGroups = [];
     let newEndpoints = [];
     let missingEndpoints = [];
-    
+
     // Fonction utilitaire pour construire le chemin
     const buildPath = (folder, filename) => `v103/api-reference/endpoint/${folder}/${filename}`;
-    
+
     // Fonction pour vérifier si un endpoint existe
     const endpointExists = (folder, filename) => {
         return generatedEndpoints[folder]?.includes(filename);
     };
-    
+
     // Parcourir la structure de configuration
     for (const [groupName, groupConfig] of Object.entries(CONFIG.apiStructure)) {
         const group = { group: groupName, pages: [] };
-        
+
         // Pages statiques (comme introduction)
         if (groupConfig.pages) {
             group.pages.push(...groupConfig.pages);
         }
-        
+
         // Pages principales du groupe
         if (groupConfig.mainPages) {
             for (const page of groupConfig.mainPages) {
@@ -588,28 +588,28 @@ function buildNavigation(generatedEndpoints) {
                 }
             }
         }
-        
+
         // Toutes les pages d'un dossier
         if (groupConfig.allPages && groupConfig.folder) {
             const folderEndpoints = generatedEndpoints[groupConfig.folder] || [];
             const exclude = groupConfig.exclude || [];
-            
+
             for (const filename of folderEndpoints) {
                 // Vérifier les exclusions globales et locales
                 const isExcluded = CONFIG.globalExclusions.some(pattern => pattern.test(filename)) ||
-                                   exclude.includes(filename);
-                
+                    exclude.includes(filename);
+
                 if (!isExcluded) {
                     group.pages.push(buildPath(groupConfig.folder, filename));
                 }
             }
         }
-        
+
         // Sous-groupes
         if (groupConfig.subgroups) {
             for (const [subgroupName, subgroupConfig] of Object.entries(groupConfig.subgroups)) {
                 const subgroup = { group: subgroupName, pages: [] };
-                
+
                 // Si subgroupConfig est un array, ce sont directement les noms de fichiers
                 if (Array.isArray(subgroupConfig)) {
                     for (const filename of subgroupConfig) {
@@ -632,18 +632,18 @@ function buildNavigation(generatedEndpoints) {
                         }
                     }
                 }
-                
+
                 if (subgroup.pages.length > 0) {
                     group.pages.push(subgroup);
                 }
             }
         }
-        
+
         if (group.pages.length > 0) {
             apiGroups.push(group);
         }
     }
-    
+
     // Détecter les nouveaux endpoints non catégorisés
     const categorizedEndpoints = new Set();
     function collectCategorized(pages) {
@@ -658,21 +658,21 @@ function buildNavigation(generatedEndpoints) {
     for (const group of apiGroups) {
         collectCategorized(group.pages);
     }
-    
+
     // Trouver les endpoints non catégorisés
     for (const [folder, files] of Object.entries(generatedEndpoints)) {
         for (const filename of files) {
             const fullPath = buildPath(folder, filename);
             const isExcluded = CONFIG.globalExclusions.some(pattern => pattern.test(filename));
-            
+
             if (!isExcluded && !categorizedEndpoints.has(fullPath)) {
                 newEndpoints.push({ folder, filename, path: fullPath });
             }
         }
     }
-    
+
     log.success(`${apiGroups.length} groupes créés`);
-    
+
     if (newEndpoints.length > 0) {
         log.warning(`${newEndpoints.length} nouveaux endpoints non catégorisés:`);
         for (const ep of newEndpoints.slice(0, 10)) {
@@ -682,11 +682,11 @@ function buildNavigation(generatedEndpoints) {
             log.detail(`... et ${newEndpoints.length - 10} autres`);
         }
     }
-    
+
     if (missingEndpoints.length > 0) {
         log.warning(`${missingEndpoints.length} endpoints attendus mais non trouvés`);
     }
-    
+
     return { apiGroups, newEndpoints, missingEndpoints };
 }
 
@@ -696,23 +696,23 @@ function buildNavigation(generatedEndpoints) {
 
 function updateDocsJson(apiGroups) {
     log.step('5/5', 'Mise à jour de docs.json...');
-    
+
     const docsContent = fs.readFileSync(CONFIG.docsJsonPath, 'utf8');
     const docs = JSON.parse(docsContent);
-    
+
     // Trouver l'onglet API Reference
     const version = docs.navigation.versions.find(v => v.version === 'latest');
     if (!version) throw new Error('Version "latest" non trouvée dans docs.json');
-    
+
     const apiTab = version.tabs.find(t => t.tab === 'API Reference');
     if (!apiTab) throw new Error('Onglet "API Reference" non trouvé dans docs.json');
-    
+
     // Mettre à jour les groupes
     apiTab.groups = apiGroups;
-    
+
     // Sauvegarder
     fs.writeFileSync(CONFIG.docsJsonPath, JSON.stringify(docs, null, 2));
-    
+
     log.success('docs.json mis à jour avec succès');
 }
 
@@ -723,22 +723,22 @@ function updateDocsJson(apiGroups) {
 function validateResult() {
     console.log('\n' + '═'.repeat(50));
     log.step('VALIDATION', 'Vérification finale...');
-    
+
     let errors = 0;
-    
+
     // 1. Valider docs.json
     try {
         const docs = JSON.parse(fs.readFileSync(CONFIG.docsJsonPath, 'utf8'));
         log.success('docs.json est un JSON valide');
-        
+
         // Vérifier que tous les fichiers existent
         const version = docs.navigation.versions.find(v => v.version === 'latest');
         const apiTab = version?.tabs.find(t => t.tab === 'API Reference');
-        
+
         if (apiTab) {
             let totalPages = 0;
             let missingPages = 0;
-            
+
             function checkPages(pages) {
                 for (const page of pages) {
                     if (typeof page === 'string') {
@@ -755,11 +755,11 @@ function validateResult() {
                     }
                 }
             }
-            
+
             for (const group of apiTab.groups) {
                 checkPages(group.pages);
             }
-            
+
             if (missingPages === 0) {
                 log.success(`Tous les ${totalPages} fichiers référencés existent`);
             }
@@ -768,13 +768,13 @@ function validateResult() {
         log.error(`docs.json invalide: ${e.message}`);
         errors++;
     }
-    
+
     // 2. Valider openapi.json
     try {
         const openapi = JSON.parse(fs.readFileSync(CONFIG.openapiPath, 'utf8'));
         const endpointCount = Object.keys(openapi.paths).length;
         log.success(`openapi.json valide (${endpointCount} endpoints)`);
-        
+
         // Vérifier securitySchemes
         if (openapi.components?.securitySchemes?.['x-api-key']) {
             log.success('securitySchemes x-api-key présent');
@@ -785,9 +785,9 @@ function validateResult() {
         log.error(`openapi.json invalide: ${e.message}`);
         errors++;
     }
-    
+
     console.log('\n' + '═'.repeat(50));
-    
+
     if (errors === 0) {
         console.log(`\n${colors.green}✅ SUCCÈS: Documentation API synchronisée!${colors.reset}\n`);
         console.log('Vous pouvez maintenant lancer: mintlify dev\n');
@@ -806,41 +806,41 @@ async function main() {
     console.log('\n' + '═'.repeat(50));
     console.log(`${colors.cyan}🚀 CybeDefend API Documentation Sync${colors.reset}`);
     console.log('═'.repeat(50));
-    
+
     const args = process.argv.slice(2);
     const dryRun = args.includes('--dry-run');
-    
+
     if (dryRun) {
         log.warning('Mode dry-run: aucune modification ne sera effectuée');
     }
-    
+
     try {
         // Étape 1: Nettoyer OpenAPI
         cleanOpenAPI();
-        
+
         // Étape 2: Régénérer les MDX
         if (!dryRun) {
             regenerateMDX();
         } else {
             log.info('Régénération MDX ignorée (dry-run)');
         }
-        
+
         // Étape 3: Scanner les endpoints
         const generatedEndpoints = scanGeneratedEndpoints();
-        
+
         // Étape 4: Construire la navigation
         const { apiGroups, newEndpoints, missingEndpoints } = buildNavigation(generatedEndpoints);
-        
+
         // Étape 5: Mettre à jour docs.json
         if (!dryRun) {
             updateDocsJson(apiGroups);
         } else {
             log.info('Mise à jour docs.json ignorée (dry-run)');
         }
-        
+
         // Validation
         const success = validateResult();
-        
+
         // Rapport des nouveaux endpoints
         if (newEndpoints.length > 0) {
             console.log(`\n${colors.yellow}📋 Nouveaux endpoints à catégoriser:${colors.reset}`);
@@ -849,9 +849,9 @@ async function main() {
             }
             console.log(`\nAjoutez-les dans CONFIG.apiStructure du script pour les intégrer.\n`);
         }
-        
+
         process.exit(success ? 0 : 1);
-        
+
     } catch (error) {
         log.error(`Erreur fatale: ${error.message}`);
         console.error(error.stack);

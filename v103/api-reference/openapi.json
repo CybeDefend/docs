@@ -17735,7 +17735,7 @@
   "tags": [],
   "servers": [
     {
-      "url": "https://us.cybedefend.com"
+      "url": "https://api-eu.cybedefend.com"
     }
   ],
   "components": {
