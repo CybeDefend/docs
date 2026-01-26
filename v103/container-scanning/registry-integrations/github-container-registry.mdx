@@ -3,17 +3,32 @@ title: "GitHub Container Registry"
 description: "Scan container images stored in GitHub Container Registry (GHCR)."
 ---
 
-**GitHub Container Registry (GHCR)** is GitHub's container registry for Docker images. CybeDefend integrates with GHCR to scan both public and private container images.
+**GitHub Container Registry (GHCR)** is GitHub's container registry for Docker images. CybeDefend integrates with GHCR to scan public and internal container images.
+
+<Note>
+**Supported Image Visibility:**
+- ✅ **Public** images - Accessible to everyone
+- ✅ **Internal** images - Accessible within your organization
+- ❌ **Private** images - Not supported by CybeDefend
+</Note>
 
 ## CybeDefend Configuration
+
+<Warning>
+**Personal Access Token Required:** A Personal Access Token with `read:packages` scope is required to scan internal container images. Public images can be scanned without authentication.
+</Warning>
 
 | Field | Description | Example |
 |-------|-------------|---------|
 | **GitHub Username** | Your GitHub username or organization | `myorg` |
-| **Personal Access Token** | GitHub PAT with `read:packages` scope | `ghp_xxxxxxxxxxxx` |
+| **Personal Access Token** | GitHub PAT with `read:packages` scope (required for internal images) | `ghp_xxxxxxxxxxxx` |
 | **Description** | Optional description for the registry | `Production GitHub Registry` |
 
 ## How to Create a Personal Access Token (PAT) in GitHub
+
+<Info>
+A Personal Access Token with the `read:packages` scope is **required** to scan internal container images. Public images can be accessed without authentication.
+</Info>
 
 <Steps>
   <Step title="Access GitHub Settings">
@@ -25,9 +40,9 @@ description: "Scan container images stored in GitHub Container Registry (GHCR)."
   </Step>
   
   <Step title="Select Scopes">
-    Select the required scopes:
-    - `read:packages` (read access)
-    - or `write:packages` (read/write access)
+    Select the required scopes for internal container images:
+    - ✅ `read:packages` (required for internal images)
+    - Optional: `write:packages` (if you need write access)
   </Step>
   
   <Step title="Copy Token">
@@ -67,6 +82,11 @@ The Personal Access Token is only displayed once when created. Make sure to copy
   <Accordion title="Permission Denied" icon="ban">
     - Verify you have access to the repository
     - Check package visibility settings
-    - Ensure organization membership for private packages
+    - Ensure organization membership for internal packages
+  </Accordion>
+  <Accordion title="Private Images Not Accessible" icon="eye-slash">
+    - Private container images are not supported by CybeDefend
+    - Change image visibility to **Internal** or **Public** to enable scanning
+    - Contact your GitHub admin to modify package visibility settings
   </Accordion>
 </AccordionGroup>
