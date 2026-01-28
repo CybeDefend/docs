@@ -17629,9 +17629,9 @@
         ]
       }
     },
-    "/integrations/container-registry/organization/{organizationId}/project/{projectId}/credentials": {
+    "/integrations/container-registry/organization/{organizationId}/credentials": {
       "get": {
-        "description": "Returns all container registry credentials for a project, grouped by provider.\n    \n**Supported providers:**\n- **GitHub Container Registry (ghcr.io)** - Uses GitHub App installation (no stored credentials, returns availability status)\n- **GitLab Container Registry** - Personal/group deploy tokens\n- **DockerHub** - Personal access tokens\n- **Azure Container Registry (ACR)** - Service principal credentials\n- **Google Container Registry (GCR)** - Service account JSON keys\n- **Amazon ECR** - IAM access keys\n- **Quay.io** - Robot account credentials\n- **Harbor** - Robot account credentials\n- **JFrog Artifactory** - API keys or access tokens\n\nThis endpoint consolidates all registry credentials into a single response for easier frontend integration.",
+        "description": "Returns all container registry credentials for an organization, grouped by provider.\n    \n**Supported providers:**\n- **GitHub Container Registry (ghcr.io)** - Uses GitHub App installation (no stored credentials, returns availability status)\n- **GitLab Container Registry** - Personal/group deploy tokens\n- **DockerHub** - Personal access tokens\n- **Azure Container Registry (ACR)** - Service principal credentials\n- **Google Container Registry (GCR)** - Service account JSON keys\n- **Amazon ECR** - IAM access keys\n- **Quay.io** - Robot account credentials\n- **Harbor** - Robot account credentials\n- **JFrog Artifactory** - API keys or access tokens\n\nThis endpoint consolidates all registry credentials into a single response for easier frontend integration.",
         "operationId": "ContainerRegistryCredentialsController_getAllCredentials",
         "parameters": [
           {
@@ -17639,17 +17639,6 @@
             "required": true,
             "in": "path",
             "description": "CybeDefend organization ID",
-            "schema": {
-              "format": "uuid",
-              "example": "550e8400-e29b-41d4-a716-446655440000",
-              "type": "string"
-            }
-          },
-          {
-            "name": "projectId",
-            "required": true,
-            "in": "path",
-            "description": "CybeDefend project ID",
             "schema": {
               "format": "uuid",
               "example": "550e8400-e29b-41d4-a716-446655440000",
@@ -17719,7 +17708,7 @@
             "x-api-key": []
           }
         ],
-        "summary": "Get all container registry credentials for a project",
+        "summary": "Get all container registry credentials for an organization",
         "tags": [
           "Container Registry Credentials"
         ]
@@ -17728,7 +17717,7 @@
   },
   "info": {
     "title": "Cybedefend API",
-    "description": "CybeDefend is an advanced API for application security analysis. Based on a microservices architecture using TypeScript and the NestJS framework, it communicates via Kafka to ensure cooperation between services. Key features include OAuth 2.0 authentication, user/organization/project management, and REBAC-based permissions. It excels in static, dynamic, and IaC security analyses (SAST, DAST, IaC, etc.) by integrating various open source tools.",
+    "description": "CybeDefend is an advanced API for application security analysis. Key features include OAuth 2.0 authentication, user/organization/project management, and REBAC-based permissions. It excels in static, dynamic, and IaC security analyses (SAST, DAST, IaC, etc.).",
     "version": "1.0",
     "contact": {}
   },
@@ -17744,7 +17733,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "x-api-key",
-        "description": "API Key for authentication. You can generate an API key from your organization settings."
+        "description": "API Key for authentication. You can generate an API key from your personal settings."
       }
     },
     "schemas": {
@@ -17958,8 +17947,7 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/OrganizationInviteResponseDto"
-            },
-            "description": "List of invitations"
+            }
           }
         },
         "required": [
@@ -18498,8 +18486,7 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/AnalysisTypeResponseDto"
-            },
-            "description": "List of analyses"
+            }
           },
           "ingestionProjectId": {
             "type": "string",
@@ -18592,8 +18579,7 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ProjectAllInformationsResponseDto"
-            },
-            "description": "List of projects with all informations"
+            }
           },
           "totalProjects": {
             "type": "number",
@@ -18832,8 +18818,7 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ProjectInformationsResponseDto"
-            },
-            "description": "List of projects"
+            }
           },
           "totalProjects": {
             "type": "number",
@@ -19792,8 +19777,7 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ContainerDto"
-            },
-            "description": "Array of containers used or involved in this scan"
+            }
           },
           "progress": {
             "type": "number",
@@ -21477,8 +21461,7 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CodeStructure"
-            },
-            "description": "Lines of code in the snippet"
+            }
           },
           "language": {
             "type": "string",
@@ -21514,8 +21497,7 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CodeStructure"
-            },
-            "description": "Lines of code surrounding the dataflow item"
+            }
           },
           "language": {
             "type": "string",
@@ -21605,8 +21587,7 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/DataFlowItem"
-            },
-            "description": "Data flow steps leading to the vulnerability"
+            }
           }
         },
         "required": [
@@ -21664,8 +21645,7 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/VulnerabilityDtoRequest"
-            },
-            "description": "List of discovered vulnerabilities"
+            }
           }
         },
         "required": [
@@ -21733,8 +21713,7 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/LibraryDto"
-            },
-            "description": "List of discovered packages or libraries"
+            }
           }
         },
         "required": [
@@ -22159,8 +22138,7 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ScaDetectedPackageDto"
-            },
-            "description": "List of packages detected"
+            }
           }
         },
         "required": [
@@ -22525,29 +22503,25 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TotalBySeverityDto"
-            },
-            "description": "Aggregation of vulnerabilities grouped by severity"
+            }
           },
           "totalByState": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TotalByStateDto"
-            },
-            "description": "Aggregation of vulnerabilities grouped by state"
+            }
           },
           "totalByAnalysisType": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TotalByAnalysisTypeDto"
-            },
-            "description": "Aggregation of vulnerabilities grouped by analysis type"
+            }
           },
           "vulnerabilitiesOverTime": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/VulnerabilitiesOverTimeDto"
-            },
-            "description": "Number of vulnerabilities over time grouped by severity"
+            }
           }
         },
         "required": [
@@ -22737,50 +22711,43 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TotalBySeverityDto"
-            },
-            "description": "Aggregation of vulnerabilities grouped by severity"
+            }
           },
           "totalByState": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TotalByStateDto"
-            },
-            "description": "Aggregation of vulnerabilities grouped by state"
+            }
           },
           "totalByAnalysisType": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TotalByAnalysisTypeDto"
-            },
-            "description": "Aggregation of vulnerabilities grouped by analysis type"
+            }
           },
           "vulnerabilitiesOverTime": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/VulnerabilitiesOverTimeDto"
-            },
-            "description": "Vulnerabilities over time grouped by severity"
+            }
           },
           "projectsSummary": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ProjectOverviewSummaryDto"
-            },
-            "description": "Summary statistics for each project"
+            }
           },
           "teamsSummary": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TeamOverviewSummaryDto"
-            },
-            "description": "Summary statistics for each team"
+            }
           },
           "topVulnerableProjects": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TopVulnerableProjectDto"
-            },
-            "description": "Top 10 most vulnerable projects"
+            }
           },
           "highRiskProjects": {
             "type": "number",
@@ -24163,8 +24130,7 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TeamDto"
-            },
-            "description": "List of teams within the organization"
+            }
           },
           "myRole": {
             "type": "string",
@@ -24238,8 +24204,7 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/OrganizationDto"
-            },
-            "description": "List of organizations the user is part of"
+            }
           }
         },
         "required": [
@@ -24758,6 +24723,11 @@
             "description": "Credential UUID",
             "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
           },
+          "projectId": {
+            "type": "string",
+            "description": "CybeDefend project ID this credential belongs to",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
           "name": {
             "type": "string",
             "description": "Display name (e.g., username, registry name)",
@@ -24845,6 +24815,7 @@
         },
         "required": [
           "id",
+          "projectId",
           "name",
           "registryUrl",
           "createdAt"

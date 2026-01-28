@@ -247,7 +247,7 @@ const CONFIG = {
 
         // Groupe "Container Registries"
         "Container Registries": {
-            mainPages: ["v103/api-reference/endpoint/container-registry-credentials/get-all-container-registry-credentials-for-a-project"],
+            mainPages: ["v103/api-reference/endpoint/container-registry-credentials/get-all-container-registry-credentials-for-an-organization"],
             subgroups: {
                 "Docker Hub": {
                     folder: "dockerhub-container-registry",
