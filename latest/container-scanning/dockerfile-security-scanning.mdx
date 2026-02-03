@@ -1,0 +1,84 @@
+---
+title: "Dockerfile Security Scanning"
+description: "Detect vulnerabilities and security issues in Dockerfile configurations and container image builds during code scanning."
+---
+
+CybeDefend's **Dockerfile Security Scanning** analyzes your Dockerfile configurations for security vulnerabilities, misconfigurations, and best practice violations. This scanning is automatically integrated into your regular code scanning process, ensuring container security is part of your development workflow.
+
+## How It Works
+
+When CybeDefend scans your codebase, it automatically detects Dockerfile files and performs comprehensive security analysis alongside your source code scanning. This integrated approach ensures both your application code and container configurations are secure.
+
+### Automatic Detection
+
+CybeDefend automatically identifies and scans:
+- `Dockerfile` files in your repository
+- Multi-stage build configurations
+- Docker Compose files with build contexts
+- Custom Dockerfile variants (e.g., `Dockerfile.prod`, `Dockerfile.dev`)
+
+### Security Analysis
+
+The scanner examines multiple aspects of your Dockerfile:
+
+1. **Base Image Security**
+   - Identifies vulnerable base images
+   - Recommends secure alternatives
+   - Checks for outdated image versions
+
+2. **Configuration Issues**
+   - Detects insecure configurations
+   - Identifies privilege escalation risks
+   - Finds exposed sensitive data
+
+3. **Best Practice Violations**
+   - Running containers as root user
+   - Missing health checks
+   - Inefficient layer management
+
+## Types of Issues Detected
+
+<CardGroup cols={2}>
+  <Card title="Vulnerable Base Images" icon="exclamation-triangle">
+    Detection of base images with known CVEs and security vulnerabilities
+  </Card>
+  
+  <Card title="Secrets Exposure" icon="eye-slash">
+    Hard-coded passwords, API keys, or sensitive data in Dockerfile instructions
+  </Card>
+  
+  <Card title="Privilege Escalation" icon="user-shield">
+    Containers running as root or with unnecessary elevated privileges
+  </Card>
+  
+  <Card title="Network Security" icon="network-wired">
+    Exposed ports and insecure network configurations
+  </Card>
+</CardGroup>
+
+## Integration with Code Scanning
+
+Dockerfile scanning is seamlessly integrated into your regular code scanning workflow:
+
+### Automatic Inclusion
+- No additional configuration required
+- Scans run alongside SAST, SCA, and IaC analysis
+- Results appear in the same vulnerability dashboard
+
+### Scan Triggers
+- **Repository Scans**: Includes all Dockerfiles in the repository
+- **CI/CD Integration**: Scans Dockerfiles in pull requests and commits
+- **Manual Scans**: On-demand analysis of container configurations
+
+### Results Integration
+- Dockerfile issues appear with other security findings
+- Severity levels aligned with overall vulnerability scoring
+- Remediation guidance provided for each issue
+
+<Note>
+Dockerfile security scanning is automatically enabled when you scan repositories containing Docker configurations. No additional setup is required beyond your regular code scanning configuration.
+</Note>
+
+---
+
+**Related:** [Container Image Scanning](/latest/container-scanning/container-image-scanning) · [IaC Security](/latest/code-scanning/scanning-options/code-repository-scanning) · [Scan Parameters](/latest/code-scanning/scanning-options/scan-parameters)

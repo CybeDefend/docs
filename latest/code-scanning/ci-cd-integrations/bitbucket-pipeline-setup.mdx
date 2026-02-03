@@ -1,0 +1,65 @@
+---
+title: "Bitbucket Pipeline Setup for Local Code Scanning"
+description: "Run the CybeDefend CLI in Bitbucket Pipelines to securely upload and scan your repository code."
+icon: "bitbucket"
+---
+
+Use **Bitbucket Pipelines** to automate local scanning with the CybeDefend CLI. This approach is ideal if you want to keep direct repository access closed and rely on your pipeline to handle code uploads.
+
+## Prerequisites
+
+- **API Key**: [Create it](/latest/code-scanning/local-code-scanning/introduction-api-key) and store in Bitbucket’s **Repository Settings → Pipelines → Repository Variables**.
+- **Bitbucket Pipelines**: Enable pipelines in your repository.
+
+---
+
+## Example bitbucket-pipelines.yml
+
+```yaml
+image: ubuntu:latest
+
+pipelines:
+  default:
+    - step:
+        name: CybeDefend Local Scan
+        caches:
+          - apt
+        script:
+          - apt-get update && apt-get install -y curl
+          - curl -L https://github.com/CybeDefend/cybedefend-cli/releases/download/v1.0.0/cybedefend-linux-amd64 -o cybedefend
+          - chmod +x cybedefend
+          - mv cybedefend /usr/local/bin/
+          - cybedefend scan --dir . --ci --api-key $CYBEDEFEND_API_KEY --project-id $CYBEDEFEND_PROJECT_ID
+```
+
+### Explanation
+
+1. **image**  
+   `ubuntu:latest` is sufficient for installing cURL and the CLI.  
+2. **Install CLI**  
+   Similar approach as other platforms.  
+3. **Run the Scan**  
+   Use environment variables `$CYBEDEFEND_API_KEY` and `$CYBEDEFEND_PROJECT_ID` defined in Bitbucket’s pipeline settings.
+
+<Note>
+You can add advanced steps, such as storing results in artifacts or gating merges based on severity thresholds.
+</Note>
+
+---
+
+## Where to Check Results
+
+1. **Pipeline Logs**: The CLI’s console output shows a summary.  
+2. **Local Results**: Optionally fetch `sarif` or `html` outputs in subsequent steps:
+   ```bash
+   cybedefend results --project-id $CYBEDEFEND_PROJECT_ID --output html --filename bitbucket-scan.html
+   ```
+3. **CybeDefend Dashboard**: Provides a deeper analysis of all vulnerabilities discovered.
+
+<Warning>
+Bitbucket Pipelines may have build minute limitations. Ensure your scans complete within your pipeline’s allotted time.
+</Warning>
+
+<Tip>
+For huge codebases, consider partial scans or <strong>artifact caching</strong> to reduce pipeline duration.
+</Tip>

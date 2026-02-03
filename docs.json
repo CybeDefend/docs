@@ -3,7 +3,7 @@
   "theme": "mint",
   "name": "Cybdefend Documentation",
   "openapi": [
-    "v103/api-reference/openapi.json"
+    "latest/api-reference/openapi.json"
   ],
   "colors": {
     "primary": "#af93ff",
@@ -22,7 +22,7 @@
               {
                 "group": "CybeDefend",
                 "pages": [
-                  "/v103/introduction"
+                  "/latest/introduction"
                 ]
               },
               {
@@ -31,28 +31,28 @@
                   {
                     "group": "Key Features",
                     "pages": [
-                      "/v103/plateform-overview/key-features/cybe-analysis",
-                      "/v103/plateform-overview/key-features/cybe-autofix",
-                      "/v103/plateform-overview/key-features/cybe-security-champion",
-                      "/v103/plateform-overview/key-features/mcp-server-integration",
-                      "/v103/plateform-overview/key-features/rebac-management",
-                      "/v103/plateform-overview/key-features/blsa-business-logic-security-analysis",
-                      "/v103/plateform-overview/key-features/sovereign-data-storage"
+                      "/latest/plateform-overview/key-features/cybe-analysis",
+                      "/latest/plateform-overview/key-features/cybe-autofix",
+                      "/latest/plateform-overview/key-features/cybe-security-champion",
+                      "/latest/plateform-overview/key-features/mcp-server-integration",
+                      "/latest/plateform-overview/key-features/rebac-management",
+                      "/latest/plateform-overview/key-features/blsa-business-logic-security-analysis",
+                      "/latest/plateform-overview/key-features/sovereign-data-storage"
                     ]
                   },
                   {
                     "group": "Security & Privacy",
                     "pages": [
-                      "/v103/plateform-overview/security-privacy/never-stores-your-code",
-                      "/v103/plateform-overview/security-privacy/llm-usage-privacy"
+                      "/latest/plateform-overview/security-privacy/never-stores-your-code",
+                      "/latest/plateform-overview/security-privacy/llm-usage-privacy"
                     ]
                   },
                   {
                     "group": "Plans & Pricing",
                     "pages": [
-                      "/v103/plateform-overview/plan-&-pricing/free-plan",
-                      "/v103/plateform-overview/plan-&-pricing/manage-billing-subscription",
-                      "/v103/plateform-overview/plan-&-pricing/ai-usage-tracking"
+                      "/latest/plateform-overview/plan-&-pricing/free-plan",
+                      "/latest/plateform-overview/plan-&-pricing/manage-billing-subscription",
+                      "/latest/plateform-overview/plan-&-pricing/ai-usage-tracking"
                     ]
                   }
                 ]
@@ -63,24 +63,24 @@
                   {
                     "group": "Account Setup",
                     "pages": [
-                      "/v103/get-started/account-setup/create-account-organization",
-                      "/v103/get-started/account-setup/managing-access-org-teams",
-                      "/v103/get-started/account-setup/assigning-roles"
+                      "/latest/get-started/account-setup/create-account-organization",
+                      "/latest/get-started/account-setup/managing-access-org-teams",
+                      "/latest/get-started/account-setup/assigning-roles"
                     ]
                   },
                   {
                     "group": "Project Management",
                     "pages": [
-                      "/v103/get-started/project-management/global-project-management",
-                      "/v103/get-started/project-management/create-project",
-                      "/v103/get-started/project-management/project-overview-stats"
+                      "/latest/get-started/project-management/global-project-management",
+                      "/latest/get-started/project-management/create-project",
+                      "/latest/get-started/project-management/project-overview-stats"
                     ]
                   },
                   {
                     "group": "Connect Your Source Code",
                     "pages": [
-                      "/v103/get-started/connect-your-source-code/connect-github",
-                      "/v103/get-started/connect-your-source-code/connect-gitlab"
+                      "/latest/get-started/connect-your-source-code/connect-github",
+                      "/latest/get-started/connect-your-source-code/connect-gitlab"
                     ]
                   }
                 ]
@@ -88,16 +88,16 @@
               {
                 "group": "Agent & AI Integration",
                 "pages": [
-                  "/v103/agent-ai-integration/cybe-analysis-detail",
-                  "/v103/agent-ai-integration/cybe-autofix-detail",
-                  "/v103/agent-ai-integration/cybe-security-champion-detail"
+                  "/latest/agent-ai-integration/cybe-analysis-detail",
+                  "/latest/agent-ai-integration/cybe-autofix-detail",
+                  "/latest/agent-ai-integration/cybe-security-champion-detail"
                 ]
               },
               {
                 "group": "IDE Integrations",
                 "pages": [
-                  "/v103/ide-integrations/vscode",
-                  "/v103/ide-integrations/jetbrains"
+                  "/latest/ide-integrations/vscode",
+                  "/latest/ide-integrations/jetbrains"
                 ]
               },
               {
@@ -106,43 +106,43 @@
                   {
                     "group": "Scanning Options",
                     "pages": [
-                      "/v103/code-scanning/scanning-options/code-repository-scanning",
-                      "/v103/code-scanning/scanning-options/scan-parameters",
-                      "/v103/code-scanning/scanning-options/cybedefend-ignore-file"
+                      "/latest/code-scanning/scanning-options/code-repository-scanning",
+                      "/latest/code-scanning/scanning-options/scan-parameters",
+                      "/latest/code-scanning/scanning-options/cybedefend-ignore-file"
                     ]
                   },
                   {
                     "group": "Scanning by Project Type",
                     "pages": [
-                      "/v103/code-scanning/scanning-by-project-type/how-to-launch-scan-java-scala-kotlin",
-                      "/v103/code-scanning/scanning-by-project-type/how-to-launch-scan-maven",
-                      "/v103/code-scanning/scanning-by-project-type/how-to-launch-scan-node",
-                      "/v103/code-scanning/scanning-by-project-type/how-to-launch-scan-dotnet",
-                      "/v103/code-scanning/scanning-by-project-type/how-to-launch-scan-composer",
-                      "/v103/code-scanning/scanning-by-project-type/how-to-launch-scan-c-cpp"
+                      "/latest/code-scanning/scanning-by-project-type/how-to-launch-scan-java-scala-kotlin",
+                      "/latest/code-scanning/scanning-by-project-type/how-to-launch-scan-maven",
+                      "/latest/code-scanning/scanning-by-project-type/how-to-launch-scan-node",
+                      "/latest/code-scanning/scanning-by-project-type/how-to-launch-scan-dotnet",
+                      "/latest/code-scanning/scanning-by-project-type/how-to-launch-scan-composer",
+                      "/latest/code-scanning/scanning-by-project-type/how-to-launch-scan-c-cpp"
                     ]
                   },
                   {
                     "group": "Local Code Scanning",
                     "pages": [
-                      "/v103/code-scanning/local-code-scanning/introduction-api-key",
-                      "/v103/code-scanning/local-code-scanning/cli-options",
-                      "/v103/code-scanning/local-code-scanning/mac-setup",
-                      "/v103/code-scanning/local-code-scanning/windows-setup",
-                      "/v103/code-scanning/local-code-scanning/linux-setup"
+                      "/latest/code-scanning/local-code-scanning/introduction-api-key",
+                      "/latest/code-scanning/local-code-scanning/cli-options",
+                      "/latest/code-scanning/local-code-scanning/mac-setup",
+                      "/latest/code-scanning/local-code-scanning/windows-setup",
+                      "/latest/code-scanning/local-code-scanning/linux-setup"
                     ]
                   },
                   {
                     "group": "CI/CD Integrations",
                     "pages": [
-                      "/v103/code-scanning/ci-cd-integrations/github-action-setup",
-                      "/v103/code-scanning/ci-cd-integrations/gitlab-self-managed-setup",
-                      "/v103/code-scanning/ci-cd-integrations/jenkins-setup",
-                      "/v103/code-scanning/ci-cd-integrations/azure-devops-server-setup",
-                      "/v103/code-scanning/ci-cd-integrations/bitbucket-pipeline-setup",
-                      "/v103/code-scanning/ci-cd-integrations/circleci-setup",
-                      "/v103/code-scanning/ci-cd-integrations/teamcity-setup",
-                      "/v103/code-scanning/ci-cd-integrations/bamboo-setup"
+                      "/latest/code-scanning/ci-cd-integrations/github-action-setup",
+                      "/latest/code-scanning/ci-cd-integrations/gitlab-self-managed-setup",
+                      "/latest/code-scanning/ci-cd-integrations/jenkins-setup",
+                      "/latest/code-scanning/ci-cd-integrations/azure-devops-server-setup",
+                      "/latest/code-scanning/ci-cd-integrations/bitbucket-pipeline-setup",
+                      "/latest/code-scanning/ci-cd-integrations/circleci-setup",
+                      "/latest/code-scanning/ci-cd-integrations/teamcity-setup",
+                      "/latest/code-scanning/ci-cd-integrations/bamboo-setup"
                     ]
                   }
                 ]
@@ -150,20 +150,20 @@
               {
                 "group": "Container Scanning",
                 "pages": [
-                  "/v103/container-scanning/container-image-scanning",
-                  "/v103/container-scanning/dockerfile-security-scanning",
+                  "/latest/container-scanning/container-image-scanning",
+                  "/latest/container-scanning/dockerfile-security-scanning",
                   {
                     "group": "Registry Integrations",
                     "pages": [
-                      "/v103/container-scanning/registry-integrations/docker-hub",
-                      "/v103/container-scanning/registry-integrations/github-container-registry",
-                      "/v103/container-scanning/registry-integrations/gitlab-container-registry",
-                      "/v103/container-scanning/registry-integrations/amazon-ecr",
-                      "/v103/container-scanning/registry-integrations/azure-container-registry",
-                      "/v103/container-scanning/registry-integrations/google-container-registry",
-                      "/v103/container-scanning/registry-integrations/red-hat-quay",
-                      "/v103/container-scanning/registry-integrations/harbor",
-                      "/v103/container-scanning/registry-integrations/jfrog-artifactory"
+                      "/latest/container-scanning/registry-integrations/docker-hub",
+                      "/latest/container-scanning/registry-integrations/github-container-registry",
+                      "/latest/container-scanning/registry-integrations/gitlab-container-registry",
+                      "/latest/container-scanning/registry-integrations/amazon-ecr",
+                      "/latest/container-scanning/registry-integrations/azure-container-registry",
+                      "/latest/container-scanning/registry-integrations/google-container-registry",
+                      "/latest/container-scanning/registry-integrations/red-hat-quay",
+                      "/latest/container-scanning/registry-integrations/harbor",
+                      "/latest/container-scanning/registry-integrations/jfrog-artifactory"
                     ]
                   }
                 ]
@@ -171,8 +171,8 @@
               {
                 "group": "Managing Vulnerabilities",
                 "pages": [
-                  "/v103/managing-vulnerabilities/project-vulnerability-list",
-                  "/v103/managing-vulnerabilities/updating-vulnerabilities"
+                  "/latest/managing-vulnerabilities/project-vulnerability-list",
+                  "/latest/managing-vulnerabilities/updating-vulnerabilities"
                 ]
               }
             ]
@@ -183,32 +183,32 @@
               {
                 "group": "Getting Started",
                 "pages": [
-                  "/v103/api-reference/introduction"
+                  "/latest/api-reference/introduction"
                 ]
               },
               {
                 "group": "Organization",
                 "pages": [
-                  "v103/api-reference/endpoint/organization/create-organization",
-                  "v103/api-reference/endpoint/organization/get-organizations-of-user",
-                  "v103/api-reference/endpoint/organization/get-organization-by-id",
-                  "v103/api-reference/endpoint/organization/update-organization",
-                  "v103/api-reference/endpoint/organization/delete-organization",
+                  "latest/api-reference/endpoint/organization/create-organization",
+                  "latest/api-reference/endpoint/organization/get-organizations-of-user",
+                  "latest/api-reference/endpoint/organization/get-organization-by-id",
+                  "latest/api-reference/endpoint/organization/update-organization",
+                  "latest/api-reference/endpoint/organization/delete-organization",
                   {
                     "group": "Members",
                     "pages": [
-                      "v103/api-reference/endpoint/organization/get-organization-members",
-                      "v103/api-reference/endpoint/organization/update-organization-member-role",
-                      "v103/api-reference/endpoint/organization/remove-member-from-organization"
+                      "latest/api-reference/endpoint/organization/get-organization-members",
+                      "latest/api-reference/endpoint/organization/update-organization-member-role",
+                      "latest/api-reference/endpoint/organization/remove-member-from-organization"
                     ]
                   },
                   {
                     "group": "Invitations",
                     "pages": [
-                      "v103/api-reference/endpoint/organization/invite-user-to-organization",
-                      "v103/api-reference/endpoint/organization/get-organization-invitations",
-                      "v103/api-reference/endpoint/organization/cancel-organization-invitation",
-                      "v103/api-reference/endpoint/organization/accept-invitation-to-organization"
+                      "latest/api-reference/endpoint/organization/invite-user-to-organization",
+                      "latest/api-reference/endpoint/organization/get-organization-invitations",
+                      "latest/api-reference/endpoint/organization/cancel-organization-invitation",
+                      "latest/api-reference/endpoint/organization/accept-invitation-to-organization"
                     ]
                   }
                 ]
@@ -216,30 +216,30 @@
               {
                 "group": "Project",
                 "pages": [
-                  "v103/api-reference/endpoint/project/create-a-project",
-                  "v103/api-reference/endpoint/project/delete-a-project",
-                  "v103/api-reference/endpoint/project/get-a-project",
-                  "v103/api-reference/endpoint/project/get-all-projects-of-a-team-with-pagination",
-                  "v103/api-reference/endpoint/project/get-all-projects-of-an-organization-with-pagination",
-                  "v103/api-reference/endpoint/project/update-a-project"
+                  "latest/api-reference/endpoint/project/create-a-project",
+                  "latest/api-reference/endpoint/project/delete-a-project",
+                  "latest/api-reference/endpoint/project/get-a-project",
+                  "latest/api-reference/endpoint/project/get-all-projects-of-a-team-with-pagination",
+                  "latest/api-reference/endpoint/project/get-all-projects-of-an-organization-with-pagination",
+                  "latest/api-reference/endpoint/project/update-a-project"
                 ]
               },
               {
                 "group": "Team",
                 "pages": [
-                  "v103/api-reference/endpoint/team/create-a-new-team",
-                  "v103/api-reference/endpoint/team/get-all-teams-of-an-organization",
-                  "v103/api-reference/endpoint/team/get-team-by-id",
-                  "v103/api-reference/endpoint/team/update-a-team",
-                  "v103/api-reference/endpoint/team/delete-a-team",
+                  "latest/api-reference/endpoint/team/create-a-new-team",
+                  "latest/api-reference/endpoint/team/get-all-teams-of-an-organization",
+                  "latest/api-reference/endpoint/team/get-team-by-id",
+                  "latest/api-reference/endpoint/team/update-a-team",
+                  "latest/api-reference/endpoint/team/delete-a-team",
                   {
                     "group": "Team Members",
                     "pages": [
-                      "v103/api-reference/endpoint/team/get-all-members-of-a-team",
-                      "v103/api-reference/endpoint/team/get-a-member-of-a-team",
-                      "v103/api-reference/endpoint/team/add-a-member-to-a-team",
-                      "v103/api-reference/endpoint/team/update-a-member-role-in-a-team",
-                      "v103/api-reference/endpoint/team/remove-a-member-from-a-team"
+                      "latest/api-reference/endpoint/team/get-all-members-of-a-team",
+                      "latest/api-reference/endpoint/team/get-a-member-of-a-team",
+                      "latest/api-reference/endpoint/team/add-a-member-to-a-team",
+                      "latest/api-reference/endpoint/team/update-a-member-role-in-a-team",
+                      "latest/api-reference/endpoint/team/remove-a-member-from-a-team"
                     ]
                   }
                 ]
@@ -247,15 +247,15 @@
               {
                 "group": "User",
                 "pages": [
-                  "v103/api-reference/endpoint/user/get-user-profile",
-                  "v103/api-reference/endpoint/user/update-user-profile"
+                  "latest/api-reference/endpoint/user/get-user-profile",
+                  "latest/api-reference/endpoint/user/update-user-profile"
                 ]
               },
               {
                 "group": "Scanning",
                 "pages": [
-                  "v103/api-reference/endpoint/scan/get-a-scan-by-id",
-                  "v103/api-reference/endpoint/scan/start-a-scan"
+                  "latest/api-reference/endpoint/scan/get-a-scan-by-id",
+                  "latest/api-reference/endpoint/scan/start-a-scan"
                 ]
               },
               {
@@ -264,63 +264,63 @@
                   {
                     "group": "SAST (Code)",
                     "pages": [
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-vulnerabilities-of-a-project-for-sast",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-sast",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-sast-vulnerabilities-grouped-by-rule-id"
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-all-vulnerabilities-of-a-project-for-sast",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-sast",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-sast-vulnerabilities-grouped-by-rule-id"
                     ]
                   },
                   {
                     "group": "SCA (Dependencies)",
                     "pages": [
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-sca-vulnerabilities-of-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-sca",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-sca-packages-of-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-sca-vulnerabilities-grouped-by-cve-+-package-name",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/analyze-sca-vulnerabilities-for-autofix-candidates",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-sca-autofix-job-status",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-sca-autofix-job-results"
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-all-sca-vulnerabilities-of-a-project",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-sca",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-all-sca-packages-of-a-project",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-sca-vulnerabilities-grouped-by-cve-+-package-name",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/analyze-sca-vulnerabilities-for-autofix-candidates",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-sca-autofix-job-status",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-sca-autofix-job-results"
                     ]
                   },
                   {
                     "group": "Container",
                     "pages": [
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-container-vulnerabilities-of-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-a-container-vulnerability-by-id",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-container-images-of-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-container-packages-of-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/delete-a-scanned-container-image-from-a-project"
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-all-container-vulnerabilities-of-a-project",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-a-container-vulnerability-by-id",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-all-container-images-of-a-project",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-all-container-packages-of-a-project",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/delete-a-scanned-container-image-from-a-project"
                     ]
                   },
                   {
                     "group": "IaC (Infrastructure as Code)",
                     "pages": [
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-iac-vulnerabilities-of-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-iac",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-iac-vulnerabilities-grouped-by-rule-id"
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-all-iac-vulnerabilities-of-a-project",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-iac",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-iac-vulnerabilities-grouped-by-rule-id"
                     ]
                   },
                   {
                     "group": "CI/CD",
                     "pages": [
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-cicd-vulnerabilities-of-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-cicd",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-cicd-vulnerabilities-grouped-by-rule-id"
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-all-cicd-vulnerabilities-of-a-project",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-cicd",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-cicd-vulnerabilities-grouped-by-rule-id"
                     ]
                   },
                   {
                     "group": "Secrets",
                     "pages": [
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-all-secret-vulnerabilities-of-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-secret",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-secret-vulnerabilities-grouped-by-rule-id"
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-all-secret-vulnerabilities-of-a-project",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-a-vulnerability-of-a-project-for-secret",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-secret-vulnerabilities-grouped-by-rule-id"
                     ]
                   },
                   {
                     "group": "Manage",
                     "pages": [
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/update-a-vulnerability-of-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-vulnerability-by-id-with-similar-occurrences",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-branches-from-vulnerability-detections"
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/update-a-vulnerability-of-a-project",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-vulnerability-by-id-with-similar-occurrences",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-branches-from-vulnerability-detections"
                     ]
                   }
                 ]
@@ -328,22 +328,22 @@
               {
                 "group": "Reports & Statistics",
                 "pages": [
-                  "v103/api-reference/endpoint/results-&-vulnerabilities/get-overview-of-a-project",
-                  "v103/api-reference/endpoint/results-&-vulnerabilities/get-aggregated-overview-statistics-for-an-organization",
+                  "latest/api-reference/endpoint/results-&-vulnerabilities/get-overview-of-a-project",
+                  "latest/api-reference/endpoint/results-&-vulnerabilities/get-aggregated-overview-statistics-for-an-organization",
                   {
                     "group": "Security Reports",
                     "pages": [
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/generate-a-security-report-for-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/generate-cwe-top-25-2024-report-for-a-project",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/generate-aggregated-security-report-for-an-organization",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/generate-aggregated-security-report-for-a-team",
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/generate-report-for-a-manual-selection-of-projects"
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/generate-a-security-report-for-a-project",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/generate-cwe-top-25-2024-report-for-a-project",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/generate-aggregated-security-report-for-an-organization",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/generate-aggregated-security-report-for-a-team",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/generate-report-for-a-manual-selection-of-projects"
                     ]
                   },
                   {
                     "group": "SBOM",
                     "pages": [
-                      "v103/api-reference/endpoint/results-&-vulnerabilities/get-sbom-report-for-a-project"
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-sbom-report-for-a-project"
                     ]
                   }
                 ]
@@ -354,19 +354,19 @@
                   {
                     "group": "Autofix",
                     "pages": [
-                      "v103/api-reference/endpoint/ai-agent/start-autofix-workflow",
-                      "v103/api-reference/endpoint/ai-agent/start-batch-autofix-workflow"
+                      "latest/api-reference/endpoint/ai-agent/start-autofix-workflow",
+                      "latest/api-reference/endpoint/ai-agent/start-batch-autofix-workflow"
                     ]
                   },
                   {
                     "group": "Security Champion",
                     "pages": [
-                      "v103/api-reference/endpoint/ai-agent/create-security-champion-conversation",
-                      "v103/api-reference/endpoint/ai-agent/stream-security-champion-messages",
-                      "v103/api-reference/endpoint/ai-agent/list-user-conversations",
-                      "v103/api-reference/endpoint/ai-agent/get-conversation-messages",
-                      "v103/api-reference/endpoint/ai-agent/delete-conversation",
-                      "v103/api-reference/endpoint/ai-agent/stop-conversation-generation"
+                      "latest/api-reference/endpoint/ai-agent/create-security-champion-conversation",
+                      "latest/api-reference/endpoint/ai-agent/stream-security-champion-messages",
+                      "latest/api-reference/endpoint/ai-agent/list-user-conversations",
+                      "latest/api-reference/endpoint/ai-agent/get-conversation-messages",
+                      "latest/api-reference/endpoint/ai-agent/delete-conversation",
+                      "latest/api-reference/endpoint/ai-agent/stop-conversation-generation"
                     ]
                   }
                 ]
@@ -374,25 +374,25 @@
               {
                 "group": "Source Code Integrations",
                 "pages": [
-                  "v103/api-reference/endpoint/integrations/get-integration-overview-for-organization",
+                  "latest/api-reference/endpoint/integrations/get-integration-overview-for-organization",
                   {
                     "group": "GitHub",
                     "pages": [
-                      "v103/api-reference/endpoint/github-integration/get-github-repositories",
-                      "v103/api-reference/endpoint/github-integration/get-github-repository-branches",
-                      "v103/api-reference/endpoint/github-integration/link-github-repository-to-project",
-                      "v103/api-reference/endpoint/github-integration/unlink-github-repository-from-project",
-                      "v103/api-reference/endpoint/github-integration/start-github-repository-scan"
+                      "latest/api-reference/endpoint/github-integration/get-github-repositories",
+                      "latest/api-reference/endpoint/github-integration/get-github-repository-branches",
+                      "latest/api-reference/endpoint/github-integration/link-github-repository-to-project",
+                      "latest/api-reference/endpoint/github-integration/unlink-github-repository-from-project",
+                      "latest/api-reference/endpoint/github-integration/start-github-repository-scan"
                     ]
                   },
                   {
                     "group": "GitLab",
                     "pages": [
-                      "v103/api-reference/endpoint/gitlab-integration/get-gitlab-repositories",
-                      "v103/api-reference/endpoint/gitlab-integration/get-gitlab-repository-branches",
-                      "v103/api-reference/endpoint/gitlab-integration/link-gitlab-repository-to-project",
-                      "v103/api-reference/endpoint/gitlab-integration/unlink-gitlab-repository-from-project",
-                      "v103/api-reference/endpoint/gitlab-integration/start-gitlab-repository-scan"
+                      "latest/api-reference/endpoint/gitlab-integration/get-gitlab-repositories",
+                      "latest/api-reference/endpoint/gitlab-integration/get-gitlab-repository-branches",
+                      "latest/api-reference/endpoint/gitlab-integration/link-gitlab-repository-to-project",
+                      "latest/api-reference/endpoint/gitlab-integration/unlink-gitlab-repository-from-project",
+                      "latest/api-reference/endpoint/gitlab-integration/start-gitlab-repository-scan"
                     ]
                   }
                 ]
@@ -400,115 +400,115 @@
               {
                 "group": "Container Registries",
                 "pages": [
-                  "v103/api-reference/endpoint/container-registry-credentials/get-all-container-registry-credentials-for-an-organization",
+                  "latest/api-reference/endpoint/container-registry-credentials/get-all-container-registry-credentials-for-an-organization",
                   {
                     "group": "Docker Hub",
                     "pages": [
-                      "v103/api-reference/endpoint/dockerhub-container-registry/store-dockerhub-container-registry-credentials",
-                      "v103/api-reference/endpoint/dockerhub-container-registry/list-dockerhub-credentials",
-                      "v103/api-reference/endpoint/dockerhub-container-registry/get-dockerhub-credential-details",
-                      "v103/api-reference/endpoint/dockerhub-container-registry/delete-dockerhub-credentials",
-                      "v103/api-reference/endpoint/dockerhub-container-registry/list-dockerhub-images",
-                      "v103/api-reference/endpoint/dockerhub-container-registry/list-dockerhub-image-tags",
-                      "v103/api-reference/endpoint/dockerhub-container-registry/start-dockerhub-container-scan"
+                      "latest/api-reference/endpoint/dockerhub-container-registry/store-dockerhub-container-registry-credentials",
+                      "latest/api-reference/endpoint/dockerhub-container-registry/list-dockerhub-credentials",
+                      "latest/api-reference/endpoint/dockerhub-container-registry/get-dockerhub-credential-details",
+                      "latest/api-reference/endpoint/dockerhub-container-registry/delete-dockerhub-credentials",
+                      "latest/api-reference/endpoint/dockerhub-container-registry/list-dockerhub-images",
+                      "latest/api-reference/endpoint/dockerhub-container-registry/list-dockerhub-image-tags",
+                      "latest/api-reference/endpoint/dockerhub-container-registry/start-dockerhub-container-scan"
                     ]
                   },
                   {
                     "group": "GitHub (GHCR)",
                     "pages": [
-                      "v103/api-reference/endpoint/github-container-registry/store-a-personal-access-token-pat-for-ghcrio",
-                      "v103/api-reference/endpoint/github-container-registry/get-pat-status-for-ghcrio",
-                      "v103/api-reference/endpoint/github-container-registry/delete-stored-pat-for-ghcrio",
-                      "v103/api-reference/endpoint/github-container-registry/get-github-container-registry-token",
-                      "v103/api-reference/endpoint/github-container-registry/list-docker-images-from-github-container-registry",
-                      "v103/api-reference/endpoint/github-container-registry/list-image-tags-from-github-container-registry",
-                      "v103/api-reference/endpoint/github-container-registry/start-github-container-registry-scan"
+                      "latest/api-reference/endpoint/github-container-registry/store-a-personal-access-token-pat-for-ghcrio",
+                      "latest/api-reference/endpoint/github-container-registry/get-pat-status-for-ghcrio",
+                      "latest/api-reference/endpoint/github-container-registry/delete-stored-pat-for-ghcrio",
+                      "latest/api-reference/endpoint/github-container-registry/get-github-container-registry-token",
+                      "latest/api-reference/endpoint/github-container-registry/list-docker-images-from-github-container-registry",
+                      "latest/api-reference/endpoint/github-container-registry/list-image-tags-from-github-container-registry",
+                      "latest/api-reference/endpoint/github-container-registry/start-github-container-registry-scan"
                     ]
                   },
                   {
                     "group": "GitLab",
                     "pages": [
-                      "v103/api-reference/endpoint/gitlab-container-registry/store-gitlab-container-registry-credentials",
-                      "v103/api-reference/endpoint/gitlab-container-registry/list-gitlab-container-registry-credentials",
-                      "v103/api-reference/endpoint/gitlab-container-registry/get-gitlab-container-registry-credential-details",
-                      "v103/api-reference/endpoint/gitlab-container-registry/delete-gitlab-container-registry-credentials",
-                      "v103/api-reference/endpoint/gitlab-container-registry/list-docker-images-from-gitlab-container-registry",
-                      "v103/api-reference/endpoint/gitlab-container-registry/list-docker-image-tags-from-gitlab-container-registry",
-                      "v103/api-reference/endpoint/gitlab-container-registry/start-gitlab-container-registry-scan"
+                      "latest/api-reference/endpoint/gitlab-container-registry/store-gitlab-container-registry-credentials",
+                      "latest/api-reference/endpoint/gitlab-container-registry/list-gitlab-container-registry-credentials",
+                      "latest/api-reference/endpoint/gitlab-container-registry/get-gitlab-container-registry-credential-details",
+                      "latest/api-reference/endpoint/gitlab-container-registry/delete-gitlab-container-registry-credentials",
+                      "latest/api-reference/endpoint/gitlab-container-registry/list-docker-images-from-gitlab-container-registry",
+                      "latest/api-reference/endpoint/gitlab-container-registry/list-docker-image-tags-from-gitlab-container-registry",
+                      "latest/api-reference/endpoint/gitlab-container-registry/start-gitlab-container-registry-scan"
                     ]
                   },
                   {
                     "group": "Google (GCR / Artifact Registry)",
                     "pages": [
-                      "v103/api-reference/endpoint/gcr-container-registry/store-gcr-container-registry-credentials",
-                      "v103/api-reference/endpoint/gcr-container-registry/list-stored-gcr-container-registry-credentials",
-                      "v103/api-reference/endpoint/gcr-container-registry/get-gcr-container-registry-credential-details",
-                      "v103/api-reference/endpoint/gcr-container-registry/delete-gcr-container-registry-credentials",
-                      "v103/api-reference/endpoint/gcr-container-registry/list-container-images-from-gcrartifact-registry",
-                      "v103/api-reference/endpoint/gcr-container-registry/list-tags-for-a-container-image",
-                      "v103/api-reference/endpoint/gcr-container-registry/start-gcr-container-vulnerability-scan"
+                      "latest/api-reference/endpoint/gcr-container-registry/store-gcr-container-registry-credentials",
+                      "latest/api-reference/endpoint/gcr-container-registry/list-stored-gcr-container-registry-credentials",
+                      "latest/api-reference/endpoint/gcr-container-registry/get-gcr-container-registry-credential-details",
+                      "latest/api-reference/endpoint/gcr-container-registry/delete-gcr-container-registry-credentials",
+                      "latest/api-reference/endpoint/gcr-container-registry/list-container-images-from-gcrartifact-registry",
+                      "latest/api-reference/endpoint/gcr-container-registry/list-tags-for-a-container-image",
+                      "latest/api-reference/endpoint/gcr-container-registry/start-gcr-container-vulnerability-scan"
                     ]
                   },
                   {
                     "group": "AWS (ECR)",
                     "pages": [
-                      "v103/api-reference/endpoint/ecr-container-registry/store-ecr-container-registry-credentials",
-                      "v103/api-reference/endpoint/ecr-container-registry/list-ecr-credentials",
-                      "v103/api-reference/endpoint/ecr-container-registry/get-ecr-credential-details",
-                      "v103/api-reference/endpoint/ecr-container-registry/delete-ecr-credentials",
-                      "v103/api-reference/endpoint/ecr-container-registry/list-ecr-images",
-                      "v103/api-reference/endpoint/ecr-container-registry/list-ecr-image-tags",
-                      "v103/api-reference/endpoint/ecr-container-registry/start-ecr-container-scan"
+                      "latest/api-reference/endpoint/ecr-container-registry/store-ecr-container-registry-credentials",
+                      "latest/api-reference/endpoint/ecr-container-registry/list-ecr-credentials",
+                      "latest/api-reference/endpoint/ecr-container-registry/get-ecr-credential-details",
+                      "latest/api-reference/endpoint/ecr-container-registry/delete-ecr-credentials",
+                      "latest/api-reference/endpoint/ecr-container-registry/list-ecr-images",
+                      "latest/api-reference/endpoint/ecr-container-registry/list-ecr-image-tags",
+                      "latest/api-reference/endpoint/ecr-container-registry/start-ecr-container-scan"
                     ]
                   },
                   {
                     "group": "Azure (ACR)",
                     "pages": [
-                      "v103/api-reference/endpoint/acr-container-registry/store-acr-container-registry-credentials",
-                      "v103/api-reference/endpoint/acr-container-registry/list-acr-credentials",
-                      "v103/api-reference/endpoint/acr-container-registry/get-acr-credential-details",
-                      "v103/api-reference/endpoint/acr-container-registry/delete-acr-credentials",
-                      "v103/api-reference/endpoint/acr-container-registry/list-acr-images",
-                      "v103/api-reference/endpoint/acr-container-registry/list-acr-image-tags",
-                      "v103/api-reference/endpoint/acr-container-registry/start-acr-container-scan"
+                      "latest/api-reference/endpoint/acr-container-registry/store-acr-container-registry-credentials",
+                      "latest/api-reference/endpoint/acr-container-registry/list-acr-credentials",
+                      "latest/api-reference/endpoint/acr-container-registry/get-acr-credential-details",
+                      "latest/api-reference/endpoint/acr-container-registry/delete-acr-credentials",
+                      "latest/api-reference/endpoint/acr-container-registry/list-acr-images",
+                      "latest/api-reference/endpoint/acr-container-registry/list-acr-image-tags",
+                      "latest/api-reference/endpoint/acr-container-registry/start-acr-container-scan"
                     ]
                   },
                   {
                     "group": "Quay",
                     "pages": [
-                      "v103/api-reference/endpoint/quay-container-registry/store-quay-container-registry-credentials",
-                      "v103/api-reference/endpoint/quay-container-registry/list-quay-container-registry-credentials",
-                      "v103/api-reference/endpoint/quay-container-registry/get-quay-container-registry-credential-details",
-                      "v103/api-reference/endpoint/quay-container-registry/delete-quay-container-registry-credentials",
-                      "v103/api-reference/endpoint/quay-container-registry/list-container-images-from-quay-registry",
-                      "v103/api-reference/endpoint/quay-container-registry/list-container-image-tags-from-quay-registry",
-                      "v103/api-reference/endpoint/quay-container-registry/start-quay-container-registry-scan"
+                      "latest/api-reference/endpoint/quay-container-registry/store-quay-container-registry-credentials",
+                      "latest/api-reference/endpoint/quay-container-registry/list-quay-container-registry-credentials",
+                      "latest/api-reference/endpoint/quay-container-registry/get-quay-container-registry-credential-details",
+                      "latest/api-reference/endpoint/quay-container-registry/delete-quay-container-registry-credentials",
+                      "latest/api-reference/endpoint/quay-container-registry/list-container-images-from-quay-registry",
+                      "latest/api-reference/endpoint/quay-container-registry/list-container-image-tags-from-quay-registry",
+                      "latest/api-reference/endpoint/quay-container-registry/start-quay-container-registry-scan"
                     ]
                   },
                   {
                     "group": "Harbor",
                     "pages": [
-                      "v103/api-reference/endpoint/harbor-container-registry/store-harbor-container-registry-credentials",
-                      "v103/api-reference/endpoint/harbor-container-registry/list-stored-harbor-credentials",
-                      "v103/api-reference/endpoint/harbor-container-registry/get-harbor-credential-details",
-                      "v103/api-reference/endpoint/harbor-container-registry/delete-harbor-credentials",
-                      "v103/api-reference/endpoint/harbor-container-registry/list-harbor-projects",
-                      "v103/api-reference/endpoint/harbor-container-registry/list-docker-images-from-harbor",
-                      "v103/api-reference/endpoint/harbor-container-registry/list-harbor-image-tags",
-                      "v103/api-reference/endpoint/harbor-container-registry/start-harbor-container-scan"
+                      "latest/api-reference/endpoint/harbor-container-registry/store-harbor-container-registry-credentials",
+                      "latest/api-reference/endpoint/harbor-container-registry/list-stored-harbor-credentials",
+                      "latest/api-reference/endpoint/harbor-container-registry/get-harbor-credential-details",
+                      "latest/api-reference/endpoint/harbor-container-registry/delete-harbor-credentials",
+                      "latest/api-reference/endpoint/harbor-container-registry/list-harbor-projects",
+                      "latest/api-reference/endpoint/harbor-container-registry/list-docker-images-from-harbor",
+                      "latest/api-reference/endpoint/harbor-container-registry/list-harbor-image-tags",
+                      "latest/api-reference/endpoint/harbor-container-registry/start-harbor-container-scan"
                     ]
                   },
                   {
                     "group": "JFrog Artifactory",
                     "pages": [
-                      "v103/api-reference/endpoint/jfrog-container-registry/store-jfrog-container-registry-credentials",
-                      "v103/api-reference/endpoint/jfrog-container-registry/list-jfrog-container-registry-credentials",
-                      "v103/api-reference/endpoint/jfrog-container-registry/get-jfrog-credential-details",
-                      "v103/api-reference/endpoint/jfrog-container-registry/delete-jfrog-container-registry-credentials",
-                      "v103/api-reference/endpoint/jfrog-container-registry/list-jfrog-artifactory-docker-repositories",
-                      "v103/api-reference/endpoint/jfrog-container-registry/list-docker-images-in-jfrog-artifactory-repository",
-                      "v103/api-reference/endpoint/jfrog-container-registry/list-tags-for-a-docker-image-in-jfrog-artifactory",
-                      "v103/api-reference/endpoint/jfrog-container-registry/start-jfrog-artifactory-container-image-scan"
+                      "latest/api-reference/endpoint/jfrog-container-registry/store-jfrog-container-registry-credentials",
+                      "latest/api-reference/endpoint/jfrog-container-registry/list-jfrog-container-registry-credentials",
+                      "latest/api-reference/endpoint/jfrog-container-registry/get-jfrog-credential-details",
+                      "latest/api-reference/endpoint/jfrog-container-registry/delete-jfrog-container-registry-credentials",
+                      "latest/api-reference/endpoint/jfrog-container-registry/list-jfrog-artifactory-docker-repositories",
+                      "latest/api-reference/endpoint/jfrog-container-registry/list-docker-images-in-jfrog-artifactory-repository",
+                      "latest/api-reference/endpoint/jfrog-container-registry/list-tags-for-a-docker-image-in-jfrog-artifactory",
+                      "latest/api-reference/endpoint/jfrog-container-registry/start-jfrog-artifactory-container-image-scan"
                     ]
                   }
                 ]

@@ -1,0 +1,81 @@
+---
+title: "Bamboo Setup for Local Code Scanning"
+description: "Use CybeDefend local scanning in your Atlassian Bamboo pipeline, either via Docker or binary installation."
+icon: "leaf"
+---
+
+**Bamboo** (from Atlassian) can run **CybeDefend** local scans to keep your code private. Whether you’re using Docker tasks or an executable on the agent, you’ll upload only the minimal data to CybeDefend for analysis.
+
+## Prerequisites
+
+- **API Key**: Create one via [Introduction & API Key Creation](/latest/code-scanning/local-code-scanning/introduction-api-key) and store it in **Plan Variables** (e.g. `CYBEDEFEND_API_KEY`).  
+- **Branch Target**: We advise scanning only your main branch to prevent mixing partial or experimental features.
+
+<Note>
+Make sure your build agent has sufficient disk space, since the CLI zips your code locally before upload.
+</Note>
+
+---
+
+## Option 1: Docker-Based Task
+
+If your Bamboo agent supports Docker:
+
+1. **Add a “Source Code Checkout” Task**  
+   Ensures your repository is cloned into the workspace.
+2. **Docker Task**  
+   - **Command**: “Run a Docker container”  
+   - **Image**: `cybedefend/local-scanner:latest`  
+   - **Container Command**:
+     ```bash
+     cybedefend scan . \
+       --api-key ${bamboo.CYBEDEFEND_API_KEY} \
+       --project-id ${bamboo.CYBEDEFEND_PROJECT_ID} \
+       --ci
+     ```
+3. **Save & Run**  
+   On the first run, if the project doesn’t exist yet in CybeDefend, it will be created automatically.
+
+<Accordion icon="branch" title="Branch Configuration">
+  <p>Under Plan Configuration > Repositories, limit builds to <strong>main</strong> or your default branch for consistent, consolidated vulnerability data.</p>
+</Accordion>
+
+---
+
+## Option 2: Executable Capability
+
+1. **Download Binary**  
+   Place the `cybedefend` CLI on the Bamboo agent(s). Mark it executable (`chmod +x cybedefend`).
+2. **Agent Capability**  
+   - In Bamboo, go to **Build Resources → Agents**.  
+   - Select the agent, add an **Executable** capability (e.g. label: “CybeDefend CLI,” path: `/usr/local/bin/cybedefend`).
+3. **Plan → Tasks**  
+   - Add a **Command** task.  
+   - Under **Executable**, choose “CybeDefend CLI.”  
+   - **Argument field**:  
+     ```bash
+     scan . --api-key ${bamboo.CYBEDEFEND_API_KEY} --project-id ${bamboo.CYBEDEFEND_PROJECT_ID} --ci
+     ```
+
+<Note>
+If your code is large, consider ignoring extraneous directories to speed up scanning (e.g., <strong>node_modules</strong>, <strong>vendor</strong>, or <strong>build</strong> artifacts).
+</Note>
+
+---
+
+## Checking Results
+
+- **Bamboo Logs**: Check logs for a summary.  
+- **Extra Command**: 
+  ```bash
+  cybedefend results --project-id ${bamboo.CYBEDEFEND_PROJECT_ID} --output html
+  ```
+- **CybeDefend Dashboard**: Full details on vulnerabilities, severity, and recommended fixes.
+
+<Warning>
+If you plan to gate releases, parse the CLI exit code or use <strong>--fail-on</strong> if we offer that feature for gating merges.
+</Warning>
+
+<Tip>
+You can also define global variables for <strong>CYBEDEFEND_API_KEY</strong> to reuse across multiple plans or projects.
+</Tip>

@@ -29,15 +29,15 @@ const { execSync } = require('child_process');
 
 const CONFIG = {
     // Chemins
-    openapiPath: path.join(__dirname, '..', 'v103', 'api-reference', 'openapi.json'),
-    endpointDir: path.join(__dirname, '..', 'v103', 'api-reference', 'endpoint'),
+    openapiPath: path.join(__dirname, '..', 'latest', 'api-reference', 'openapi.json'),
+    endpointDir: path.join(__dirname, '..', 'latest', 'api-reference', 'endpoint'),
     docsJsonPath: path.join(__dirname, '..', 'docs.json'),
 
     // Structure de la documentation API (mapping des dossiers vers la structure)
     apiStructure: {
         // Groupe "Getting Started"
         "Getting Started": {
-            pages: ["/v103/api-reference/introduction"]
+            pages: ["/latest/api-reference/introduction"]
         },
 
         // Groupe "Organization" avec sous-groupes
@@ -220,7 +220,7 @@ const CONFIG = {
 
         // Groupe "Source Code Integrations"
         "Source Code Integrations": {
-            mainPages: ["v103/api-reference/endpoint/integrations/get-integration-overview-for-organization"],
+            mainPages: ["latest/api-reference/endpoint/integrations/get-integration-overview-for-organization"],
             subgroups: {
                 "GitHub": {
                     folder: "github-integration",
@@ -247,7 +247,7 @@ const CONFIG = {
 
         // Groupe "Container Registries"
         "Container Registries": {
-            mainPages: ["v103/api-reference/endpoint/container-registry-credentials/get-all-container-registry-credentials-for-an-organization"],
+            mainPages: ["latest/api-reference/endpoint/container-registry-credentials/get-all-container-registry-credentials-for-an-organization"],
             subgroups: {
                 "Docker Hub": {
                     folder: "dockerhub-container-registry",
@@ -468,8 +468,8 @@ function regenerateMDX() {
     log.step('2/5', 'Régénération des fichiers MDX...');
 
     const rootDir = path.join(__dirname, '..');
-    const relativeOpenapiPath = 'v103/api-reference/openapi.json';
-    const relativeEndpointDir = 'v103/api-reference/endpoint';
+    const relativeOpenapiPath = 'latest/api-reference/openapi.json';
+    const relativeEndpointDir = 'latest/api-reference/endpoint';
 
     // Supprimer l'ancien dossier
     if (fs.existsSync(CONFIG.endpointDir)) {
@@ -499,7 +499,7 @@ function regenerateMDX() {
         }
     }
 
-    throw new Error('Impossible de générer les fichiers MDX. Lancez manuellement: npx @mintlify/scraping@latest openapi-file v103/api-reference/openapi.json -o v103/api-reference/endpoint');
+    throw new Error('Impossible de générer les fichiers MDX. Lancez manuellement: npx @mintlify/scraping@latest openapi-file latest/api-reference/openapi.json -o latest/api-reference/endpoint');
 }
 
 // ============================================
@@ -555,7 +555,7 @@ function buildNavigation(generatedEndpoints) {
     let missingEndpoints = [];
 
     // Fonction utilitaire pour construire le chemin
-    const buildPath = (folder, filename) => `v103/api-reference/endpoint/${folder}/${filename}`;
+    const buildPath = (folder, filename) => `latest/api-reference/endpoint/${folder}/${filename}`;
 
     // Fonction pour vérifier si un endpoint existe
     const endpointExists = (folder, filename) => {
