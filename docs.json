@@ -35,6 +35,7 @@
                       "/latest/plateform-overview/key-features/cybe-autofix",
                       "/latest/plateform-overview/key-features/cybe-security-champion",
                       "/latest/plateform-overview/key-features/mcp-server-integration",
+                      "/latest/plateform-overview/key-features/policy-management",
                       "/latest/plateform-overview/key-features/rebac-management",
                       "/latest/plateform-overview/key-features/blsa-business-logic-security-analysis",
                       "/latest/plateform-overview/key-features/sovereign-data-storage"
@@ -367,6 +368,42 @@
                       "latest/api-reference/endpoint/ai-agent/get-conversation-messages",
                       "latest/api-reference/endpoint/ai-agent/delete-conversation",
                       "latest/api-reference/endpoint/ai-agent/stop-conversation-generation"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "Policy Management",
+                "pages": [
+                  {
+                    "group": "Policies",
+                    "pages": [
+                      "latest/api-reference/endpoint/policy/list-security-policies",
+                      "latest/api-reference/endpoint/policy/create-a-new-security-policy",
+                      "latest/api-reference/endpoint/policy/get-a-security-policy-by-id",
+                      "latest/api-reference/endpoint/policy/update-a-security-policy",
+                      "latest/api-reference/endpoint/policy/delete-a-security-policy",
+                      "latest/api-reference/endpoint/policy/enable-or-disable-a-security-policy",
+                      "latest/api-reference/endpoint/policy/get-effective-policies-for-a-project",
+                      "latest/api-reference/endpoint/policy/validate-a-policy-yaml-configuration-without-saving",
+                      "latest/api-reference/endpoint/policy/export-a-policy-as-yaml-file"
+                    ]
+                  },
+                  {
+                    "group": "Compliance & Evaluation",
+                    "pages": [
+                      "latest/api-reference/endpoint/policy/get-the-evaluation-status-for-a-scan",
+                      "latest/api-reference/endpoint/policy/get-compliance-result-for-a-scan",
+                      "latest/api-reference/endpoint/policy/get-compliance-history-for-a-project",
+                      "latest/api-reference/endpoint/policy/get-organization-wide-compliance-overview-for-ciso-dashboard"
+                    ]
+                  },
+                  {
+                    "group": "Violations",
+                    "pages": [
+                      "latest/api-reference/endpoint/policy/get-policy-violations-for-a-scan",
+                      "latest/api-reference/endpoint/policy/get-policy-violations-for-a-project",
+                      "latest/api-reference/endpoint/policy/get-violation-statistics-for-a-project"
                     ]
                   }
                 ]

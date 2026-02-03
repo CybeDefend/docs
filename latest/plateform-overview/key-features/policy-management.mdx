@@ -1,0 +1,429 @@
+---
+title: 'Policy Management'
+description: 'Define security policies as code and enforce compliance across your organization'
+icon: 'shield-check'
+---
+
+## Overview
+
+The **Policy Management** feature provides a **Policy as Code** approach to security governance. Define your security requirements in YAML or JSON, and CybeDefend will automatically evaluate every scan against your policies.
+
+<CardGroup cols={2}>
+  <Card title="Hierarchical Policies" icon="layer-group">
+    Organization → Team → Project hierarchy ensures policies cascade appropriately
+  </Card>
+  <Card title="Policy as Code" icon="code">
+    Version-controlled YAML/JSON policies that integrate with your GitOps workflow
+  </Card>
+  <Card title="Async Evaluation" icon="bolt">
+    Non-blocking BullMQ-based worker for fast policy evaluation
+  </Card>
+  <Card title="Compliance Tracking" icon="chart-line">
+    Full audit trail and compliance history for governance reporting
+  </Card>
+</CardGroup>
+
+---
+
+## Key Features
+
+### Policy Hierarchy
+
+Policies are applied in a hierarchical manner, ensuring organizational standards cannot be bypassed:
+
+```
+Organization Policy (highest priority)
+    ↓
+Team Policy
+    ↓
+Project Policy (lowest priority)
+```
+
+<Info>
+A policy at a higher level **cannot be disabled** by a policy at a lower level. Lower-level policies can only **add stricter rules**.
+</Info>
+
+### Automatic Vulnerability Filtering
+
+During policy evaluation, certain vulnerabilities are automatically ignored to focus on active security risks:
+
+| Status | Description |
+|--------|-------------|
+| `not_exploitable` | Manually reviewed and marked as not posing a security risk |
+| `resolved` / `fixed` | Already fixed in the source code |
+| `ignored` / `accepted_risk` | Risks that have been formally accepted by the organization |
+
+---
+
+## Policy Configuration
+
+Policies are defined in YAML format with complete metadata. Here's a full example:
+
+```yaml
+version: '1.0'
+name: 'Production Security Policy'
+description: 'Strict security policy for production deployments'
+scope: PROJECT  # ORGANIZATION | TEAM | PROJECT
+priority: 10    # 1-100 (lower = higher priority)
+enabled: true
+
+# For PROJECT scope - specify target projects
+projectIds:
+  - 550e8400-e29b-41d4-a716-446655440001
+
+rules:
+  - name: 'Block critical vulnerabilities'
+    type: severity
+    operator: eq
+    value: CRITICAL
+    action: block
+
+  - name: 'Warn on high vulnerabilities'
+    type: severity
+    operator: eq
+    value: HIGH
+    action: warn
+
+  - name: 'Block high CVSS scores'
+    type: cvss_score
+    operator: gt
+    value: 9.0
+    action: block
+
+# Optional exclusions (max 30)
+exclusions:
+  - pattern: 'test/**'
+    reason: 'Test files are not deployed to production'
+  
+  - pattern: '**/vendor/**'
+    reason: 'Third-party code - tracked separately'
+    expirationDate: '2026-06-30T00:00:00Z'
+```
+
+<Note>
+Policies require **1-15 rules** and support a **maximum of 30 exclusions**.
+</Note>
+
+---
+
+## Rule Types
+
+| Type | Description | Valid Values |
+|------|-------------|--------------|
+| `severity` | Vulnerability severity level | `critical`, `high`, `medium`, `low`, `info` |
+| `cvss_score` | CVSS score (0-10) | Numeric value (e.g., `7.5`, `9.0`) |
+| `cwe_check` | CWE identifier | String (e.g., `CWE-89`, `CWE-79`) |
+| `owasp_category` | OWASP Top 10 category | String (e.g., `A01:2021`, `A03:2021`) |
+| `scanner_type` | Type of scanner | `sast`, `secret`, `sca`, `container`, `iac`, `cicd` |
+| `vulnerability_age_days` | Days since detection | Numeric value |
+| `is_new_vulnerability` | Whether vulnerability is new | Boolean (`true`/`false`) |
+| `branch` | Git branch name (supports glob) | String (e.g., `main`, `feature/*`) |
+| `composite_and` | Combine rules with AND logic | Array of sub-rules |
+| `composite_or` | Combine rules with OR logic | Array of sub-rules |
+
+---
+
+## Operators
+
+| Operator | Description | Example |
+|----------|-------------|---------|
+| `eq` | Equals (exact match) | `severity eq critical` |
+| `neq` | Not equals | `severity neq info` |
+| `gt` | Greater than | `cvss_score gt 7.0` |
+| `lt` | Less than | `vulnerability_age_days lt 30` |
+| `gte` | Greater than or equal | `cvss_score gte 9.0` |
+| `lte` | Less than or equal | `vulnerability_age_days lte 7` |
+| `in` | In list | `severity in [critical, high]` |
+| `not_in` | Not in list | `cwe_check not_in [CWE-1, CWE-2]` |
+
+---
+
+## Actions
+
+| Action | Description | CI/CD Exit Code |
+|--------|-------------|-----------------|
+| `block` | Blocks the pipeline, creates violation record | `1` |
+| `warn` | Creates violation record, doesn't block | `0` |
+
+---
+
+## Composite Rules
+
+Use composite rules to combine multiple conditions:
+
+### AND Logic (All conditions must match)
+
+```yaml
+- name: 'Block Critical on Main Branch'
+  type: composite_and
+  action: block
+  criteria:
+    - type: severity
+      operator: eq
+      value: CRITICAL
+    - type: branch
+      operator: eq
+      value: main
+```
+
+### OR Logic (Any condition can match)
+
+```yaml
+- name: 'Block dangerous patterns'
+  type: composite_or
+  action: block
+  criteria:
+    - type: cvss_score
+      operator: gt
+      value: 9.0
+    - type: cwe_check
+      operator: in
+      value: ['CWE-89', 'CWE-78', 'CWE-94']
+```
+
+---
+
+## Exclusions
+
+Exclusions allow you to skip policy evaluation for specific files or patterns:
+
+```yaml
+exclusions:
+  - pattern: 'test/**'
+    reason: 'Test files are not deployed'  # Required
+
+  - pattern: '**/node_modules/**'
+    reason: 'Dependencies tracked via SCA'
+    expirationDate: '2026-12-31T00:00:00Z'  # Optional expiration
+```
+
+**Pattern matching uses glob patterns:**
+- `**` matches any number of directories
+- `*` matches any characters except `/`
+- `?` matches a single character
+
+<Warning>
+Always set expiration dates on exclusions to prevent permanent security gaps.
+</Warning>
+
+---
+
+## Policy Examples
+
+### Branch-Based Policy (Production Protection)
+
+```yaml
+version: '1.0'
+name: 'Production Branch Policy'
+description: 'Strict policy for production branches'
+scope: PROJECT
+priority: 5
+enabled: true
+projectIds:
+  - 550e8400-e29b-41d4-a716-446655440001
+
+rules:
+  # Block ALL high/critical on main and release branches
+  - name: 'Block critical on production branches'
+    type: composite_and
+    action: block
+    criteria:
+      - type: branch
+        operator: in
+        value: ['main', 'master', 'release-*', 'release/*']
+      - type: severity
+        operator: in
+        value: [CRITICAL, HIGH]
+
+  # Only warn on feature branches
+  - name: 'Warn on feature branches'
+    type: composite_and
+    action: warn
+    criteria:
+      - type: branch
+        operator: in
+        value: ['feature/*', 'feat/*', 'develop']
+      - type: severity
+        operator: eq
+        value: CRITICAL
+
+  # Block secrets on any branch
+  - name: 'Always block exposed secrets'
+    type: composite_and
+    action: block
+    criteria:
+      - type: scanner_type
+        operator: eq
+        value: SECRET
+      - type: severity
+        operator: in
+        value: [CRITICAL, HIGH]
+```
+
+### Multi-Scanner Organization Policy
+
+```yaml
+version: '1.0'
+name: 'Organization Security Policy'
+description: 'Enterprise-wide policy for all scanners'
+scope: ORGANIZATION
+priority: 1
+enabled: true
+
+rules:
+  # SAST Rules
+  - name: 'SAST - Block critical vulnerabilities'
+    type: composite_and
+    action: block
+    criteria:
+      - type: scanner_type
+        operator: eq
+        value: sast
+      - type: severity
+        operator: eq
+        value: CRITICAL
+
+  # Secret Detection
+  - name: 'Secrets - Block exposed secrets'
+    type: composite_and
+    action: block
+    criteria:
+      - type: scanner_type
+        operator: eq
+        value: secret
+      - type: severity
+        operator: in
+        value: ['CRITICAL', 'HIGH']
+
+  # Container Scanning
+  - name: 'Container - Block high CVSS'
+    type: composite_and
+    action: block
+    criteria:
+      - type: scanner_type
+        operator: eq
+        value: container
+      - type: cvss_score
+        operator: gt
+        value: 8.0
+
+  # OWASP Categories
+  - name: 'OWASP A01 - Broken Access Control'
+    type: owasp_category
+    operator: eq
+    value: 'A01:2021'
+    action: block
+
+exclusions:
+  - pattern: 'test/**'
+    reason: 'Test files'
+  - pattern: 'docs/**'
+    reason: 'Documentation'
+```
+
+---
+
+## CI/CD Integration
+
+### GitHub Actions
+
+```yaml
+name: Security Check
+
+on: [push, pull_request]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run CybeDefend Scan
+        run: cybedefend scan --all
+
+      - name: Evaluate Policies
+        env:
+          CYBEDEFEND_API_KEY: ${{ secrets.CYBEDEFEND_API_KEY }}
+        run: |
+          # Trigger policy evaluation
+          RESULT=$(curl -s -H "Authorization: Bearer $CYBEDEFEND_API_KEY" \
+            "$CYBEDEFEND_API/scans/$SCAN_ID/compliance")
+          
+          EXIT_CODE=$(echo $RESULT | jq -r '.result.exitCode')
+          exit $EXIT_CODE
+```
+
+### GitLab CI
+
+```yaml
+security-check:
+  stage: test
+  script:
+    - cybedefend scan --all
+    - cybedefend check-compliance --scan-id $SCAN_ID --exit-on-failure
+  artifacts:
+    reports:
+      security: security-report.json
+```
+
+---
+
+## Managing Violations
+
+When a policy violation occurs, you have two options to resolve it:
+
+<Steps>
+  <Step title="Change Vulnerability Status">
+    Change the vulnerability status from "open" to "ignored" with a justification. The vulnerability will be excluded from future policy evaluations.
+  </Step>
+  <Step title="Fix the Vulnerability">
+    Resolve the security issue directly in your source code and re-run the scan. The vulnerability will be marked as "resolved" and excluded from policy evaluations.
+  </Step>
+</Steps>
+
+<Tip>
+Both approaches create an audit trail. Changing status to "ignored" requires a comment explaining the risk acceptance decision.
+</Tip>
+
+---
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Start with Warning-Only Mode">
+    When rolling out policies, start with `action: warn` to understand the impact before switching to `action: block`.
+  </Accordion>
+  
+  <Accordion title="Use Expiring Exclusions">
+    Always set expiration dates on exclusions to prevent permanent security gaps:
+    ```yaml
+    exclusions:
+      - pattern: 'src/legacy/**'
+        reason: 'Technical debt - scheduled for Q2 refactor'
+        expirationDate: '2026-06-30T00:00:00Z'
+    ```
+  </Accordion>
+  
+  <Accordion title="Layer Policies Appropriately">
+    - **Organization level**: Global security requirements (e.g., no exposed secrets)
+    - **Team level**: Team-specific standards (e.g., frontend vs backend rules)
+    - **Project level**: Project-specific exclusions only
+  </Accordion>
+  
+  <Accordion title="Version Control Your Policies">
+    Store policy YAML files in your repository:
+    ```
+    repo/
+    ├── .cybedefend/
+    │   ├── policies/
+    │   │   ├── sast-policy.yaml
+    │   │   ├── sca-policy.yaml
+    │   │   └── secret-policy.yaml
+    │   └── README.md
+    ```
+  </Accordion>
+</AccordionGroup>
+
+---
+
+**Related:** [API Reference - Policy Management](/latest/api-reference/introduction) · [Managing Vulnerabilities](/latest/managing-vulnerabilities/project-vulnerability-list) · [CI/CD Integrations](/latest/code-scanning/ci-cd-integrations/github-action-setup)

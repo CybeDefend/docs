@@ -218,6 +218,43 @@ const CONFIG = {
             }
         },
 
+        // Groupe "Policy Management"
+        "Policy Management": {
+            subgroups: {
+                "Policies": {
+                    folder: "policy",
+                    pages: [
+                        "list-security-policies",
+                        "create-a-new-security-policy",
+                        "get-a-security-policy-by-id",
+                        "update-a-security-policy",
+                        "delete-a-security-policy",
+                        "enable-or-disable-a-security-policy",
+                        "get-effective-policies-for-a-project",
+                        "validate-a-policy-yaml-configuration-without-saving",
+                        "export-a-policy-as-yaml-file"
+                    ]
+                },
+                "Compliance & Evaluation": {
+                    folder: "policy",
+                    pages: [
+                        "get-the-evaluation-status-for-a-scan",
+                        "get-compliance-result-for-a-scan",
+                        "get-compliance-history-for-a-project",
+                        "get-organization-wide-compliance-overview-for-ciso-dashboard"
+                    ]
+                },
+                "Violations": {
+                    folder: "policy",
+                    pages: [
+                        "get-policy-violations-for-a-scan",
+                        "get-policy-violations-for-a-project",
+                        "get-violation-statistics-for-a-project"
+                    ]
+                }
+            }
+        },
+
         // Groupe "Source Code Integrations"
         "Source Code Integrations": {
             mainPages: ["latest/api-reference/endpoint/integrations/get-integration-overview-for-organization"],

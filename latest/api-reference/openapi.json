@@ -3797,7 +3797,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StoreCredentialsDto"
+                "$ref": "#/components/schemas/GcrStoreCredentialsDto"
               }
             }
           }
@@ -4211,7 +4211,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StartContainerScanDto"
+                "$ref": "#/components/schemas/GcrStartContainerScanDto"
               }
             }
           }
@@ -4571,7 +4571,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StoreCredentialsDto"
+                "$ref": "#/components/schemas/GitlabStoreCredentialsDto"
               }
             }
           }
@@ -4985,7 +4985,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StartContainerScanDto"
+                "$ref": "#/components/schemas/GitlabStartContainerScanDto"
               }
             }
           }
@@ -6004,7 +6004,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StartContainerScanDto"
+                "$ref": "#/components/schemas/GithubStartContainerScanDto"
               }
             }
           }
@@ -6130,7 +6130,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StoreCredentialsDto"
+                "$ref": "#/components/schemas/DockerhubStoreCredentialsDto"
               }
             }
           }
@@ -6499,7 +6499,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StartContainerScanDto"
+                "$ref": "#/components/schemas/DockerhubStartContainerScanDto"
               }
             }
           }
@@ -6890,7 +6890,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StoreCredentialsDto"
+                "$ref": "#/components/schemas/EcrStoreCredentialsDto"
               }
             }
           }
@@ -7259,7 +7259,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StartContainerScanDto"
+                "$ref": "#/components/schemas/EcrStartContainerScanDto"
               }
             }
           }
@@ -7638,7 +7638,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StoreCredentialsDto"
+                "$ref": "#/components/schemas/AcrStoreCredentialsDto"
               }
             }
           }
@@ -8007,7 +8007,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StartContainerScanDto"
+                "$ref": "#/components/schemas/AcrStartContainerScanDto"
               }
             }
           }
@@ -8350,7 +8350,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StoreCredentialsDto"
+                "$ref": "#/components/schemas/QuayStoreCredentialsDto"
               }
             }
           }
@@ -8764,7 +8764,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StartContainerScanDto"
+                "$ref": "#/components/schemas/QuayStartContainerScanDto"
               }
             }
           }
@@ -9155,7 +9155,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StoreCredentialsDto"
+                "$ref": "#/components/schemas/HarborStoreCredentialsDto"
               }
             }
           }
@@ -9983,7 +9983,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StartContainerScanDto"
+                "$ref": "#/components/schemas/HarborStartContainerScanDto"
               }
             }
           }
@@ -10109,7 +10109,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StoreCredentialsDto"
+                "$ref": "#/components/schemas/JfrogStoreCredentialsDto"
               }
             }
           }
@@ -10946,7 +10946,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StartContainerScanDto"
+                "$ref": "#/components/schemas/JfrogStartContainerScanDto"
               }
             }
           }
@@ -11270,6 +11270,157 @@
           }
         ],
         "summary": "Get all container images of a project",
+        "tags": [
+          "Results & Vulnerabilities"
+        ]
+      }
+    },
+    "/project/{projectId}/results/container/images/grouped": {
+      "get": {
+        "description": "Retrieves container images grouped by repository name, showing all tags within each image. Useful for viewing images with multiple tags (e.g., v1.0.0, latest) as a single entity.",
+        "operationId": "ResultController_getGroupedContainerImages",
+        "parameters": [
+          {
+            "name": "projectId",
+            "required": true,
+            "in": "path",
+            "description": "Project identifier",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (starts from 1)",
+            "schema": {
+              "minimum": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "branch",
+            "required": false,
+            "in": "query",
+            "description": "Branch name to filter container images",
+            "schema": {
+              "example": "main",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "description": "Sort field",
+            "schema": {
+              "example": "latestScanAt",
+              "type": "string",
+              "enum": [
+                "repositoryName",
+                "tagCount",
+                "latestScanAt"
+              ]
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "description": "Sort order",
+            "schema": {
+              "example": "DESC",
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "name": "searchQuery",
+            "required": false,
+            "in": "query",
+            "description": "Search query for repository name",
+            "schema": {
+              "example": "nginx",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Grouped container images retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetGroupedContainerImagesResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Unauthorized",
+                    "statusCode": 401,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Forbidden",
+                    "statusCode": 403,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ],
+        "summary": "Get container images grouped by repository",
         "tags": [
           "Results & Vulnerabilities"
         ]
@@ -17713,6 +17864,1036 @@
           "Container Registry Credentials"
         ]
       }
+    },
+    "/organization/{organizationId}/policies": {
+      "post": {
+        "operationId": "PolicyController_createPolicy",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePolicyBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Policy created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new security policy",
+        "tags": [
+          "Policy"
+        ]
+      },
+      "get": {
+        "operationId": "PolicyController_listPolicies",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "scope",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "ORGANIZATION",
+                "TEAM",
+                "PROJECT"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "isEnabled",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of policies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyListResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List security policies",
+        "tags": [
+          "Policy"
+        ]
+      }
+    },
+    "/organization/{organizationId}/policies/{policyId}": {
+      "get": {
+        "operationId": "PolicyController_getPolicy",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "policyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Policy details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Policy not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get a security policy by ID",
+        "tags": [
+          "Policy"
+        ]
+      },
+      "put": {
+        "operationId": "PolicyController_updatePolicy",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "policyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePolicyBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a security policy",
+        "tags": [
+          "Policy"
+        ]
+      },
+      "delete": {
+        "operationId": "PolicyController_deletePolicy",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "policyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Policy deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletePolicyResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a security policy",
+        "tags": [
+          "Policy"
+        ]
+      }
+    },
+    "/organization/{organizationId}/policies/{policyId}/toggle": {
+      "put": {
+        "description": "Toggle the enabled state of a security policy. For organization-level policies, only one can be active at a time.",
+        "operationId": "PolicyController_togglePolicy",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "policyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "isEnabled": {
+                    "type": "boolean",
+                    "description": "New enabled state for the policy"
+                  }
+                },
+                "required": [
+                  "isEnabled"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Policy state toggled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - e.g., trying to enable an organization policy when another is already active",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Policy not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Enable or disable a security policy",
+        "tags": [
+          "Policy"
+        ]
+      }
+    },
+    "/projects/{projectId}/effective-policies": {
+      "get": {
+        "description": "Returns the list of policies that apply to this project (from organization, team, and project scopes).",
+        "operationId": "PolicyController_getEffectivePolicies",
+        "parameters": [
+          {
+            "name": "projectId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Effective policies for the project",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EffectivePolicyResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get effective policies for a project",
+        "tags": [
+          "Policy"
+        ]
+      }
+    },
+    "/organization/{organizationId}/policies/validate": {
+      "post": {
+        "operationId": "PolicyController_validatePolicy",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "yamlContent": {
+                    "type": "string",
+                    "description": "YAML policy configuration to validate"
+                  }
+                },
+                "required": [
+                  "yamlContent"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Validation result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidatePolicyResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Validate a policy YAML configuration without saving",
+        "tags": [
+          "Policy"
+        ]
+      }
+    },
+    "/organization/{organizationId}/policies/{policyId}/yaml": {
+      "get": {
+        "operationId": "PolicyController_exportPolicyYaml",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "policyId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Policy YAML content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportPolicyYamlResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Export a policy as YAML file",
+        "tags": [
+          "Policy"
+        ]
+      }
+    },
+    "/projects/{projectId}/scans/{scanId}/evaluation-status": {
+      "get": {
+        "description": "Check if a policy evaluation has been triggered for this scan, and if so, what its current status is. Used by the CLI to poll for completion before checking compliance results.",
+        "operationId": "PolicyController_getScanEvaluationStatus",
+        "parameters": [
+          {
+            "name": "projectId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "scanId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Evaluation status for the scan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScanEvaluationStatusResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get the evaluation status for a scan",
+        "tags": [
+          "Policy"
+        ]
+      }
+    },
+    "/projects/{projectId}/scans/{scanId}/compliance": {
+      "get": {
+        "description": "Returns the compliance result from the most recent policy evaluation for this scan.",
+        "operationId": "PolicyController_getComplianceResult",
+        "parameters": [
+          {
+            "name": "projectId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "scanId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "evaluationId",
+            "required": false,
+            "in": "query",
+            "description": "Specific evaluation ID (optional)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Compliance result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplianceResultResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get compliance result for a scan",
+        "tags": [
+          "Policy"
+        ]
+      }
+    },
+    "/projects/{projectId}/compliance-history": {
+      "get": {
+        "description": "Returns a paginated list of past policy evaluations for the project.",
+        "operationId": "PolicyController_getComplianceHistory",
+        "parameters": [
+          {
+            "name": "projectId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "startDate",
+            "required": false,
+            "in": "query",
+            "description": "ISO date string",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "description": "ISO date string",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Compliance history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplianceHistoryResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get compliance history for a project",
+        "tags": [
+          "Policy"
+        ]
+      }
+    },
+    "/projects/{projectId}/scans/{scanId}/violations": {
+      "get": {
+        "operationId": "PolicyController_getScanViolations",
+        "parameters": [
+          {
+            "name": "projectId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "scanId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of violations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ViolationListResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get policy violations for a scan",
+        "tags": [
+          "Policy"
+        ]
+      }
+    },
+    "/projects/{projectId}/violations": {
+      "get": {
+        "operationId": "PolicyController_getProjectViolations",
+        "parameters": [
+          {
+            "name": "projectId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of violations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ViolationListResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get policy violations for a project",
+        "tags": [
+          "Policy"
+        ]
+      }
+    },
+    "/projects/{projectId}/violation-stats": {
+      "get": {
+        "operationId": "PolicyController_getViolationStats",
+        "parameters": [
+          {
+            "name": "projectId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "startDate",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Violation statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ViolationStatsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get violation statistics for a project",
+        "tags": [
+          "Policy"
+        ]
+      }
+    },
+    "/organization/{organizationId}/compliance-overview": {
+      "get": {
+        "description": "Returns a comprehensive overview of all projects within the organization with their compliance status, violation statistics, breakdown by rule type, and trend data for the last 30 days.",
+        "operationId": "PolicyController_getOrganizationComplianceOverview",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default: 1)",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "Page size (default: 20)",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "startDate",
+            "required": false,
+            "in": "query",
+            "description": "Filter start date (ISO 8601)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "description": "Filter end date (ISO 8601)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "complianceStatus",
+            "required": false,
+            "in": "query",
+            "description": "Filter by compliance status",
+            "schema": {
+              "enum": [
+                "Compliant",
+                "Non-Compliant",
+                "Pending"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Search by project name",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "Sort field",
+            "schema": {
+              "enum": [
+                "blockedCount",
+                "warnedCount",
+                "totalViolations",
+                "lastEvaluatedAt",
+                "projectName"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort order (default: desc)",
+            "schema": {
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "timeframe",
+            "required": false,
+            "in": "query",
+            "description": "Timeframe for trend aggregation: day (default), week, or month",
+            "schema": {
+              "enum": [
+                "day",
+                "week",
+                "month"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organization compliance overview",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationComplianceOverviewResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get organization-wide compliance overview for CISO dashboard",
+        "tags": [
+          "Policy"
+        ]
+      }
     }
   },
   "info": {
@@ -18474,6 +19655,10 @@
             "type": "string",
             "description": "Risk level of the project"
           },
+          "riskScore": {
+            "type": "number",
+            "description": "Risk score of the project (0-100)"
+          },
           "issuesCount": {
             "description": "Number of issues by severity",
             "allOf": [
@@ -18509,6 +19694,7 @@
           "createdAt",
           "updatedAt",
           "riskLevel",
+          "riskScore",
           "issuesCount",
           "analyses",
           "isGithubLinked",
@@ -18518,6 +19704,14 @@
       "MainStatisticsResponseDto": {
         "type": "object",
         "properties": {
+          "criticalRiskProjects": {
+            "type": "number",
+            "description": "Number of critical risk projects"
+          },
+          "criticalRiskProjectsInLast7Days": {
+            "type": "number",
+            "description": "Number of critical risk projects in the last 7 days"
+          },
           "highRiskProjects": {
             "type": "number",
             "description": "Number of high risk projects"
@@ -18560,6 +19754,8 @@
           }
         },
         "required": [
+          "criticalRiskProjects",
+          "criticalRiskProjectsInLast7Days",
           "highRiskProjects",
           "highRiskProjectsInLast7Days",
           "solvedIssues",
@@ -18635,6 +19831,14 @@
             "format": "date-time",
             "type": "string",
             "description": "Project last update date"
+          },
+          "riskScore": {
+            "type": "number",
+            "description": "Risk score of the project (0-100)"
+          },
+          "riskLevel": {
+            "type": "string",
+            "description": "Risk level of the project"
           },
           "applicationType": {
             "type": "string",
@@ -18808,7 +20012,9 @@
           "teamName",
           "name",
           "createdAt",
-          "updatedAt"
+          "updatedAt",
+          "riskScore",
+          "riskLevel"
         ]
       },
       "PaginatedProjectsResponseDto": {
@@ -19925,7 +21131,7 @@
           "message"
         ]
       },
-      "StoreCredentialsDto": {
+      "GcrStoreCredentialsDto": {
         "type": "object",
         "properties": {
           "projectId": {
@@ -19933,38 +21139,32 @@
             "description": "CybeDefend project ID to associate this credential with",
             "example": "097bbbf4-d1eb-4512-9950-684445279808"
           },
-          "jfrogUrl": {
+          "gcpProjectId": {
             "type": "string",
-            "description": "JFrog Artifactory URL (e.g., https://mycompany.jfrog.io)",
-            "example": "https://mycompany.jfrog.io"
+            "description": "GCP project ID",
+            "example": "my-gcp-project-123"
           },
-          "repositoryKey": {
+          "registryHostname": {
             "type": "string",
-            "description": "Docker repository key in JFrog",
-            "example": "docker-local"
+            "description": "Registry hostname (gcr.io, us.gcr.io, eu.gcr.io, asia.gcr.io, or Artifact Registry hostname)",
+            "example": "gcr.io"
           },
-          "username": {
+          "serviceAccountKey": {
             "type": "string",
-            "description": "JFrog username or email",
-            "example": "user@example.com"
-          },
-          "password": {
-            "type": "string",
-            "description": "JFrog password or API key/identity token",
-            "example": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+            "description": "GCP Service Account JSON key (entire JSON content)",
+            "example": "{\"type\": \"service_account\", \"project_id\": \"...\", ...}"
           },
           "description": {
             "type": "string",
-            "description": "Optional description for the credentials",
-            "example": "Production JFrog Artifactory registry"
+            "description": "Description for this credential",
+            "example": "Production container registry"
           }
         },
         "required": [
           "projectId",
-          "jfrogUrl",
-          "repositoryKey",
-          "username",
-          "password"
+          "gcpProjectId",
+          "registryHostname",
+          "serviceAccountKey"
         ]
       },
       "GcrCredentialResponseDto": {
@@ -20039,7 +21239,7 @@
           "createdAt"
         ]
       },
-      "StartContainerScanDto": {
+      "GcrStartContainerScanDto": {
         "type": "object",
         "properties": {
           "credentialId": {
@@ -20077,6 +21277,71 @@
         "required": [
           "credentialId",
           "imageName"
+        ]
+      },
+      "GitlabStoreCredentialsDto": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "CybeDefend project ID to associate this credential with",
+            "example": "097bbbf4-d1eb-4512-9950-684445279808"
+          },
+          "gitlabProjectId": {
+            "type": "number",
+            "description": "GitLab project ID (numeric)",
+            "example": 12345
+          },
+          "username": {
+            "type": "string",
+            "description": "Deploy token username from GitLab",
+            "example": "gitlab+deploy-token-123"
+          },
+          "deployToken": {
+            "type": "string",
+            "description": "Deploy token secret from GitLab",
+            "example": "gldt-xxxxxxxxxxxxxxxxxxxx"
+          },
+          "scopes": {
+            "description": "Token scopes",
+            "example": [
+              "read_registry",
+              "write_registry"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "registryUrl": {
+            "type": "string",
+            "description": "Container registry URL",
+            "example": "registry.gitlab.com",
+            "default": "registry.gitlab.com"
+          },
+          "projectPath": {
+            "type": "string",
+            "description": "GitLab project path (namespace/project)",
+            "example": "mygroup/myproject"
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "Token expiration date (ISO 8601)",
+            "example": "2025-12-31T23:59:59Z"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description for this credential",
+            "example": "Production registry access"
+          }
+        },
+        "required": [
+          "projectId",
+          "gitlabProjectId",
+          "username",
+          "deployToken",
+          "registryUrl",
+          "projectPath"
         ]
       },
       "GitlabCredentialResponseDto": {
@@ -20182,6 +21447,46 @@
           "registryUrl",
           "projectPath",
           "createdAt"
+        ]
+      },
+      "GitlabStartContainerScanDto": {
+        "type": "object",
+        "properties": {
+          "credentialId": {
+            "type": "string",
+            "description": "Credential ID to use for authentication",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "imageName": {
+            "type": "string",
+            "description": "Image name with tag to scan",
+            "example": "my-app:v1.0.0"
+          },
+          "branch": {
+            "type": "string",
+            "description": "Branch name for tracking purposes",
+            "example": "main"
+          },
+          "privateScan": {
+            "type": "boolean",
+            "description": "Whether the scan results should be private",
+            "default": false
+          },
+          "severities": {
+            "description": "Vulnerability severities to include",
+            "example": [
+              "CRITICAL",
+              "HIGH"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "credentialId",
+          "imageName"
         ]
       },
       "GithubRegistryTokenResponseDto": {
@@ -20543,6 +21848,70 @@
           "message"
         ]
       },
+      "GithubStartContainerScanDto": {
+        "type": "object",
+        "properties": {
+          "imageName": {
+            "type": "string",
+            "description": "Image name with tag to scan (e.g., \"my-app:v1.0.0\" or \"my-app@sha256:...\")",
+            "example": "my-app:v1.0.0"
+          },
+          "branch": {
+            "type": "string",
+            "description": "Branch name for tracking purposes",
+            "example": "main"
+          },
+          "privateScan": {
+            "type": "boolean",
+            "description": "Whether the scan results should be private",
+            "default": false
+          },
+          "severities": {
+            "description": "Vulnerability severities to include",
+            "example": [
+              "CRITICAL",
+              "HIGH"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "imageName"
+        ]
+      },
+      "DockerhubStoreCredentialsDto": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "CybeDefend project ID to associate this credential with",
+            "example": "097bbbf4-d1eb-4512-9950-684445279808"
+          },
+          "dockerhubUsername": {
+            "type": "string",
+            "description": "DockerHub username or organization",
+            "example": "myusername"
+          },
+          "accessToken": {
+            "type": "string",
+            "description": "DockerHub Personal Access Token (PAT)",
+            "example": "dckr_pat_xxxxxxxxxxxxxxxxxxxx"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description for this credential",
+            "example": "Production registry access"
+          }
+        },
+        "required": [
+          "projectId",
+          "dockerhubUsername",
+          "accessToken"
+        ]
+      },
       "DockerhubCredentialResponseDto": {
         "type": "object",
         "properties": {
@@ -20607,6 +21976,88 @@
           "id",
           "dockerhubUsername",
           "createdAt"
+        ]
+      },
+      "DockerhubStartContainerScanDto": {
+        "type": "object",
+        "properties": {
+          "credentialId": {
+            "type": "string",
+            "description": "Credential ID to use for authentication",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "imageName": {
+            "type": "string",
+            "description": "Image name with tag to scan (e.g., myuser/myapp:v1.0.0)",
+            "example": "myuser/myapp:v1.0.0"
+          },
+          "branch": {
+            "type": "string",
+            "description": "Branch name for tracking purposes",
+            "example": "main"
+          },
+          "privateScan": {
+            "type": "boolean",
+            "description": "Whether the scan results should be private",
+            "default": false
+          },
+          "severities": {
+            "description": "Vulnerability severities to include",
+            "example": [
+              "CRITICAL",
+              "HIGH"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "credentialId",
+          "imageName"
+        ]
+      },
+      "EcrStoreCredentialsDto": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "CybeDefend project ID to associate this credential with",
+            "example": "097bbbf4-d1eb-4512-9950-684445279808"
+          },
+          "awsAccountId": {
+            "type": "string",
+            "description": "AWS Account ID (12 digits)",
+            "example": "123456789012"
+          },
+          "awsRegion": {
+            "type": "string",
+            "description": "AWS Region",
+            "example": "us-east-1"
+          },
+          "awsAccessKeyId": {
+            "type": "string",
+            "description": "AWS Access Key ID",
+            "example": "AKIAIOSFODNN7EXAMPLE"
+          },
+          "awsSecretAccessKey": {
+            "type": "string",
+            "description": "AWS Secret Access Key",
+            "example": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description for this credential",
+            "example": "Production ECR registry"
+          }
+        },
+        "required": [
+          "projectId",
+          "awsAccountId",
+          "awsRegion",
+          "awsAccessKeyId",
+          "awsSecretAccessKey"
         ]
       },
       "EcrCredentialResponseDto": {
@@ -20687,6 +22138,82 @@
           "createdAt"
         ]
       },
+      "EcrStartContainerScanDto": {
+        "type": "object",
+        "properties": {
+          "credentialId": {
+            "type": "string",
+            "description": "Credential ID to use for authentication",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "imageName": {
+            "type": "string",
+            "description": "Image name with tag to scan (e.g., my-app:v1.0.0)",
+            "example": "my-app:v1.0.0"
+          },
+          "branch": {
+            "type": "string",
+            "description": "Branch name for tracking purposes",
+            "example": "main"
+          },
+          "privateScan": {
+            "type": "boolean",
+            "description": "Whether the scan results should be private",
+            "default": false
+          },
+          "severities": {
+            "description": "Vulnerability severities to include",
+            "example": [
+              "CRITICAL",
+              "HIGH"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "credentialId",
+          "imageName"
+        ]
+      },
+      "AcrStoreCredentialsDto": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "CybeDefend project ID to associate this credential with",
+            "example": "097bbbf4-d1eb-4512-9950-684445279808"
+          },
+          "acrLoginServer": {
+            "type": "string",
+            "description": "ACR Login Server URL",
+            "example": "myregistry.azurecr.io"
+          },
+          "servicePrincipalId": {
+            "type": "string",
+            "description": "Service Principal ID (App ID)",
+            "example": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          },
+          "servicePrincipalPassword": {
+            "type": "string",
+            "description": "Service Principal Password (Client Secret)",
+            "example": "your-secret-password"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description for this credential",
+            "example": "Production ACR registry"
+          }
+        },
+        "required": [
+          "projectId",
+          "acrLoginServer",
+          "servicePrincipalId",
+          "servicePrincipalPassword"
+        ]
+      },
       "AcrCredentialResponseDto": {
         "type": "object",
         "properties": {
@@ -20757,6 +22284,88 @@
           "acrLoginServer",
           "servicePrincipalId",
           "createdAt"
+        ]
+      },
+      "AcrStartContainerScanDto": {
+        "type": "object",
+        "properties": {
+          "credentialId": {
+            "type": "string",
+            "description": "Credential ID to use for authentication",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "imageName": {
+            "type": "string",
+            "description": "Image name with tag to scan",
+            "example": "my-app:v1.0.0"
+          },
+          "branch": {
+            "type": "string",
+            "description": "Branch name for tracking purposes",
+            "example": "main"
+          },
+          "privateScan": {
+            "type": "boolean",
+            "description": "Whether the scan results should be private",
+            "default": false
+          },
+          "severities": {
+            "description": "Vulnerability severities to include",
+            "example": [
+              "CRITICAL",
+              "HIGH"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "credentialId",
+          "imageName"
+        ]
+      },
+      "QuayStoreCredentialsDto": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "CybeDefend project ID to associate this credential with",
+            "example": "097bbbf4-d1eb-4512-9950-684445279808"
+          },
+          "quayNamespace": {
+            "type": "string",
+            "description": "The Quay.io namespace (organization or user)",
+            "example": "myorganization"
+          },
+          "robotUsername": {
+            "type": "string",
+            "description": "The Quay.io robot account username",
+            "example": "myorganization+deploy_robot"
+          },
+          "robotToken": {
+            "type": "string",
+            "description": "The Quay.io robot account token",
+            "example": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+          },
+          "quayHost": {
+            "type": "string",
+            "description": "The Quay.io registry host (default: quay.io). Use custom host for self-hosted Quay",
+            "example": "quay.io",
+            "default": "quay.io"
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional description for the credentials",
+            "example": "Production deployment credentials"
+          }
+        },
+        "required": [
+          "projectId",
+          "quayNamespace",
+          "robotUsername",
+          "robotToken"
         ]
       },
       "QuayCredentialResponseDto": {
@@ -20841,6 +22450,88 @@
           "robotUsername",
           "quayHost",
           "createdAt"
+        ]
+      },
+      "QuayStartContainerScanDto": {
+        "type": "object",
+        "properties": {
+          "credentialId": {
+            "type": "string",
+            "description": "Credential ID to use for authentication",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "imageName": {
+            "type": "string",
+            "description": "Image name with tag to scan",
+            "example": "my-app:v1.0.0"
+          },
+          "branch": {
+            "type": "string",
+            "description": "Branch name for tracking purposes",
+            "example": "main"
+          },
+          "privateScan": {
+            "type": "boolean",
+            "description": "Whether the scan results should be private",
+            "default": false
+          },
+          "severities": {
+            "description": "Vulnerability severities to include",
+            "example": [
+              "CRITICAL",
+              "HIGH"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "credentialId",
+          "imageName"
+        ]
+      },
+      "HarborStoreCredentialsDto": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "CybeDefend project ID to associate this credential with",
+            "example": "097bbbf4-d1eb-4512-9950-684445279808"
+          },
+          "harborUrl": {
+            "type": "string",
+            "description": "Harbor server URL (e.g., https://harbor.example.com)",
+            "example": "https://harbor.example.com"
+          },
+          "harborProject": {
+            "type": "string",
+            "description": "Harbor project name",
+            "example": "my-project"
+          },
+          "username": {
+            "type": "string",
+            "description": "Robot account username. Required permissions: List/Read Artifact, List Label, Read Project, List/Pull/Read Repository, List Tag",
+            "example": "robot$my-project+deploy"
+          },
+          "password": {
+            "type": "string",
+            "description": "Robot account secret token",
+            "example": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional description for the credentials",
+            "example": "Production Harbor registry"
+          }
+        },
+        "required": [
+          "projectId",
+          "harborUrl",
+          "harborProject",
+          "username",
+          "password"
         ]
       },
       "HarborCredentialResponseDto": {
@@ -21146,6 +22837,88 @@
           "pageSize"
         ]
       },
+      "HarborStartContainerScanDto": {
+        "type": "object",
+        "properties": {
+          "credentialId": {
+            "type": "string",
+            "description": "Credential ID to use for authentication",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "imageName": {
+            "type": "string",
+            "description": "Image name with tag to scan (e.g., my-app:v1.0.0)",
+            "example": "my-app:v1.0.0"
+          },
+          "branch": {
+            "type": "string",
+            "description": "Branch name for tracking purposes",
+            "example": "main"
+          },
+          "privateScan": {
+            "type": "boolean",
+            "description": "Whether the scan results should be private",
+            "default": false
+          },
+          "severities": {
+            "description": "Vulnerability severities to include",
+            "example": [
+              "CRITICAL",
+              "HIGH"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "credentialId",
+          "imageName"
+        ]
+      },
+      "JfrogStoreCredentialsDto": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "CybeDefend project ID to associate this credential with",
+            "example": "097bbbf4-d1eb-4512-9950-684445279808"
+          },
+          "jfrogUrl": {
+            "type": "string",
+            "description": "JFrog Artifactory URL (e.g., https://mycompany.jfrog.io)",
+            "example": "https://mycompany.jfrog.io"
+          },
+          "repositoryKey": {
+            "type": "string",
+            "description": "Docker repository key in JFrog",
+            "example": "docker-local"
+          },
+          "username": {
+            "type": "string",
+            "description": "JFrog username or email",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "JFrog password or API key/identity token",
+            "example": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional description for the credentials",
+            "example": "Production JFrog Artifactory registry"
+          }
+        },
+        "required": [
+          "projectId",
+          "jfrogUrl",
+          "repositoryKey",
+          "username",
+          "password"
+        ]
+      },
       "JFrogCredentialResponseDto": {
         "type": "object",
         "properties": {
@@ -21419,6 +23192,46 @@
           "totalCount",
           "page",
           "pageSize"
+        ]
+      },
+      "JfrogStartContainerScanDto": {
+        "type": "object",
+        "properties": {
+          "credentialId": {
+            "type": "string",
+            "description": "Credential ID to use for authentication",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "imageName": {
+            "type": "string",
+            "description": "Image name with tag to scan (e.g., my-app:v1.0.0)",
+            "example": "my-app:v1.0.0"
+          },
+          "branch": {
+            "type": "string",
+            "description": "Branch name for tracking purposes",
+            "example": "main"
+          },
+          "privateScan": {
+            "type": "boolean",
+            "description": "Whether the scan results should be private",
+            "default": false
+          },
+          "severities": {
+            "description": "Vulnerability severities to include",
+            "example": [
+              "CRITICAL",
+              "HIGH"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "credentialId",
+          "imageName"
         ]
       },
       "CodeStructure": {
@@ -22064,6 +23877,158 @@
           "pageSize"
         ]
       },
+      "ContainerImageTagDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Original image entity ID"
+          },
+          "tag": {
+            "type": "string",
+            "description": "Tag extracted from artifact name",
+            "example": "v1.0.0"
+          },
+          "scanId": {
+            "type": "string",
+            "description": "Scan ID associated with this tag"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Creation timestamp (ISO 8601)"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Last update timestamp (ISO 8601)"
+          },
+          "vulnCounts": {
+            "description": "Vulnerability counts for this specific tag",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VulnCountsDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "tag",
+          "scanId",
+          "createdAt",
+          "updatedAt",
+          "vulnCounts"
+        ]
+      },
+      "GroupedContainerImageDto": {
+        "type": "object",
+        "properties": {
+          "repositoryName": {
+            "type": "string",
+            "description": "Repository name without tag",
+            "example": "registry.gitlab.com/group/project"
+          },
+          "projectId": {
+            "type": "string",
+            "description": "Project identifier"
+          },
+          "osFamily": {
+            "type": "string",
+            "description": "Operating system family",
+            "example": "debian"
+          },
+          "osName": {
+            "type": "string",
+            "description": "Operating system name",
+            "example": "Debian GNU/Linux 11"
+          },
+          "branch": {
+            "type": "string",
+            "description": "Branch that was scanned",
+            "example": "main"
+          },
+          "tagCount": {
+            "type": "number",
+            "description": "Number of different tags for this repository",
+            "example": 3
+          },
+          "tags": {
+            "description": "All tags for this repository",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContainerImageTagDto"
+            }
+          },
+          "aggregatedVulnCounts": {
+            "description": "Aggregated vulnerability counts across all tags",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VulnCountsDto"
+              }
+            ]
+          },
+          "latestScanAt": {
+            "type": "string",
+            "description": "Most recent scan date across all tags (ISO 8601)",
+            "example": "2024-01-15T10:30:00.000Z"
+          }
+        },
+        "required": [
+          "repositoryName",
+          "projectId",
+          "osFamily",
+          "osName",
+          "branch",
+          "tagCount",
+          "tags",
+          "aggregatedVulnCounts",
+          "latestScanAt"
+        ]
+      },
+      "GetGroupedContainerImagesResponseDto": {
+        "type": "object",
+        "properties": {
+          "projectName": {
+            "type": "string",
+            "description": "Project name"
+          },
+          "groupedImages": {
+            "description": "Container images grouped by repository",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GroupedContainerImageDto"
+            }
+          },
+          "totalRepositories": {
+            "type": "number",
+            "description": "Total number of unique repositories"
+          },
+          "totalTags": {
+            "type": "number",
+            "description": "Total number of tags across all repositories"
+          },
+          "totalPages": {
+            "type": "number",
+            "description": "Total number of pages"
+          },
+          "currentPage": {
+            "type": "number",
+            "description": "Current page number"
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "Number of items per page"
+          }
+        },
+        "required": [
+          "projectName",
+          "groupedImages",
+          "totalRepositories",
+          "totalTags",
+          "totalPages",
+          "currentPage",
+          "pageSize"
+        ]
+      },
       "ScaDetectedPackageDto": {
         "type": "object",
         "properties": {
@@ -22522,13 +24487,23 @@
             "items": {
               "$ref": "#/components/schemas/VulnerabilitiesOverTimeDto"
             }
+          },
+          "riskScore": {
+            "type": "number",
+            "description": "The risk score of the project"
+          },
+          "riskLevel": {
+            "type": "string",
+            "description": "The risk level of the project"
           }
         },
         "required": [
           "totalBySeverity",
           "totalByState",
           "totalByAnalysisType",
-          "vulnerabilitiesOverTime"
+          "vulnerabilitiesOverTime",
+          "riskScore",
+          "riskLevel"
         ]
       },
       "ProjectOverviewSummaryDto": {
@@ -22642,6 +24617,22 @@
           "totalVulnerabilities": {
             "type": "number",
             "description": "Total number of vulnerabilities in the team"
+          },
+          "criticalRiskProjects": {
+            "type": "number",
+            "description": "Number of projects with critical risk level"
+          },
+          "highRiskProjects": {
+            "type": "number",
+            "description": "Number of projects with high risk level"
+          },
+          "mediumRiskProjects": {
+            "type": "number",
+            "description": "Number of projects with medium risk level"
+          },
+          "lowRiskProjects": {
+            "type": "number",
+            "description": "Number of projects with low risk level"
           }
         },
         "required": [
@@ -22652,7 +24643,11 @@
           "highCount",
           "mediumCount",
           "lowCount",
-          "totalVulnerabilities"
+          "totalVulnerabilities",
+          "criticalRiskProjects",
+          "highRiskProjects",
+          "mediumRiskProjects",
+          "lowRiskProjects"
         ]
       },
       "TopVulnerableProjectDto": {
@@ -22681,6 +24676,22 @@
           "highCount": {
             "type": "number",
             "description": "Number of high severity vulnerabilities"
+          },
+          "riskLevel": {
+            "type": "string",
+            "description": "Risk level of the project"
+          },
+          "openCount": {
+            "type": "number",
+            "description": "Number of open vulnerabilities"
+          },
+          "newLast7Days": {
+            "type": "number",
+            "description": "Number of new vulnerabilities in last 7 days"
+          },
+          "teamId": {
+            "type": "string",
+            "description": "Team identifier"
           }
         },
         "required": [
@@ -22689,7 +24700,10 @@
           "teamName",
           "vulnerabilityCount",
           "criticalCount",
-          "highCount"
+          "highCount",
+          "riskLevel",
+          "openCount",
+          "newLast7Days"
         ]
       },
       "GetOrganizationOverviewResponseDto": {
@@ -22749,9 +24763,13 @@
               "$ref": "#/components/schemas/TopVulnerableProjectDto"
             }
           },
+          "criticalRiskProjects": {
+            "type": "number",
+            "description": "Number of projects with critical risk level"
+          },
           "highRiskProjects": {
             "type": "number",
-            "description": "Number of projects with critical or high risk level"
+            "description": "Number of projects with high risk level"
           },
           "mediumRiskProjects": {
             "type": "number",
@@ -22805,6 +24823,7 @@
           "projectsSummary",
           "teamsSummary",
           "topVulnerableProjects",
+          "criticalRiskProjects",
           "highRiskProjects",
           "mediumRiskProjects",
           "lowRiskProjects",
@@ -24899,6 +26918,1074 @@
           "quay",
           "harbor",
           "jfrog"
+        ]
+      },
+      "CreatePolicyBodyDto": {
+        "type": "object",
+        "properties": {
+          "yamlContent": {
+            "type": "string",
+            "description": "Full YAML policy definition. Example:\n```yaml\nversion: '1.0'\nname: Production Security Policy\ndescription: Block critical vulnerabilities\nscope: PROJECT\npriority: 10\nenabled: true\nprojectIds:\n  - 550e8400-e29b-41d4-a716-446655440000\nrules:\n  - name: Block Critical\n    type: severity\n    operator: eq\n    value: CRITICAL\n    action: block\n```",
+            "example": "version: '1.0'\nname: Production Security Policy\nscope: PROJECT\npriority: 10\nenabled: true\nprojectIds:\n  - 550e8400-e29b-41d4-a716-446655440000\nrules:\n  - name: Block Critical\n    type: severity\n    operator: eq\n    value: CRITICAL\n    action: block"
+          }
+        },
+        "required": [
+          "yamlContent"
+        ]
+      },
+      "PolicyResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Policy ID",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "scope": {
+            "type": "string",
+            "description": "Policy scope",
+            "enum": [
+              "ORGANIZATION",
+              "TEAM",
+              "PROJECT"
+            ],
+            "example": "PROJECT"
+          },
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID the policy belongs to",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "projectIds": {
+            "description": "Project IDs targeted by this policy (for PROJECT scope)",
+            "example": [
+              "550e8400-e29b-41d4-a716-446655440002"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "teamIds": {
+            "description": "Team IDs targeted by this policy (for TEAM scope)",
+            "example": [
+              "550e8400-e29b-41d4-a716-446655440003"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "Policy name",
+            "example": "Production Security Policy"
+          },
+          "description": {
+            "type": "string",
+            "description": "Policy description",
+            "example": "Security policy for production environment"
+          },
+          "priority": {
+            "type": "number",
+            "description": "Priority (lower = higher priority)",
+            "example": 10
+          },
+          "config": {
+            "type": "object",
+            "description": "Policy configuration",
+            "example": {
+              "rules": [],
+              "exclusions": []
+            }
+          },
+          "isEnabled": {
+            "type": "boolean",
+            "description": "Whether the policy is enabled",
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Creation timestamp",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Last update timestamp",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "User ID who created the policy"
+          },
+          "updatedBy": {
+            "type": "string",
+            "description": "User ID who last updated the policy"
+          }
+        },
+        "required": [
+          "id",
+          "scope",
+          "organizationId",
+          "name",
+          "priority",
+          "config",
+          "isEnabled",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "PolicyListResponseDto": {
+        "type": "object",
+        "properties": {
+          "policies": {
+            "description": "List of policies",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PolicyResponseDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total count",
+            "example": 10
+          },
+          "page": {
+            "type": "number",
+            "description": "Current page",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "Page size",
+            "example": 20
+          }
+        },
+        "required": [
+          "policies",
+          "total",
+          "page",
+          "pageSize"
+        ]
+      },
+      "UpdatePolicyBodyDto": {
+        "type": "object",
+        "properties": {
+          "yamlContent": {
+            "type": "string",
+            "description": "Full YAML policy definition. Example:\n```yaml\nversion: '1.0'\nname: Updated Security Policy\ndescription: Updated description\nscope: PROJECT\npriority: 15\nenabled: true\nprojectIds:\n  - 550e8400-e29b-41d4-a716-446655440000\nrules:\n  - name: Block Critical\n    type: severity\n    operator: eq\n    value: CRITICAL\n    action: block\n```",
+            "example": "version: '1.0'\nname: Updated Security Policy\nscope: PROJECT\npriority: 15\nenabled: true\nprojectIds:\n  - 550e8400-e29b-41d4-a716-446655440000\nrules:\n  - name: Block Critical\n    type: severity\n    operator: eq\n    value: CRITICAL\n    action: block"
+          }
+        },
+        "required": [
+          "yamlContent"
+        ]
+      },
+      "DeletePolicyResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the deletion was successful",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "description": "Message",
+            "example": "Policy deleted successfully"
+          }
+        },
+        "required": [
+          "success",
+          "message"
+        ]
+      },
+      "EffectivePolicyResponseDto": {
+        "type": "object",
+        "properties": {
+          "effectiveConfig": {
+            "type": "object",
+            "description": "Effective merged policy configuration",
+            "example": {
+              "rules": [],
+              "exclusions": [],
+              "notifications": []
+            }
+          },
+          "appliedPolicies": {
+            "description": "Applied policies (ordered by priority)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PolicyResponseDto"
+            }
+          }
+        },
+        "required": [
+          "effectiveConfig",
+          "appliedPolicies"
+        ]
+      },
+      "ValidatePolicyResponseDto": {
+        "type": "object",
+        "properties": {
+          "valid": {
+            "type": "boolean",
+            "description": "Whether the policy is valid",
+            "example": true
+          },
+          "errors": {
+            "description": "List of validation errors",
+            "example": [],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "warnings": {
+            "description": "List of warnings",
+            "example": [],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "valid",
+          "errors",
+          "warnings"
+        ]
+      },
+      "ExportPolicyYamlResponseDto": {
+        "type": "object",
+        "properties": {
+          "yamlContent": {
+            "type": "string",
+            "description": "YAML content of the policy",
+            "example": "# Security Policy: Production SAST Rules\nversion: \"1.0\"\nrules:\n  - id: block-critical\n    type: severity\n    operator: equals\n    value: critical\n    action: block"
+          }
+        },
+        "required": [
+          "yamlContent"
+        ]
+      },
+      "ScanEvaluationStatusResponseDto": {
+        "type": "object",
+        "properties": {
+          "hasEvaluation": {
+            "type": "boolean",
+            "description": "Whether an evaluation exists for this scan",
+            "example": true
+          },
+          "evaluationId": {
+            "type": "string",
+            "description": "Evaluation ID (if exists)",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current status of the evaluation",
+            "enum": [
+              "PENDING",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "FAILED",
+              "NOT_STARTED"
+            ],
+            "example": "COMPLETED"
+          },
+          "progress": {
+            "type": "number",
+            "description": "Progress percentage (0-100)",
+            "example": 75
+          },
+          "message": {
+            "type": "string",
+            "description": "Status message or error details",
+            "example": "Evaluating 3 policies..."
+          },
+          "startedAt": {
+            "type": "string",
+            "description": "When the evaluation started",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "completedAt": {
+            "type": "string",
+            "description": "When the evaluation completed (if done)",
+            "example": "2024-01-15T10:31:00Z"
+          }
+        },
+        "required": [
+          "hasEvaluation",
+          "status",
+          "progress",
+          "message"
+        ]
+      },
+      "ComplianceResultDto": {
+        "type": "object",
+        "properties": {
+          "compliant": {
+            "type": "boolean",
+            "description": "Whether the scan is compliant with all policies",
+            "example": false
+          },
+          "exitCode": {
+            "type": "number",
+            "description": "Exit code for CI/CD (0=pass, 1=fail)",
+            "example": 1
+          },
+          "summary": {
+            "type": "string",
+            "description": "Human-readable summary",
+            "example": "Policy check failed: 2 critical violations found."
+          },
+          "blockingViolationsCount": {
+            "type": "number",
+            "description": "Number of blocking violations",
+            "example": 2
+          },
+          "warningViolationsCount": {
+            "type": "number",
+            "description": "Number of warning violations",
+            "example": 5
+          },
+          "totalViolationsCount": {
+            "type": "number",
+            "description": "Total violations count",
+            "example": 7
+          },
+          "evaluatedAt": {
+            "type": "string",
+            "description": "When the evaluation was completed",
+            "example": "2024-01-15T10:31:00Z"
+          },
+          "evaluatedPoliciesCount": {
+            "type": "number",
+            "description": "Number of policies that were evaluated",
+            "example": 3
+          },
+          "breakingRulesCount": {
+            "type": "number",
+            "description": "Number of unique rules broken",
+            "example": 2
+          }
+        },
+        "required": [
+          "compliant",
+          "blockingViolationsCount",
+          "warningViolationsCount",
+          "totalViolationsCount",
+          "evaluatedAt",
+          "breakingRulesCount"
+        ]
+      },
+      "RuleCriterionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Child rule ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Child rule name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Child rule description"
+          },
+          "type": {
+            "type": "string",
+            "description": "Child rule type (severity, cvss_score, cwe, vulnerability_age_days, etc.)"
+          },
+          "value": {
+            "type": "object",
+            "description": "Rule value (severity level, cvss threshold, etc.)"
+          },
+          "operator": {
+            "type": "string",
+            "description": "Operator (equals, gte, lte, contains, etc.)"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type"
+        ]
+      },
+      "PolicyRuleResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Rule ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Rule name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Rule description"
+          },
+          "type": {
+            "type": "string",
+            "description": "Rule type"
+          },
+          "value": {
+            "type": "object",
+            "description": "Rule value (for non-composite rules)"
+          },
+          "action": {
+            "type": "string",
+            "description": "Action taken (WARN or BLOCK)"
+          },
+          "operator": {
+            "type": "string",
+            "description": "Operator (for non-composite rules)"
+          },
+          "criteria": {
+            "description": "Child rule criteria (for composite_and / composite_or rules)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RuleCriterionDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type",
+          "action"
+        ]
+      },
+      "AffectedVulnerabilityDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Vulnerability ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Vulnerability name/title"
+          },
+          "severity": {
+            "type": "string",
+            "description": "Severity level (CRITICAL, HIGH, MEDIUM, LOW, INFORMATIONAL)"
+          },
+          "cvssScore": {
+            "type": "number",
+            "description": "CVSS score (0-10)"
+          },
+          "cwe": {
+            "description": "CWE identifiers",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "owaspTop10": {
+            "description": "OWASP Top 10 categories",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "filePath": {
+            "type": "string",
+            "description": "File path where vulnerability was found"
+          },
+          "startLine": {
+            "type": "number",
+            "description": "Start line number"
+          },
+          "endLine": {
+            "type": "number",
+            "description": "End line number"
+          },
+          "vulnerabilityType": {
+            "type": "string",
+            "description": "Vulnerability type (sast, iac, sca, secret, cicd, container)"
+          },
+          "branch": {
+            "type": "string",
+            "description": "Branch where vulnerability was found"
+          },
+          "packageName": {
+            "type": "string",
+            "description": "Package name (for SCA vulnerabilities)"
+          },
+          "packageVersion": {
+            "type": "string",
+            "description": "Package version (for SCA vulnerabilities)"
+          },
+          "artifactName": {
+            "type": "string",
+            "description": "Artifact name (for Container vulnerabilities)"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "severity",
+          "vulnerabilityType"
+        ]
+      },
+      "ViolationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Violation ID",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "policyId": {
+            "type": "string",
+            "description": "Policy ID",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "projectId": {
+            "type": "string",
+            "description": "Project ID",
+            "example": "550e8400-e29b-41d4-a716-446655440002"
+          },
+          "scanId": {
+            "type": "string",
+            "description": "Scan ID",
+            "example": "550e8400-e29b-41d4-a716-446655440003"
+          },
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID",
+            "example": "550e8400-e29b-41d4-a716-446655440004"
+          },
+          "actionTaken": {
+            "type": "string",
+            "description": "Action taken (WARN or BLOCK)",
+            "enum": [
+              "WARN",
+              "BLOCK"
+            ],
+            "example": "BLOCK"
+          },
+          "affectedVulnerabilitiesCount": {
+            "type": "number",
+            "description": "Number of vulnerabilities affected by this violation",
+            "example": 12
+          },
+          "rule": {
+            "description": "The rule that was violated",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PolicyRuleResponseDto"
+              }
+            ]
+          },
+          "affectedVulnerabilities": {
+            "description": "List of affected vulnerabilities",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AffectedVulnerabilityDto"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Creation timestamp (ISO 8601)",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Last update timestamp (ISO 8601)",
+            "example": "2024-01-15T10:30:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "policyId",
+          "projectId",
+          "scanId",
+          "organizationId",
+          "actionTaken",
+          "affectedVulnerabilitiesCount",
+          "rule",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "ComplianceResultResponseDto": {
+        "type": "object",
+        "properties": {
+          "evaluationId": {
+            "type": "string",
+            "description": "Evaluation ID (may not be available)",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "scanId": {
+            "type": "string",
+            "description": "Scan ID that was evaluated",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "projectId": {
+            "type": "string",
+            "description": "Project ID",
+            "example": "550e8400-e29b-41d4-a716-446655440002"
+          },
+          "status": {
+            "type": "string",
+            "description": "Evaluation status",
+            "enum": [
+              "PENDING",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "FAILED",
+              "NOT_STARTED"
+            ],
+            "example": "COMPLETED"
+          },
+          "result": {
+            "description": "Compliance result (only present when completed)",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ComplianceResultDto"
+              }
+            ]
+          },
+          "violations": {
+            "description": "Violations found during evaluation",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ViolationDto"
+            }
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message if evaluation failed"
+          }
+        },
+        "required": [
+          "scanId",
+          "projectId",
+          "status"
+        ]
+      },
+      "ComplianceHistoryEntryDto": {
+        "type": "object",
+        "properties": {
+          "evaluationId": {
+            "type": "string",
+            "description": "Evaluation ID (may not be available for all entries)",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "scanId": {
+            "type": "string",
+            "description": "Scan ID",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "compliant": {
+            "type": "boolean",
+            "description": "Whether the scan was compliant",
+            "example": true
+          },
+          "blockingViolationsCount": {
+            "type": "number",
+            "description": "Number of blocking violations",
+            "example": 0
+          },
+          "warningViolationsCount": {
+            "type": "number",
+            "description": "Number of warning violations",
+            "example": 3
+          },
+          "evaluatedAt": {
+            "type": "string",
+            "description": "When the evaluation was completed",
+            "example": "2024-01-15T10:31:00Z"
+          },
+          "breakingRulesCount": {
+            "type": "number",
+            "description": "Number of unique rules broken",
+            "example": 2
+          }
+        },
+        "required": [
+          "scanId",
+          "compliant",
+          "blockingViolationsCount",
+          "warningViolationsCount",
+          "evaluatedAt",
+          "breakingRulesCount"
+        ]
+      },
+      "ComplianceHistoryResponseDto": {
+        "type": "object",
+        "properties": {
+          "entries": {
+            "description": "Compliance history entries",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComplianceHistoryEntryDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total number of entries",
+            "example": 25
+          },
+          "page": {
+            "type": "number",
+            "description": "Current page",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "Page size",
+            "example": 10
+          }
+        },
+        "required": [
+          "entries",
+          "total",
+          "page",
+          "pageSize"
+        ]
+      },
+      "ViolationListResponseDto": {
+        "type": "object",
+        "properties": {
+          "violations": {
+            "description": "List of violations",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ViolationDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total count",
+            "example": 10
+          },
+          "page": {
+            "type": "number",
+            "description": "Current page",
+            "example": 1
+          },
+          "limit": {
+            "type": "number",
+            "description": "Page size",
+            "example": 50
+          }
+        },
+        "required": [
+          "violations",
+          "total",
+          "page",
+          "limit"
+        ]
+      },
+      "ViolationStatsDto": {
+        "type": "object",
+        "properties": {
+          "totalViolations": {
+            "type": "number",
+            "description": "Total violations",
+            "example": 100
+          },
+          "blockedCount": {
+            "type": "number",
+            "description": "Number of violations with BLOCK action",
+            "example": 30
+          },
+          "warnedCount": {
+            "type": "number",
+            "description": "Number of violations with WARN action",
+            "example": 70
+          },
+          "applicablePoliciesCount": {
+            "type": "number",
+            "description": "Number of applicable policies for this project",
+            "example": 5
+          },
+          "complianceStatus": {
+            "type": "string",
+            "description": "Compliance status",
+            "example": "Compliant",
+            "enum": [
+              "Compliant",
+              "Non-Compliant",
+              "Pending"
+            ]
+          }
+        },
+        "required": [
+          "totalViolations",
+          "blockedCount",
+          "warnedCount",
+          "applicablePoliciesCount",
+          "complianceStatus"
+        ]
+      },
+      "OrganizationComplianceStatsDto": {
+        "type": "object",
+        "properties": {
+          "totalProjects": {
+            "type": "number",
+            "description": "Total number of projects in the organization",
+            "example": 50
+          },
+          "compliantProjects": {
+            "type": "number",
+            "description": "Number of compliant projects",
+            "example": 40
+          },
+          "nonCompliantProjects": {
+            "type": "number",
+            "description": "Number of non-compliant projects",
+            "example": 5
+          },
+          "pendingProjects": {
+            "type": "number",
+            "description": "Number of pending projects (awaiting evaluation)",
+            "example": 5
+          },
+          "totalViolations": {
+            "type": "number",
+            "description": "Total violations across all projects",
+            "example": 150
+          },
+          "totalBlocked": {
+            "type": "number",
+            "description": "Total BLOCK violations",
+            "example": 30
+          },
+          "totalWarned": {
+            "type": "number",
+            "description": "Total WARN violations",
+            "example": 120
+          },
+          "activePoliciesCount": {
+            "type": "number",
+            "description": "Number of active policies in the organization",
+            "example": 5
+          },
+          "complianceRate": {
+            "type": "number",
+            "description": "Compliance rate percentage (0-100)",
+            "example": 88.89
+          }
+        },
+        "required": [
+          "totalProjects",
+          "compliantProjects",
+          "nonCompliantProjects",
+          "pendingProjects",
+          "totalViolations",
+          "totalBlocked",
+          "totalWarned",
+          "activePoliciesCount",
+          "complianceRate"
+        ]
+      },
+      "ProjectComplianceSummaryDto": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "Project ID",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "projectName": {
+            "type": "string",
+            "description": "Project name",
+            "example": "My Project"
+          },
+          "complianceStatus": {
+            "type": "string",
+            "description": "Compliance status",
+            "enum": [
+              "Compliant",
+              "Non-Compliant",
+              "Pending"
+            ],
+            "example": "Compliant"
+          },
+          "totalViolations": {
+            "type": "number",
+            "description": "Total number of violations",
+            "example": 10
+          },
+          "blockedCount": {
+            "type": "number",
+            "description": "Number of BLOCK violations",
+            "example": 2
+          },
+          "warnedCount": {
+            "type": "number",
+            "description": "Number of WARN violations",
+            "example": 8
+          },
+          "applicablePoliciesCount": {
+            "type": "number",
+            "description": "Number of applicable policies",
+            "example": 3
+          },
+          "lastEvaluatedAt": {
+            "type": "string",
+            "description": "Last evaluation timestamp (ISO 8601)",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "lastScanId": {
+            "type": "string",
+            "description": "Last scan ID",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "teamIds": {
+            "description": "Team IDs this project belongs to",
+            "example": [
+              "550e8400-e29b-41d4-a716-446655440002"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "projectId",
+          "projectName",
+          "complianceStatus",
+          "totalViolations",
+          "blockedCount",
+          "warnedCount",
+          "applicablePoliciesCount",
+          "teamIds"
+        ]
+      },
+      "ViolationBreakdownDto": {
+        "type": "object",
+        "properties": {
+          "ruleType": {
+            "type": "string",
+            "description": "Rule type/name",
+            "example": "Critical Severity Check"
+          },
+          "count": {
+            "type": "number",
+            "description": "Total violations for this rule type",
+            "example": 25
+          },
+          "blockedCount": {
+            "type": "number",
+            "description": "BLOCK violations for this rule type",
+            "example": 10
+          },
+          "warnedCount": {
+            "type": "number",
+            "description": "WARN violations for this rule type",
+            "example": 15
+          }
+        },
+        "required": [
+          "ruleType",
+          "count",
+          "blockedCount",
+          "warnedCount"
+        ]
+      },
+      "ComplianceTrendPointDto": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "description": "Date (ISO 8601)",
+            "example": "2024-01-15T00:00:00Z"
+          },
+          "compliantCount": {
+            "type": "number",
+            "description": "Number of compliant projects on this day",
+            "example": 38
+          },
+          "nonCompliantCount": {
+            "type": "number",
+            "description": "Number of non-compliant projects on this day",
+            "example": 7
+          },
+          "pendingCount": {
+            "type": "number",
+            "description": "Number of pending projects on this day",
+            "example": 5
+          },
+          "complianceRate": {
+            "type": "number",
+            "description": "Compliance rate percentage on this day",
+            "example": 84.44
+          }
+        },
+        "required": [
+          "date",
+          "compliantCount",
+          "nonCompliantCount",
+          "pendingCount",
+          "complianceRate"
+        ]
+      },
+      "OrganizationComplianceOverviewResponseDto": {
+        "type": "object",
+        "properties": {
+          "stats": {
+            "description": "Organization-wide compliance statistics",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrganizationComplianceStatsDto"
+              }
+            ]
+          },
+          "projects": {
+            "description": "List of projects with their compliance summary",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectComplianceSummaryDto"
+            }
+          },
+          "violationBreakdown": {
+            "description": "Violation breakdown by rule type",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ViolationBreakdownDto"
+            }
+          },
+          "trend": {
+            "description": "Compliance trend over time (last 30 days)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ComplianceTrendPointDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "description": "Total count of projects (for pagination)",
+            "example": 50
+          },
+          "page": {
+            "type": "number",
+            "description": "Current page",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "Page size",
+            "example": 20
+          }
+        },
+        "required": [
+          "stats",
+          "projects",
+          "violationBreakdown",
+          "trend",
+          "total",
+          "page",
+          "pageSize"
         ]
       }
     }
