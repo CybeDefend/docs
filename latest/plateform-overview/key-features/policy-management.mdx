@@ -1,7 +1,6 @@
 ---
 title: 'Policy Management'
 description: 'Define security policies as code and enforce compliance across your organization'
-icon: 'shield-check'
 ---
 
 ## Overview
@@ -327,44 +326,109 @@ exclusions:
 
 ### GitHub Actions
 
-```yaml
-name: Security Check
+Use the official CybeDefend GitHub Action with policy evaluation enabled:
 
-on: [push, pull_request]
+```yaml
+name: CybeDefend Security Scan with Policy Enforcement
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  security-scan:
+  scan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Run CybeDefend Scan
-        run: cybedefend scan --all
-
-      - name: Evaluate Policies
-        env:
-          CYBEDEFEND_API_KEY: ${{ secrets.CYBEDEFEND_API_KEY }}
-        run: |
-          # Trigger policy evaluation
-          RESULT=$(curl -s -H "Authorization: Bearer $CYBEDEFEND_API_KEY" \
-            "$CYBEDEFEND_API/scans/$SCAN_ID/compliance")
-          
-          EXIT_CODE=$(echo $RESULT | jq -r '.result.exitCode')
-          exit $EXIT_CODE
+      - name: Run CybeDefend Security Scan
+        uses: CybeDefend/cybedefend-action@v1
+        with:
+          api_key: ${{ secrets.CYBEDEFEND_API_KEY }}
+          project_id: ${{ secrets.CYBEDEFEND_PROJECT_ID }}
+          branch: ${{ github.head_ref || github.ref_name }}
+          # Policy evaluation options
+          policy_check: true
+          policy_timeout: 300
+          show_policy_vulns: true
+          show_all_policy_vulns: false
 ```
+
+#### Policy Evaluation Options
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `policy_check` | `true` | Enable/disable policy evaluation after scan |
+| `policy_timeout` | `300` | Timeout in seconds for policy evaluation |
+| `show_policy_vulns` | `true` | Show affected vulnerabilities in output |
+| `show_all_policy_vulns` | `false` | Show all vulnerabilities (no limit) |
 
 ### GitLab CI
 
+Use the CybeDefend CLI directly with policy evaluation:
+
 ```yaml
-security-check:
-  stage: test
+stages:
+  - security
+
+cybedefend-scan:
+  stage: security
+  image: ghcr.io/cybedefend/cybedefend-cli:v1.0.9
+  variables:
+    CYBEDEFEND_API_KEY: $CYBEDEFEND_API_KEY
+    CYBEDEFEND_PROJECT_ID: $CYBEDEFEND_PROJECT_ID
   script:
-    - cybedefend scan --all
-    - cybedefend check-compliance --scan-id $SCAN_ID --exit-on-failure
-  artifacts:
-    reports:
-      security: security-report.json
+    # Run scan with policy evaluation (enabled by default)
+    - cybedefend scan --dir . --branch $CI_COMMIT_REF_NAME --ci
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
 ```
+
+#### CLI Policy Flags
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--policy-check` | `true` | Enable/disable policy evaluation |
+| `--policy-timeout` | `300` | Timeout in seconds for evaluation |
+| `--show-policy-vulns` | `true` | Show affected vulnerabilities |
+| `--show-all-policy-vulns` | `false` | Show all vulnerabilities without limit |
+
+#### Example Output
+
+```
+✓ Scan completed successfully
+ℹ Checking policy evaluation status...
+✓ Policy evaluation completed
+ℹ Policy violations found: 2 BLOCK, 1 WARN
+
+⛔ BLOCK Actions:
+  ✗ No Critical Vulnerabilities (BLOCK)
+    Affected: 3 vulnerabilities
+      → [CRITICAL] SQL Injection - src/api/users.ts (L45-48)
+        https://us.cybedefend.com/project/xxx/sast/issue/yyy
+      → [CRITICAL] Path Traversal - src/utils/file.ts (L12)
+        https://us.cybedefend.com/project/xxx/sast/issue/zzz
+
+⚠️ WARN Actions:
+  ⚠ Dependency Check (WARN)
+    Affected: 1 vulnerability
+      → [HIGH] Prototype Pollution - lodash@4.17.15
+        https://us.cybedefend.com/project/xxx/sca/issue/aaa
+
+✓ Acknowledged Violations (not blocking):
+  ⚠ No High Vulnerabilities (BLOCK)
+    ✓ Acknowledged: Risk accepted for legacy code
+```
+
+<Note>
+If any policy has a **BLOCK** action with violations, the CLI exits with code `1`, failing the pipeline. **WARN** actions are informational only and don't affect the exit code.
+</Note>
 
 ---
 
