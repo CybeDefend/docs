@@ -92,7 +92,8 @@ curl -X POST https://auth-eu.cybedefend.com/oidc/token \
   -d "grant_type=urn:ietf:params:oauth:grant-type:token-exchange" \
   -d "client_id=fm90ay05zohu8fk2q45ms" \
   -d "subject_token=YOUR_PAT" \
-  -d "subject_token_type=urn:ietf:params:oauth:token-type:pat"
+  -d "subject_token_type=urn:logto:token-type:personal_access_token" \
+  -d "resource=https://api-eu.cybedefend.com"
 ```
 
 ```bash US
@@ -101,7 +102,8 @@ curl -X POST https://auth-us.cybedefend.com/oidc/token \
   -d "grant_type=urn:ietf:params:oauth:grant-type:token-exchange" \
   -d "client_id=7o6r9cvvi8um0kisvn7hm" \
   -d "subject_token=YOUR_PAT" \
-  -d "subject_token_type=urn:ietf:params:oauth:token-type:pat"
+  -d "subject_token_type=urn:logto:token-type:personal_access_token" \
+  -d "resource=https://api-us.cybedefend.com"
 ```
 
 </CodeGroup>
