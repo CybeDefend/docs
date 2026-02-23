@@ -9,7 +9,7 @@ If you’re on Windows, you can install the **CybeDefend CLI** as an `.exe` file
 ## Requirements
 
 - **Windows 10 or 11** (32-bit or 64-bit).
-- [API Key](/latest/code-scanning/local-code-scanning/introduction-api-key) from your CybeDefend account.
+- [Personal Access Token (PAT)](/latest/code-scanning/local-code-scanning/introduction-api-key) from your CybeDefend account.
 - Optional: Integration with your CI pipeline.
 
 ---
@@ -36,11 +36,15 @@ On Windows, some security tools may flag new executables. Ensure <strong>cybedef
    ```powershell
    cd C:\Users\YourName\Projects\my-app
    ```
-2. **Initiate Scan**  
+2. **Authenticate (one-time setup)**  
    ```powershell
-   cybedefend.exe scan --dir . --api-key YOUR_API_KEY --project-id YOUR_PROJECT_ID
+   cybedefend.exe login --pat YOUR_PAT --region eu
    ```
-3. **View Results**  
+3. **Initiate Scan**  
+   ```powershell
+   cybedefend.exe scan --dir . --project-id YOUR_PROJECT_ID
+   ```
+4. **View Results**  
    ```powershell
    cybedefend.exe results --project-id YOUR_PROJECT_ID --output sarif
    ```
@@ -49,6 +53,10 @@ On Windows, some security tools may flag new executables. Ensure <strong>cybedef
 If you see a SmartScreen prompt, confirm the binary’s source to proceed with the installation.
 </Warning>
 
-<Tip>
+<Tip>You can also store your PAT in the <strong>CYBEDEFEND_PAT</strong> environment variable:
+
+```powershell
+$env:CYBEDEFEND_PAT = "your_pat_here"
+```
 Using <strong>--ci</strong> can simplify output if you’re parsing logs in a Windows-based CI system.
 </Tip>

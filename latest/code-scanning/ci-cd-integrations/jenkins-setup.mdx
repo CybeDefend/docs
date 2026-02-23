@@ -8,8 +8,8 @@ icon: "jenkins"
 
 ## Requirements
 
-1. **API Key**  
-   Follow [Introduction & API Key Creation](/latest/code-scanning/local-code-scanning/introduction-api-key) to generate and store a key in Jenkins credentials.
+1. **Personal Access Token (PAT)**  
+   Follow [Personal Access Tokens (PAT)](/latest/code-scanning/local-code-scanning/introduction-api-key) to generate and store a PAT in Jenkins credentials (e.g., `CYBEDEFEND_PAT`).
 2. **Operating System**  
    Jenkins agent must be on a supported OS (Linux x86_64, Windows, macOS). For Linux, ensure `glibc >= 2.27`.
 3. **Sufficient Resources**  
@@ -35,8 +35,9 @@ If your Jenkins agent supports Docker, run the **CybeDefend** scanner image:
 docker run --rm \
   -v $WORKSPACE:/app \
   -w /app \
+  -e CYBEDEFEND_PAT=$CYBEDEFEND_PAT \
   cybedefend/local-scanner:latest \
-  cybedefend scan . --api-key $CYBEDEFEND_API_KEY --project-id $CYBEDEFEND_PROJECT_ID --ci
+  cybedefend scan . --project-id $CYBEDEFEND_PROJECT_ID --ci
 ```
 
 ### Explanation
@@ -62,7 +63,6 @@ docker run --rm \
 2. **Run the Scan**  
    ```bash
    cybedefend scan . \
-     --api-key $CYBEDEFEND_API_KEY \
      --project-id $CYBEDEFEND_PROJECT_ID \
      --ci
    ```

@@ -8,7 +8,7 @@ Use **Bitbucket Pipelines** to automate local scanning with the CybeDefend CLI. 
 
 ## Prerequisites
 
-- **API Key**: [Create it](/latest/code-scanning/local-code-scanning/introduction-api-key) and store in Bitbucket’s **Repository Settings → Pipelines → Repository Variables**.
+- **Personal Access Token (PAT)**: [Create it](/latest/code-scanning/local-code-scanning/introduction-api-key) and store in Bitbucket's **Repository Settings → Pipelines → Repository Variables** (e.g., `CYBEDEFEND_PAT`).
 - **Bitbucket Pipelines**: Enable pipelines in your repository.
 
 ---
@@ -29,7 +29,7 @@ pipelines:
           - curl -L https://github.com/CybeDefend/cybedefend-cli/releases/download/v1.0.0/cybedefend-linux-amd64 -o cybedefend
           - chmod +x cybedefend
           - mv cybedefend /usr/local/bin/
-          - cybedefend scan --dir . --ci --api-key $CYBEDEFEND_API_KEY --project-id $CYBEDEFEND_PROJECT_ID
+          - cybedefend scan --dir . --ci --project-id $CYBEDEFEND_PROJECT_ID
 ```
 
 ### Explanation
@@ -39,7 +39,7 @@ pipelines:
 2. **Install CLI**  
    Similar approach as other platforms.  
 3. **Run the Scan**  
-   Use environment variables `$CYBEDEFEND_API_KEY` and `$CYBEDEFEND_PROJECT_ID` defined in Bitbucket’s pipeline settings.
+   Use environment variables `$CYBEDEFEND_PAT` and `$CYBEDEFEND_PROJECT_ID` defined in Bitbucket's pipeline settings.
 
 <Note>
 You can add advanced steps, such as storing results in artifacts or gating merges based on severity thresholds.

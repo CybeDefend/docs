@@ -8,7 +8,7 @@ icon: "leaf"
 
 ## Prerequisites
 
-- **API Key**: Create one via [Introduction & API Key Creation](/latest/code-scanning/local-code-scanning/introduction-api-key) and store it in **Plan Variables** (e.g. `CYBEDEFEND_API_KEY`).  
+- **Personal Access Token (PAT)**: Create one via [Personal Access Tokens (PAT)](/latest/code-scanning/local-code-scanning/introduction-api-key) and store it in **Plan Variables** (e.g. `CYBEDEFEND_PAT`).  
 - **Branch Target**: We advise scanning only your main branch to prevent mixing partial or experimental features.
 
 <Note>
@@ -29,7 +29,6 @@ If your Bamboo agent supports Docker:
    - **Container Command**:
      ```bash
      cybedefend scan . \
-       --api-key ${bamboo.CYBEDEFEND_API_KEY} \
        --project-id ${bamboo.CYBEDEFEND_PROJECT_ID} \
        --ci
      ```
@@ -54,7 +53,7 @@ If your Bamboo agent supports Docker:
    - Under **Executable**, choose “CybeDefend CLI.”  
    - **Argument field**:  
      ```bash
-     scan . --api-key ${bamboo.CYBEDEFEND_API_KEY} --project-id ${bamboo.CYBEDEFEND_PROJECT_ID} --ci
+     scan . --project-id ${bamboo.CYBEDEFEND_PROJECT_ID} --ci
      ```
 
 <Note>
@@ -77,5 +76,5 @@ If you plan to gate releases, parse the CLI exit code or use <strong>--fail-on</
 </Warning>
 
 <Tip>
-You can also define global variables for <strong>CYBEDEFEND_API_KEY</strong> to reuse across multiple plans or projects.
+You can also define global variables for <strong>CYBEDEFEND_PAT</strong> to reuse across multiple plans or projects.
 </Tip>

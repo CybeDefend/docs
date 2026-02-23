@@ -8,7 +8,7 @@ Use **Docker** to run CybeDefend local scans in your TeamCity pipeline, keeping 
 
 ## Prerequisites
 
-- **API Key**: [Create one](/latest/code-scanning/local-code-scanning/introduction-api-key) in your CybeDefend profile.
+- **Personal Access Token (PAT)**: [Create one](/latest/code-scanning/local-code-scanning/introduction-api-key) in your CybeDefend profile and store it as `CYBEDEFEND_PAT` in TeamCity parameters.
 - **Agent Permissions**: Ensure your self-hosted agent can install or run the CybeDefend CLI.
 - **TeamCity Access**: Sufficient rights to modify your pipeline definition.
 
@@ -36,7 +36,6 @@ jobs:
         docker-image: cybedefend/local-scanner:latest
         script-content: >-
           cybedefend scan ./ --ci 
-            --api-key %CYBEDEFEND_API_KEY% 
             --project-id %CYBEDEFEND_PROJECT_ID%
 ```
 
@@ -45,7 +44,7 @@ jobs:
 - **docker-image**: Points to a Docker image (e.g., cybedefend/local-scanner) that already has the CybeDefend CLI installed.
 - **script-content**: Runs `cybedefend scan`, zipping your current directory (`./`) and securely uploading it to CybeDefend.
 - **--ci**: Outputs minimal logs for a cleaner CI experience.
-- **Environment Variables**: `%CYBEDEFEND_API_KEY%` and `%CYBEDEFEND_PROJECT_ID%` are typically stored in **TeamCity** → **Project Settings** → **Parameters**, masking sensitive data.
+- **Environment Variables**: `%CYBEDEFEND_PAT%` and `%CYBEDEFEND_PROJECT_ID%` are typically stored in **TeamCity** → **Project Settings** → **Parameters**, masking sensitive data.
 
 <Note>
 If this is your first time scanning the repo, CybeDefend will automatically create a new project (assuming the <strong>Project ID</strong> is valid or left empty to be generated). Subsequent scans append results to the same project.

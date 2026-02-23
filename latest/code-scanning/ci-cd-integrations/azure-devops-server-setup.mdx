@@ -8,7 +8,7 @@ Run **CybeDefend** scans in your on-prem **Azure DevOps Server** pipeline, maint
 
 ## Prerequisites
 
-- **API Key**: [Create one](/latest/code-scanning/local-code-scanning/introduction-api-key) in your CybeDefend profile.
+- **Personal Access Token (PAT)**: [Create one](/latest/code-scanning/local-code-scanning/introduction-api-key) in your CybeDefend profile and store it as `CYBEDEFEND_PAT` in Azure DevOps.
 - **Agent Permissions**: Ensure your self-hosted agent can install or run the CybeDefend CLI.
 - **Azure DevOps Access**: Sufficient rights to modify your pipeline definition.
 
@@ -38,9 +38,10 @@ steps:
   - script: |
       cybedefend scan --dir . \
         --ci \
-        --api-key $(CYBEDEFEND_API_KEY) \
         --project-id $(CYBEDEFEND_PROJECT_ID)
     displayName: 'Run CybeDefend Scan'
+    env:
+      CYBEDEFEND_PAT: $(CYBEDEFEND_PAT)
 ```
 
 ### Explanation

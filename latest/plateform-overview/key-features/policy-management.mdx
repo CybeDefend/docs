@@ -349,7 +349,7 @@ jobs:
       - name: Run CybeDefend Security Scan
         uses: CybeDefend/cybedefend-action@v1
         with:
-          api_key: ${{ secrets.CYBEDEFEND_API_KEY }}
+          token: ${{ secrets.CYBEDEFEND_PAT }}
           project_id: ${{ secrets.CYBEDEFEND_PROJECT_ID }}
           branch: ${{ github.head_ref || github.ref_name }}
           # Policy evaluation options
@@ -380,7 +380,7 @@ cybedefend-scan:
   stage: security
   image: ghcr.io/cybedefend/cybedefend-cli:v1.0.9
   variables:
-    CYBEDEFEND_API_KEY: $CYBEDEFEND_API_KEY
+    CYBEDEFEND_PAT: $CYBEDEFEND_PAT
     CYBEDEFEND_PROJECT_ID: $CYBEDEFEND_PROJECT_ID
   script:
     # Run scan with policy evaluation (enabled by default)

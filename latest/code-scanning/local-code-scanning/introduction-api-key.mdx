@@ -1,44 +1,92 @@
 ---
-title: "Introduction & API Key Creation"
-description: "Learn how to set up local scans with the CybeDefend CLI and generate an API key."
+title: "Personal Access Tokens (PAT)"
+description: "Create and use Personal Access Tokens to authenticate the CybeDefend CLI."
 ---
 
-The **CybeDefend CLI** allows you to run **local code scans** on your machine or in any CI environment. By uploading your code (or zipped directory) to CybeDefend, you receive immediate vulnerability insights—mirroring our cloud-based scanning, but on your terms.
-
-<Frame>
-  <img src="/images/static-scanning-code-repository/local-code-scanning/cli-intro.png" alt="Local Code Scanning Intro" style={{ borderRadius: '0.5rem' }} />
-</Frame>
-
-## Why Use Local Code Scanning?
-
-- **CI/CD Integration**: Integrate scans into your pipeline to catch issues before merging.
-- **Single-Command Simplicity**: The CLI provides direct control—no complex configuration needed beyond an API key.
+A **Personal Access Token (PAT)** lets you authenticate the CybeDefend CLI without going through the browser. It is the recommended authentication method for CI/CD pipelines and scripted environments.
 
 ---
 
-## API Key Creation Tutorial
+## Create a Personal Access Token
 
-To authenticate your CLI scans, you’ll need a **CybeDefend API key**:
-
-1. **Go to Profile → API Key**  
-   In the CybeDefend web interface, click your user profile and select **API Key**.  
-2. **Create New Key**  
-   Click **+ Create New API Key**. Provide a name (e.g., “Local Scanner Key”).  
-3. **Copy & Store Securely**  
-   The key is shown once. Copy and keep it safe—like in an environment variable or a secrets manager.
+1. Log in to the CybeDefend web interface
+2. Navigate to **Profile → Personal Access Tokens**
+3. Click **+ Create New Token**, give it a name (e.g., "CLI Token")
+4. Copy and store the token securely — it is shown only once
 
 <Frame>
-  <img src="/images/static-scanning-code-repository/local-code-scanning/create-api-key.png" alt="Create API Key Modal" style={{ borderRadius: '0.5rem' }} />
+  <img src="/images/static-scanning-code-repository/local-code-scanning/create-api-key.png" alt="Create Personal Access Token" style={{ borderRadius: '0.5rem' }} />
 </Frame>
 
 <Note>
-You can revoke or regenerate API keys anytime if you suspect they’re compromised.
+Store your PAT in a secure secrets manager or as an encrypted CI/CD secret. Never commit it to source control.
 </Note>
+
+---
+
+## Authenticate the CLI with Your PAT
+
+```bash
+cybedefend login --pat YOUR_PAT --region eu
+```
+
+Your credentials are saved to `~/.cybedefend/credentials.json`. Subsequent commands (scan, results…) use them automatically — no need to pass `--pat` every time.
+
+<Tip>
+Once logged in, the `--region` flag is remembered automatically. You can simply run `cybedefend scan --dir .` for all future commands.
+</Tip>
+
+---
+
+## Authenticate via OAuth (interactive)
+
+For local development, you can also log in through your browser:
+
+```bash
+cybedefend login --region eu
+```
+
+This opens the CybeDefend login page in your default browser. After completing authentication, the CLI stores your session automatically. Access tokens are refreshed transparently when they expire.
+
+---
+
+## Use a PAT Without Logging In
+
+For CI/CD environments where persistent sessions are not practical, you can pass the PAT directly via environment variable — no `cybedefend login` step needed:
+
+```bash
+export CYBEDEFEND_PAT=your_pat_here
+cybedefend scan --dir . --project-id YOUR_PROJECT_ID
+```
+
+Or inline for a single command:
+
+```bash
+CYBEDEFEND_PAT=${{ secrets.CYBEDEFEND_PAT }} cybedefend scan --dir . --project-id YOUR_PROJECT_ID
+```
+
+## Credential Priority Order
+
+When running any command, credentials are resolved in this order:
+
+1. `--pat` flag (highest priority)
+2. `CYBEDEFEND_PAT` environment variable
+3. `pat` field in config file (`config.yml`)
+4. Stored credentials from `cybedefend login`
+
+## Logout
+
+```bash
+cybedefend logout
+```
+
+Deletes `~/.cybedefend/credentials.json` and clears the stored session.
 
 ---
 
 ## Next Steps
 
-- **Learn the CLI Options**: Head to [CLI Options for Local Scanner](/latest/code-scanning/local-code-scanning/cli-options) for usage details.
-- **Install for Your OS**: Follow the OS-specific tutorials ([Mac Setup](/latest/code-scanning/local-code-scanning/mac-setup), [Windows Setup](/latest/code-scanning/local-code-scanning/windows-setup), [Linux Setup](/latest/code-scanning/local-code-scanning/linux-setup)) to get started.
-- **Scan & View Results**: After installing, run a local scan, then retrieve results directly in your terminal or through the CybeDefend dashboard.
+- [CLI Options for Local Scanner](/latest/code-scanning/local-code-scanning/cli-options)
+- [Mac Setup](/latest/code-scanning/local-code-scanning/mac-setup)
+- [Windows Setup](/latest/code-scanning/local-code-scanning/windows-setup)
+- [Linux Setup](/latest/code-scanning/local-code-scanning/linux-setup)

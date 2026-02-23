@@ -8,8 +8,8 @@ This guide shows you how to run **CybeDefend local scans** within a **GitLab Sel
 
 ## Prerequisites
 
-1. **API Key**  
-   Ensure you’ve already created an API key in the CybeDefend dashboard. If not, see [Introduction & API Key Creation](/latest/code-scanning/local-code-scanning/introduction-api-key).
+1. **Personal Access Token (PAT)**  
+   Ensure you've already created a PAT in the CybeDefend dashboard. If not, see [Personal Access Tokens (PAT)](/latest/code-scanning/local-code-scanning/introduction-api-key).
 2. **CybeDefend CLI**  
    You can either install the CLI directly in your job container or use a Docker image containing the CLI.
 
@@ -33,17 +33,17 @@ security_scan_job:
     - curl -L https://github.com/CybeDefend/cybedefend-cli/releases/download/v1.0.0/cybedefend-linux-amd64 -o cybedefend
     - chmod +x cybedefend
     - mv cybedefend /usr/local/bin/
-    - cybedefend scan --dir . --ci --api-key $CYBEDEFEND_API_KEY --project-id $CYBEDEFEND_PROJECT_ID
+    - cybedefend scan --dir . --ci --project-id $CYBEDEFEND_PROJECT_ID
   only:
     - main
 ```
 
 ### Key Points
 
-- **Use the “security-scan” stage** or any custom stage relevant to your pipeline.  
+- **Use the "security-scan" stage** or any custom stage relevant to your pipeline.  
 - **Install CLI**: Basic `curl` commands to grab the binary.  
 - **Run the scan**: Provide `--dir .` to scan current working directory.  
-- **Env Variables**: `$CYBEDEFEND_API_KEY` and `$CYBEDEFEND_PROJECT_ID` are stored in GitLab’s CI/CD Variables.
+- **Env Variables**: `$CYBEDEFEND_PAT` and `$CYBEDEFEND_PROJECT_ID` are stored in GitLab's CI/CD Variables.
 
 <Accordion icon="alert-triangle" title="Using Docker Instead">
   <p>If you prefer Docker-based scanning, create or pull an image with <strong>cybedefend</strong> pre-installed, then run the scan inside a container in your pipeline.</p>

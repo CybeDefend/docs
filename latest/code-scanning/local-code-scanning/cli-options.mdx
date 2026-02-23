@@ -20,12 +20,13 @@ Usage:
 Available Commands:
   completion  Generate the autocompletion script for the specified shell
   help        Help about any command
+  login       Authenticate with CybeDefend (OAuth browser flow or PAT)
+  logout      Clear stored credentials
   results     Get scan results
   scan        Start a new scan
   version     Show the version of cybedefend
 
 Flags:
-      --api-key string    API Key
       --api-url string    API URL (default "https://api-us.cybedefend.com")
       --region string     Platform region: us or eu (default "us")
       --ci                CI mode
@@ -83,10 +84,68 @@ docker pull ghcr.io/cybedefend/cybedefend-cli:latest
 
 # Example usage:
 docker run --rm -v $(pwd):/app -w /app \
-       -e CYBEDEFEND_API_KEY=$CYBEDEFEND_API_KEY \
+       -e CYBEDEFEND_PAT=$CYBEDEFEND_PAT \
        -e CYBEDEFEND_PROJECT_ID=$CYBEDEFEND_PROJECT_ID \
        ghcr.io/cybedefend/cybedefend-cli:latest scan --dir . --ci
 ```
+
+---
+
+## Authentication
+
+The CLI supports two authentication modes. Both store credentials in `~/.cybedefend/credentials.json` and are picked up automatically by subsequent commands.
+
+### OAuth Browser Flow (recommended for local use)
+
+```bash
+cybedefend login --region eu
+```
+
+Opens the CybeDefend login page in your default browser. After completing authentication, the CLI stores your session automatically. Access tokens are refreshed transparently when they expire.
+
+### PAT-Based Login (recommended for CI/CD)
+
+```bash
+cybedefend login --pat YOUR_PAT --region eu
+```
+
+Validates your Personal Access Token and saves it locally. All subsequent commands use it automatically.
+
+```bash
+# One-time login
+cybedefend login --pat YOUR_PAT --region eu
+
+# From now on, no credentials needed per-command
+cybedefend scan --dir .
+cybedefend results --project-id YOUR_PROJECT_ID
+```
+
+### Environment Variable (no login step)
+
+For CI/CD environments, skip `cybedefend login` entirely and set the PAT as an environment variable:
+
+```bash
+export CYBEDEFEND_PAT=your_pat_here
+```
+
+### Credential Priority Order
+
+1. `--pat` flag (highest priority)
+2. `CYBEDEFEND_PAT` environment variable
+3. `pat` field in config file
+4. Stored credentials from `cybedefend login`
+
+### Logout
+
+```bash
+cybedefend logout
+```
+
+Deletes `~/.cybedefend/credentials.json` and clears the stored session.
+
+<Warning>
+**Deprecated**: The `--api-key` flag has been removed. API Keys are no longer supported.
+</Warning>
 
 ---
 
@@ -96,7 +155,7 @@ docker run --rm -v $(pwd):/app -w /app \
 
 ```yaml
 api_url: "https://api-us.cybedefend.com"  # Default if not overridden
-api_key: "your-api-key"
+pat: "your-personal-access-token"  # PAT from Profile → Personal Access Tokens
 project_id: "your-project-id"
 # Optional: choose region (us/eu)
 # region: "eu"
@@ -105,14 +164,15 @@ project_id: "your-project-id"
 **Environment Variables:**
 - `CYBEDEFEND_API_URL` - API base URL
 - `CYBEDEFEND_REGION` - Platform region (`us` or `eu`). Ignored if `CYBEDEFEND_API_URL` is set
-- `CYBEDEFEND_API_KEY` - API key for authentication
+- `CYBEDEFEND_PAT` - Personal Access Token (PAT) for authentication
 - `CYBEDEFEND_PROJECT_ID` - Default project ID
 
 **Command-Line Flags** (override config and env vars):
 - `--region` - Platform region (`us` or `eu`). Selects `https://api-us.cybedefend.com` or `https://api-eu.cybedefend.com`
 - `--api-url` - API base URL (manual override; takes precedence over `--region`)
-- `--api-key` - API key
 - `--project-id` - Project ID
+
+> **Deprecated**: The `--api-key` flag and `CYBEDEFEND_API_KEY` environment variable have been removed. Use `CYBEDEFEND_PAT` with a Personal Access Token instead.
 
 ---
 
@@ -128,7 +188,6 @@ Starts a new scan by uploading a directory or a pre-zipped file to the CybeDefen
 - `--dir, -d` - Directory to scan (will be zipped before uploading). Cannot be used with `--file`
 - `--file, -f` - Pre-zipped file to scan. Cannot be used with `--dir`
 - `--project-id` - Project ID for the scan (required if not set in config/env)
-- `--api-key` - API key for authentication (can be set via config or env var)
 - `--region` - Platform region: `us` (default) or `eu`
 - `--api-url` - Manual API URL override (takes precedence over `--region`)
 - `--wait, -w` - Wait for scan completion before exiting (default: `true`)
@@ -140,11 +199,11 @@ Starts a new scan by uploading a directory or a pre-zipped file to the CybeDefen
 #### Examples
 ```bash
 # Scan a directory, wait for completion, and show summary (default behavior)
-# Assumes API key and Project ID are set via config or env vars
+# Assumes PAT is set via `cybedefend login` or CYBEDEFEND_PAT env var
 cybedefend scan --dir ./my-app --project-id your-project-id
 
-# Scan a pre-zipped file and provide API key via flag
-cybedefend scan --file ./my-app.zip --api-key your-api-key --project-id your-project-id
+# Scan a pre-zipped file (PAT must be configured via login or env var)
+cybedefend scan --file ./my-app.zip --project-id your-project-id
 
 # Start a scan but don't wait for completion
 cybedefend scan --dir ./my-app --project-id your-project-id --wait=false
@@ -223,16 +282,18 @@ For example, in GitHub Actions:
     sudo mv cybedefend /usr/local/bin/
 
 - name: Run security scan and break on High severity
+  env:
+    CYBEDEFEND_PAT: ${{ secrets.CYBEDEFEND_PAT }}
   run: cybedefend scan --dir ./ --ci \
-         --api-key ${{ secrets.CYBEDEFEND_API_KEY }} \
          --project-id ${{ secrets.CYBEDEFEND_PROJECT_ID }} \
          --break-on-severity high # Fail build if High or Critical vulns found
 
 # Optionally, fetch detailed results artifact if needed, e.g., for reporting
 # This step might only run if the previous one succeeded, depending on workflow setup
 - name: Fetch Detailed Results as SARIF
+  env:
+    CYBEDEFEND_PAT: ${{ secrets.CYBEDEFEND_PAT }}
   run: cybedefend results --project-id ${{ secrets.CYBEDEFEND_PROJECT_ID }} \
-                          --api-key ${{ secrets.CYBEDEFEND_API_KEY }} \
                           --output sarif --filename results.sarif --ci
 
 # - name: Upload SARIF results (Example using GitHub action)

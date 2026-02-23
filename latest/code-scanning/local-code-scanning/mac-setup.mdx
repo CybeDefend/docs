@@ -9,7 +9,7 @@ This guide walks you through installing the **CybeDefend CLI** on macOS, ensurin
 ## Requirements
 
 - **macOS** (Intel or Apple Silicon).  
-- [API Key](/latest/code-scanning/local-code-scanning/introduction-api-key) from your CybeDefend account.  
+- [Personal Access Token (PAT)](/latest/code-scanning/local-code-scanning/introduction-api-key) from your CybeDefend account.  
 - Optional: Homebrew or direct binary installation.
 
 ---
@@ -55,15 +55,23 @@ If you encounter a macOS Gatekeeper prompt, right-click the binary in Finder →
    ```bash
    cd ~/Projects/my-app
    ```
-2. **Run a Scan**  
+2. **Authenticate (one-time setup)**  
    ```bash
-   cybedefend scan --dir . --api-key YOUR_API_KEY --project-id YOUR_PROJECT_ID
+   cybedefend login --pat YOUR_PAT --region eu
    ```
-3. **Check Results**  
+3. **Run a Scan**  
+   ```bash
+   cybedefend scan --dir . --project-id YOUR_PROJECT_ID
+   ```
+4. **Check Results**  
    ```bash
    cybedefend results --project-id YOUR_PROJECT_ID --all
    ```
    
 <Tip>
-You can also store your API key in the <strong>CYBEDEFEND_API_KEY</strong> environment variable to avoid typing it each time.
+You can also store your PAT in the <strong>CYBEDEFEND_PAT</strong> environment variable to avoid typing it each time:
+
+```bash
+export CYBEDEFEND_PAT=your_pat_here
+```
 </Tip>

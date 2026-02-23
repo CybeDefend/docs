@@ -9,40 +9,33 @@ CybeDefend is an advanced API designed for application security analysis. It pro
 
 ## Authentication
 
-CybeDefend offers two authentication methods for securing API requests:
+CybeDefend uses its own identity provider. All API requests require a valid short-lived **JWT Bearer token**.
 
-### JWT Bearer Token
+### How to Obtain an Access Token
 
-You can use a JWT token passed as a Bearer token in the Authorization header. JWT tokens are short-lived with a validity period of 15 minutes.
+The recommended way to obtain a Bearer token for API access is via the **CybeDefend CLI** using a **Personal Access Token (PAT)**:
 
-To obtain a JWT token, make a POST request to the `/auth/renew` endpoint on the IAM service (not the base API):
+1. **Create a Personal Access Token** in the CybeDefend web interface under **Profile → Personal Access Tokens**
+2. **Authenticate the CLI** with your PAT:
+   ```bash
+   cybedefend login --pat YOUR_PAT --region eu
+   ```
+3. The CLI exchanges your PAT for a short-lived access token automatically and prints it, or you can use the CLI directly for scans
 
-```bash
-POST /auth/renew
-```
+**Why the CLI?** The CLI application is the only OAuth client authorized to perform the PAT → access token exchange. IDE extensions (VS Code, JetBrains) use their own browser-based OAuth flow.
 
-This endpoint requires you to be already authenticated (using session cookies). When successfully called, it returns an access token that can be used for subsequent API calls:
+### Bearer Token Usage
 
-```json
-{
-  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-Once obtained, include the JWT in the Authorization header:
+Once you have a JWT access token, include it in every request:
 
 ```bash
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
-### API Key
+Access tokens are short-lived. Use the CLI or your IDE extension to refresh them automatically.
 
-Alternatively, you can authenticate using an API key. The API key replaces the Bearer token and should be placed in the request header.
+### API Key — Deprecated
 
-```bash
-X-API-Key: your_api_key_here
-```
-
-For detailed information on creating and managing API keys, refer to the [API Key documentation](/static-scanning-code-repository/local-code-scanning/introduction-api-key#api-key-creation-tutorial).
-
-Choose the authentication method that best suits your use case. For scripts or automated systems that require longer sessions, API keys are recommended. For interactive user sessions, JWT tokens provide better security.
+<Warning>
+**API Keys are fully deprecated and no longer functional.** The `X-API-Key` header and all API key-based authentication have been removed. Please migrate to Personal Access Tokens (PAT) as described above.
+</Warning>
