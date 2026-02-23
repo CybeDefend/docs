@@ -249,13 +249,24 @@
                 "group": "User",
                 "pages": [
                   "latest/api-reference/endpoint/user/get-user-profile",
-                  "latest/api-reference/endpoint/user/update-user-profile"
+                  "latest/api-reference/endpoint/user/update-user-profile",
+                  {
+                    "group": "Personal Access Tokens",
+                    "pages": [
+                      "latest/api-reference/endpoint/user/list-personal-access-tokens",
+                      "latest/api-reference/endpoint/user/create-a-personal-access-token",
+                      "latest/api-reference/endpoint/user/delete-a-personal-access-token",
+                      "latest/api-reference/endpoint/user/rename-a-personal-access-token",
+                      "latest/api-reference/endpoint/version/get-logto-app-ids-for-native-clients"
+                    ]
+                  }
                 ]
               },
               {
                 "group": "Scanning",
                 "pages": [
                   "latest/api-reference/endpoint/scan/get-a-scan-by-id",
+                  "latest/api-reference/endpoint/scan/start-a-public-container-scan",
                   "latest/api-reference/endpoint/scan/start-a-scan"
                 ]
               },
@@ -289,7 +300,8 @@
                       "latest/api-reference/endpoint/results-&-vulnerabilities/get-a-container-vulnerability-by-id",
                       "latest/api-reference/endpoint/results-&-vulnerabilities/get-all-container-images-of-a-project",
                       "latest/api-reference/endpoint/results-&-vulnerabilities/get-all-container-packages-of-a-project",
-                      "latest/api-reference/endpoint/results-&-vulnerabilities/delete-a-scanned-container-image-from-a-project"
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/delete-a-scanned-container-image-from-a-project",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-container-images-grouped-by-repository"
                     ]
                   },
                   {
@@ -321,7 +333,8 @@
                     "pages": [
                       "latest/api-reference/endpoint/results-&-vulnerabilities/update-a-vulnerability-of-a-project",
                       "latest/api-reference/endpoint/results-&-vulnerabilities/get-vulnerability-by-id-with-similar-occurrences",
-                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-branches-from-vulnerability-detections"
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-branches-from-vulnerability-detections",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/batch-update-multiple-vulnerabilities"
                     ]
                   }
                 ]
@@ -447,7 +460,8 @@
                       "latest/api-reference/endpoint/dockerhub-container-registry/delete-dockerhub-credentials",
                       "latest/api-reference/endpoint/dockerhub-container-registry/list-dockerhub-images",
                       "latest/api-reference/endpoint/dockerhub-container-registry/list-dockerhub-image-tags",
-                      "latest/api-reference/endpoint/dockerhub-container-registry/start-dockerhub-container-scan"
+                      "latest/api-reference/endpoint/dockerhub-container-registry/start-dockerhub-container-scan",
+                      "latest/api-reference/endpoint/results-&-vulnerabilities/get-dockerhubsearchimages"
                     ]
                   },
                   {
@@ -548,6 +562,12 @@
                       "latest/api-reference/endpoint/jfrog-container-registry/start-jfrog-artifactory-container-image-scan"
                     ]
                   }
+                ]
+              },
+              {
+                "group": "SSO",
+                "pages": [
+                  "latest/api-reference/endpoint/sso/resolve-enterprise-sso-connectors-by-email-domain"
                 ]
               }
             ]
