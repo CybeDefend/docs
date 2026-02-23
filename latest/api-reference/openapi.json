@@ -18171,7 +18171,12 @@
   "tags": [],
   "servers": [
     {
-      "url": "https://api-eu.cybedefend.com"
+      "url": "https://api-eu.cybedefend.com",
+      "description": "EU"
+    },
+    {
+      "url": "https://api-us.cybedefend.com",
+      "description": "US"
     }
   ],
   "components": {

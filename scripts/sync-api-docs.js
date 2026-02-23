@@ -95,7 +95,23 @@ const CONFIG = {
         // Groupe "User"
         "User": {
             folder: "user",
-            allPages: true
+            mainPages: [
+                "get-user-profile",
+                "update-user-profile"
+            ],
+            subgroups: {
+                "Personal Access Tokens": {
+                    folder: "user",
+                    pages: [
+                        "list-personal-access-tokens",
+                        "create-a-personal-access-token",
+                        "delete-a-personal-access-token",
+                        "rename-a-personal-access-token",
+                        // cross-folder: lives in version/ but belongs here
+                        "latest/api-reference/endpoint/version/get-app-ids-for-native-clients"
+                    ]
+                }
+            }
         },
 
         // Groupe "Scanning"
@@ -134,6 +150,7 @@ const CONFIG = {
                         "get-all-container-vulnerabilities-of-a-project",
                         "get-a-container-vulnerability-by-id",
                         "get-all-container-images-of-a-project",
+                        "get-container-images-grouped-by-repository",
                         "get-all-container-packages-of-a-project",
                         "delete-a-scanned-container-image-from-a-project"
                     ]
@@ -166,6 +183,7 @@ const CONFIG = {
                     folder: "results-&-vulnerabilities",
                     pages: [
                         "update-a-vulnerability-of-a-project",
+                        "batch-update-multiple-vulnerabilities",
                         "get-vulnerability-by-id-with-similar-occurrences",
                         "get-branches-from-vulnerability-detections"
                     ]
@@ -295,7 +313,9 @@ const CONFIG = {
                         "delete-dockerhub-credentials",
                         "list-dockerhub-images",
                         "list-dockerhub-image-tags",
-                        "start-dockerhub-container-scan"
+                        "start-dockerhub-container-scan",
+                        // cross-folder: search lives in results-&-vulnerabilities/
+                        "latest/api-reference/endpoint/results-&-vulnerabilities/get-dockerhubsearchimages"
                     ]
                 },
                 "GitHub (GHCR)": {
@@ -397,6 +417,12 @@ const CONFIG = {
                     ]
                 }
             }
+        },
+
+        // Groupe "SSO"
+        "SSO": {
+            folder: "sso",
+            allPages: true
         }
     },
 
@@ -413,7 +439,7 @@ const CONFIG = {
         /store-sbom/i,
         /patch-project-scan/i,
         /get-api-version/i,
-        /dockerhub\/search/i
+        /get-app-ids-for-native-clients/i  // handled explicitly under User > PAT
     ]
 };
 
@@ -661,11 +687,16 @@ function buildNavigation(generatedEndpoints) {
                 } else {
                     // C'est un objet avec folder et pages
                     for (const filename of subgroupConfig.pages) {
-                        const pagePath = buildPath(subgroupConfig.folder, filename);
-                        if (endpointExists(subgroupConfig.folder, filename)) {
-                            subgroup.pages.push(pagePath);
+                        if (filename.includes('/')) {
+                            // Chemin complet (cross-folder) — on l'inclut directement
+                            subgroup.pages.push(filename);
                         } else {
-                            missingEndpoints.push(pagePath);
+                            const pagePath = buildPath(subgroupConfig.folder, filename);
+                            if (endpointExists(subgroupConfig.folder, filename)) {
+                                subgroup.pages.push(pagePath);
+                            } else {
+                                missingEndpoints.push(pagePath);
+                            }
                         }
                     }
                 }
