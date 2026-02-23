@@ -257,7 +257,7 @@
                       "latest/api-reference/endpoint/user/create-a-personal-access-token",
                       "latest/api-reference/endpoint/user/delete-a-personal-access-token",
                       "latest/api-reference/endpoint/user/rename-a-personal-access-token",
-                      "latest/api-reference/endpoint/version/get-logto-app-ids-for-native-clients"
+                      "latest/api-reference/endpoint/version/get-app-ids-for-native-clients"
                     ]
                   }
                 ]

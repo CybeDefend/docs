@@ -7,35 +7,133 @@ description: 'CybeDefend API Documentation for Application Security Analysis'
 
 CybeDefend is an advanced API designed for application security analysis. It provides a comprehensive solution for managing users, organizations, and projects. With secure authentication and granular permission management, CybeDefend excels in static, dynamic, and Infrastructure as Code security analyses (SAST, DAST, IaC, etc.).
 
+## Base URLs
+
+Requests are region-specific. Use the URL matching your organization's region:
+
+| Region | API base URL |
+|--------|-------------|
+| EU | `https://api-eu.cybedefend.com` |
+| US | `https://api-us.cybedefend.com` |
+
 ## Authentication
 
-CybeDefend uses its own identity provider. All API requests require a valid short-lived **JWT Bearer token**.
+All API requests require a valid short-lived **JWT Bearer token** passed in the `Authorization` header:
 
-### How to Obtain an Access Token
-
-The recommended way to obtain a Bearer token for API access is via the **CybeDefend CLI** using a **Personal Access Token (PAT)**:
-
-1. **Create a Personal Access Token** in the CybeDefend web interface under **Profile → Personal Access Tokens**
-2. **Authenticate the CLI** with your PAT:
-   ```bash
-   cybedefend login --pat YOUR_PAT --region eu
-   ```
-3. The CLI exchanges your PAT for a short-lived access token automatically and prints it, or you can use the CLI directly for scans
-
-**Why the CLI?** The CLI application is the only OAuth client authorized to perform the PAT → access token exchange. IDE extensions (VS Code, JetBrains) use their own browser-based OAuth flow.
-
-### Bearer Token Usage
-
-Once you have a JWT access token, include it in every request:
-
-```bash
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+Authorization: Bearer <access_token>
 ```
 
-Access tokens are short-lived. Use the CLI or your IDE extension to refresh them automatically.
+Access tokens are obtained by exchanging a **Personal Access Token (PAT)** through the CybeDefend identity provider.
 
-### API Key — Deprecated
+---
+
+## Obtaining an Access Token (PAT → JWT)
+
+The exchange is performed against the region-specific authentication domain:
+
+| Region | Auth URL |
+|--------|----------|
+| EU | `https://auth-eu.cybedefend.com` |
+| US | `https://auth-us.cybedefend.com` |
+
+The token exchange requires the **CLI application ID** (`appId`). Only the CLI client is authorized to exchange a PAT for an access token — other clients (VS Code, IntelliJ) use a browser-based OAuth flow and have separate app IDs.
+
+### Step 1 — Retrieve the CLI Application ID
+
+Fetch the current app IDs for your region:
+
+```bash
+# EU
+curl https://api-eu.cybedefend.com/client-apps
+
+# US
+curl https://api-us.cybedefend.com/client-apps
+```
+
+Example response:
+
+```json
+{
+  "cli": {
+    "appId": "fm90ay05zohu8fk2q45ms"
+  },
+  "vscode": {
+    "appId": "r84p1y100lf9hgvoey40c"
+  },
+  "intellij": {
+    "appId": "t40evldybv8uh97gsu7u1"
+  }
+}
+```
+
+The CLI `appId` to use:
+
+| Region | CLI `appId` |
+|--------|-------------|
+| EU | `fm90ay05zohu8fk2q45ms` |
+| US | `7o6r9cvvi8um0kisvn7hm` |
+
+<Note>
+These values are provided as a reference. Always verify against the live `/client-apps` endpoint before using them — the app ID may change between releases.
+</Note>
+
+---
+
+### Step 2 — Exchange Your PAT for an Access Token
+
+Send a `POST` request to the `/oidc/token` endpoint of your region's auth domain, using the `urn:ietf:params:oauth:grant-type:token-exchange` grant type:
+
+<CodeGroup>
+
+```bash EU
+curl -X POST https://auth-eu.cybedefend.com/oidc/token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=urn:ietf:params:oauth:grant-type:token-exchange" \
+  -d "client_id=fm90ay05zohu8fk2q45ms" \
+  -d "subject_token=YOUR_PAT" \
+  -d "subject_token_type=urn:ietf:params:oauth:token-type:pat"
+```
+
+```bash US
+curl -X POST https://auth-us.cybedefend.com/oidc/token \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=urn:ietf:params:oauth:grant-type:token-exchange" \
+  -d "client_id=7o6r9cvvi8um0kisvn7hm" \
+  -d "subject_token=YOUR_PAT" \
+  -d "subject_token_type=urn:ietf:params:oauth:token-type:pat"
+```
+
+</CodeGroup>
+
+Example response:
+
+```json
+{
+  "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "scope": "openid profile email"
+}
+```
+
+---
+
+### Step 3 — Call the API
+
+Use the `access_token` from the response as a Bearer token in all subsequent requests:
+
+```bash
+curl https://api-eu.cybedefend.com/organizations \
+  -H "Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+Access tokens expire (typically after 1 hour). Repeat the exchange in Step 2 to obtain a fresh token.
+
+---
+
+## API Key — Deprecated
 
 <Warning>
-**API Keys are fully deprecated and no longer functional.** The `X-API-Key` header and all API key-based authentication have been removed. Please migrate to Personal Access Tokens (PAT) as described above.
+**API Keys are fully deprecated and no longer functional.** The `X-API-Key` header and all API key-based authentication have been removed. Please use Personal Access Tokens (PAT) as described above.
 </Warning>

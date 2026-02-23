@@ -25,12 +25,12 @@
     },
     "/client-apps": {
       "get": {
-        "description": "Returns the public Logto application IDs for the CLI, VS Code Extension, and IntelliJ IDEA Extension. No authentication required.",
+        "description": "Returns the public application IDs for native clients (CLI, VS Code Extension, IntelliJ IDEA Extension). No authentication required.",
         "operationId": "AppController_getClientApps",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Logto app IDs for each native client",
+            "description": "App IDs for each native client",
             "content": {
               "application/json": {
                 "schema": {
@@ -40,7 +40,7 @@
             }
           }
         },
-        "summary": "Get Logto app IDs for native clients",
+        "summary": "Get app IDs for native clients",
         "tags": [
           "Version"
         ]
@@ -18180,7 +18180,7 @@
         "scheme": "bearer",
         "bearerFormat": "JWT",
         "type": "http",
-        "description": "JWT token from Logto authentication."
+        "description": "JWT access token."
       }
     },
     "schemas": {
@@ -18231,7 +18231,7 @@
         "properties": {
           "appId": {
             "type": "string",
-            "description": "Logto application ID (public client identifier)",
+            "description": "Application ID (public client identifier)",
             "example": "abc123xyz"
           }
         },
