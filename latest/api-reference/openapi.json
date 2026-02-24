@@ -1,5 +1,22 @@
 {
   "openapi": "3.0.0",
+  "info": {
+    "title": "Cybedefend API",
+    "description": "CybeDefend is an advanced API for application security analysis. Key features include OAuth 2.0 authentication, user/organization/project management, and REBAC-based permissions. It excels in static, dynamic, and IaC security analyses (SAST, DAST, IaC, etc.).",
+    "version": "1.0",
+    "contact": {}
+  },
+  "servers": [
+    {
+      "url": "https://api-eu.cybedefend.com",
+      "description": "EU"
+    },
+    {
+      "url": "https://api-us.cybedefend.com",
+      "description": "US"
+    }
+  ],
+  "tags": [],
   "paths": {
     "/": {
       "get": {
@@ -18162,23 +18179,6 @@
       }
     }
   },
-  "info": {
-    "title": "Cybedefend API",
-    "description": "CybeDefend is an advanced API for application security analysis. Key features include OAuth 2.0 authentication, user/organization/project management, and REBAC-based permissions. It excels in static, dynamic, and IaC security analyses (SAST, DAST, IaC, etc.).",
-    "version": "1.0",
-    "contact": {}
-  },
-  "tags": [],
-  "servers": [
-    {
-      "url": "https://api-eu.cybedefend.com",
-      "description": "EU"
-    },
-    {
-      "url": "https://api-us.cybedefend.com",
-      "description": "US"
-    }
-  ],
   "components": {
     "securitySchemes": {
       "bearer": {
