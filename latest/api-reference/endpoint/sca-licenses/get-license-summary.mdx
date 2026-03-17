@@ -1,0 +1,134 @@
+---
+title: 'Get License Summary'
+description: 'Get aggregated license statistics for all SCA packages in a project'
+api: 'GET /project/{projectId}/results/sca/licenses/summary'
+---
+
+## Path Parameters
+
+<ParamField path="projectId" type="string" required>
+  The UUID of the project
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="branch" type="string">
+  Filter by Git branch name
+</ParamField>
+
+<ParamField query="organizationId" type="string">
+  The UUID of the organization (required for permission resolution)
+</ParamField>
+
+<ParamField query="packageType" type="string[]">
+  Filter by package ecosystem (e.g., `npm`, `pip`, `maven`, `go`). Can be specified multiple times.
+</ParamField>
+
+## Authorization
+
+Requires `read_scan_result` permission on the project.
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request succeeded
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="License Summary Object">
+    <ResponseField name="projectId" type="string">
+      The project UUID
+    </ResponseField>
+    <ResponseField name="totalPackages" type="number">
+      Total number of SCA packages
+    </ResponseField>
+    <ResponseField name="packagesWithLicenses" type="number">
+      Number of packages with at least one detected license
+    </ResponseField>
+    <ResponseField name="packagesWithoutLicenses" type="number">
+      Number of packages with no detected license
+    </ResponseField>
+    <ResponseField name="permissiveCount" type="number">
+      Number of packages classified as Permissive
+    </ResponseField>
+    <ResponseField name="weakCopyleftCount" type="number">
+      Number of packages classified as Weak Copyleft
+    </ResponseField>
+    <ResponseField name="strongCopyleftCount" type="number">
+      Number of packages classified as Strong Copyleft
+    </ResponseField>
+    <ResponseField name="unknownCount" type="number">
+      Number of packages with unknown or unresolved licenses
+    </ResponseField>
+    <ResponseField name="ignoredCount" type="number">
+      Number of packages marked as ignored for license analysis
+    </ResponseField>
+    <ResponseField name="licenses" type="array">
+      <Expandable title="License Item">
+        <ResponseField name="spdxId" type="string">
+          SPDX license identifier (e.g., `MIT`, `Apache-2.0`)
+        </ResponseField>
+        <ResponseField name="name" type="string">
+          Human-readable license name
+        </ResponseField>
+        <ResponseField name="category" type="string">
+          License category: `PERMISSIVE`, `WEAK_COPYLEFT`, `STRONG_COPYLEFT`, or `UNKNOWN`
+        </ResponseField>
+        <ResponseField name="risk" type="string">
+          Risk level: `NONE`, `MEDIUM`, `HIGH`, or `UNKNOWN`
+        </ResponseField>
+        <ResponseField name="riskDescription" type="string">
+          Human-readable description of the risk implications
+        </ResponseField>
+        <ResponseField name="count" type="number">
+          Number of packages using this license
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseExample>
+```json
+{
+  "success": true,
+  "data": {
+    "projectId": "550e8400-e29b-41d4-a716-446655440001",
+    "totalPackages": 142,
+    "packagesWithLicenses": 135,
+    "packagesWithoutLicenses": 7,
+    "permissiveCount": 120,
+    "weakCopyleftCount": 8,
+    "strongCopyleftCount": 3,
+    "unknownCount": 7,
+    "ignoredCount": 4,
+    "licenses": [
+      {
+        "spdxId": "MIT",
+        "name": "MIT License",
+        "category": "PERMISSIVE",
+        "risk": "NONE",
+        "riskDescription": "Minimal restrictions on use, modification, and redistribution",
+        "count": 85
+      },
+      {
+        "spdxId": "Apache-2.0",
+        "name": "Apache License 2.0",
+        "category": "PERMISSIVE",
+        "risk": "NONE",
+        "riskDescription": "Minimal restrictions on use, modification, and redistribution",
+        "count": 25
+      },
+      {
+        "spdxId": "GPL-3.0-only",
+        "name": "GNU General Public License v3.0 only",
+        "category": "STRONG_COPYLEFT",
+        "risk": "HIGH",
+        "riskDescription": "Requires derivative works to be released under the same license",
+        "count": 3
+      }
+    ]
+  }
+}
+```
+</ResponseExample>

@@ -1,15 +1,15 @@
 ---
 title: "JetBrains Plugin"
-description: "Integrate CybeDefend security scanning into IntelliJ IDEA, PyCharm, WebStorm, and other JetBrains IDEs."
+description: "Integrate CybeDefend security scanning and AI-powered remediation into IntelliJ IDEA, PyCharm, WebStorm, and other JetBrains IDEs."
 ---
 
-Scan early, fix as you develop: integrate CybeDefend's powerful security scanning into your **JetBrains IDE** workflow.
+Scan. Detect. Fix. — Security meets AI, right in your editor.
 
 ---
 
 ## Overview
 
-The CybeDefend plugin for JetBrains IDEs provides comprehensive security analysis directly within your development environment. Identify and address vulnerabilities in your code, dependencies, and infrastructure configurations without leaving IntelliJ IDEA, PyCharm, WebStorm, or other JetBrains IDEs.
+The CybeDefend plugin for JetBrains IDEs brings comprehensive security analysis and AI-powered remediation directly into your development workflow. Identify vulnerabilities, get AI-generated fixes, and manage your security posture — all without leaving your IDE.
 
 <Card title="Install from JetBrains Marketplace" icon="download" href="https://plugins.jetbrains.com/plugin/27580-cybedefend">
   Get the CybeDefend plugin for JetBrains IDEs
@@ -19,58 +19,139 @@ The CybeDefend plugin for JetBrains IDEs provides comprehensive security analysi
 
 ## Supported IDEs
 
-- IntelliJ IDEA
-- PyCharm
-- WebStorm
-- PhpStorm
-- GoLand
-- Rider
-- CLion
-- RubyMine
-- And all other JetBrains IDEs
+The plugin is compatible with **JetBrains IDEs build 2024.3+**, including:
+
+<CardGroup cols={3}>
+  <Card title="IntelliJ IDEA" icon="java" />
+  <Card title="PyCharm" icon="python" />
+  <Card title="WebStorm" icon="js" />
+  <Card title="PhpStorm" icon="php" />
+  <Card title="GoLand" icon="golang" />
+  <Card title="Rider" icon="microsoft" />
+  <Card title="CLion" icon="c" />
+  <Card title="RubyMine" icon="gem" />
+  <Card title="Android Studio" icon="android" />
+</CardGroup>
+
+And all other JetBrains IDEs based on the IntelliJ Platform (DataGrip, AppCode, etc.).
 
 ---
 
 ## Key Features
 
-### Comprehensive Security Analysis
+<CardGroup cols={2}>
+  <Card title="5 Scan Types" icon="shield-halved">
+    SAST, SCA, IaC, Secrets, and CI/CD scanning in one plugin
+  </Card>
+  <Card title="CybeAgent" icon="robot">
+    AI-powered assistant that analyzes and fixes vulnerabilities with full code context
+  </Card>
+  <Card title="DeepFix" icon="wrench">
+    Automated dependency upgrades for SCA vulnerabilities across 10 ecosystems
+  </Card>
+  <Card title="Native Integration" icon="code">
+    Gutter icons, diagnostics, context menus, and tool windows built for JetBrains
+  </Card>
+</CardGroup>
 
-- **Code Security (SAST)**: Find vulnerabilities in your custom code
-- **Dependencies Security (SCA)**: Detect known vulnerabilities in open-source libraries
-- **Infrastructure Security (IaC)**: Uncover misconfigurations in infrastructure-as-code files
+### Security Scanning
 
-### In-IDE Results
+| Scan Type | What It Detects |
+|-----------|-----------------|
+| **SAST** | SQL injection, XSS, path traversal, command injection — with taint analysis and data flow tracking |
+| **SCA** | Known CVEs in dependencies (npm, Maven, pip, Go, NuGet, RubyGems, Cargo, Swift, Packagist) |
+| **IaC** | Misconfigurations in Terraform, CloudFormation, Kubernetes, Docker |
+| **Secrets** | Leaked API keys, tokens, passwords, certificates |
+| **CI/CD** | Insecure pipeline configurations and overly permissive permissions |
 
-View scan summaries and detailed vulnerability information directly within dedicated JetBrains IDE panels.
+### Editor Integration
 
-### Direct Code Navigation
+- **Gutter icons** — Severity-colored markers on every vulnerable line (Critical, High, Medium, Low, Info)
+- **Diagnostics** — Native underlines visible in the inspections/problems panel
+- **Context menu** — Right-click on vulnerable code to view details or trigger AI fix
+- **Tool windows** — Dedicated "CybeDefend" and "CybeDefend Security" panels
+- **Code navigation** — Click any vulnerability to jump to the exact line of code
 
-Quickly jump from a vulnerability report to the exact line of code that needs attention.
+### CybeAgent — AI-Powered Fix
+
+Click **"Fix with CybeAgent"** on any vulnerability. The AI agent receives the full vulnerability context — severity, CWE, OWASP classification, data flow, code snippet, and remediation guidance — then proposes a precise code fix that you review and apply.
+
+### DeepFix — Automated Dependency Upgrades
+
+Automatically resolves safe version upgrades for SCA vulnerabilities. Supports **10 package ecosystems**: npm, Maven, pip/PyPI, Go, NuGet, Packagist, RubyGems, Cargo, SwiftPM, and CocoaPods.
+
+### Git Integration
+
+The plugin adds a **"Generate Commit Message"** action in the VCS commit dialog, using AI to generate meaningful commit messages based on your staged changes.
 
 ---
 
 ## Getting Started
 
-### 1. Install
+<Steps>
+  <Step title="Install">
+    Open **Settings/Preferences** → **Plugins** → **Marketplace**, search for "**CybeDefend**", and click **Install**. Restart the IDE when prompted.
+  </Step>
+  <Step title="Select Your Region">
+    In the CybeDefend tool window settings, select **EU** (Europe — default) or **US** (United States) depending on your CybeDefend instance.
+  </Step>
+  <Step title="Authenticate">
+    Open the CybeDefend tool window and click **Login**. Your browser opens for a secure OAuth 2.0 authentication flow. After completing login, you are redirected back to the IDE automatically.
 
-Open **Settings/Preferences** → **Plugins** → **Marketplace**, search for "**CybeDefend**", and click **Install**.
-
-### 2. Authenticate
-
-Open the CybeDefend tool window in your JetBrains IDE and click **Login**. Your browser will open and redirect you to the CybeDefend login page. After completing authentication, you will be redirected back to the IDE automatically.
-
-<Tip>
-No API key or Personal Access Token is needed for the JetBrains plugin — it uses a secure browser-based OAuth 2.0 login.
-</Tip>
-
-### 3. Configure Project
-
-Select the corresponding CybeDefend Organization and Project for your workspace.
-
-### 4. Scan
-
-Open the CybeDefend tool window and start a vulnerability scan with one click.
+    <Tip>
+    No API key or Personal Access Token is needed — the plugin uses secure browser-based OAuth 2.0 with PKCE.
+    </Tip>
+  </Step>
+  <Step title="Configure Project">
+    Select the corresponding CybeDefend Organization and Project for your workspace.
+  </Step>
+  <Step title="Scan">
+    Open the CybeDefend Security tool window and start a vulnerability scan with one click. Results appear directly in your editor with gutter icons and diagnostics.
+  </Step>
+</Steps>
 
 ---
 
-**Related:** [MCP Server Integration](/latest/plateform-overview/key-features/mcp-server-integration) · [Create Your Account](/latest/get-started/account-setup/create-account-organization)
+## File Exclusion
+
+Create a **`.cybedefend`** file at your project root to exclude files and directories from scans. It uses `.gitignore` syntax:
+
+```
+# Exclude test fixtures
+tests/fixtures/
+*.test.js
+
+# Exclude generated code
+dist/
+build/
+```
+
+<Info>
+Common directories like `node_modules`, `.git`, `dist`, `build`, `venv`, and `__pycache__` are excluded by default.
+</Info>
+
+---
+
+## Vulnerability Management
+
+You can update vulnerability status directly from the IDE:
+
+| Status | Meaning |
+|--------|---------|
+| **To Verify** | Needs triage (default) |
+| **Confirmed** | Validated vulnerability |
+| **Not Exploitable** | False positive |
+| **Resolved** | Fixed |
+| **Ignored** | Accepted risk |
+
+---
+
+## Requirements
+
+- **JetBrains IDE** 2024.3 or later (build 243.0+)
+- A **CybeDefend account** ([create one here](/latest/get-started/account-setup/create-account-organization))
+- Internet connection to the CybeDefend API
+
+---
+
+**Related:** [VS Code Extension](/latest/ide-integrations/vscode) · [MCP Server Integration](/latest/plateform-overview/key-features/mcp-server-integration) · [Create Your Account](/latest/get-started/account-setup/create-account-organization) · [CybeDefend Ignore File](/latest/code-scanning/scanning-options/cybedefend-ignore-file)

@@ -1,0 +1,183 @@
+---
+title: 'License Compliance'
+description: 'Identify, categorize, and manage open-source license risks across your SCA dependencies'
+---
+
+## Overview
+
+The **License Compliance** feature gives you full visibility into the open-source licenses used by your project dependencies. CybeDefend automatically detects licenses during SCA scans, categorizes them by risk level, and lets you customize classifications at the organization level.
+
+<CardGroup cols={2}>
+  <Card title="Automatic Detection" icon="magnifying-glass">
+    Licenses are extracted from package metadata during every SCA scan
+  </Card>
+  <Card title="Risk Categorization" icon="shield-halved">
+    Each license is classified as Permissive, Weak Copyleft, Strong Copyleft, or Unknown
+  </Card>
+  <Card title="SPDX Expression Parsing" icon="code-branch">
+    Full support for complex SPDX expressions with OR, AND, and WITH operators
+  </Card>
+  <Card title="Organization Overrides" icon="sliders">
+    Customize license risk categories to match your organization's legal requirements
+  </Card>
+</CardGroup>
+
+---
+
+## License Categories
+
+CybeDefend classifies every detected license into one of four categories, each with an associated risk level:
+
+| Category | Risk | Description |
+|----------|------|-------------|
+| **Permissive** | None | Minimal restrictions on use, modification, and redistribution. Examples: MIT, Apache-2.0, BSD-2-Clause, ISC |
+| **Weak Copyleft** | Medium | Requires derivative works of the library itself to remain open-source, but allows proprietary linking. Examples: LGPL-2.1, MPL-2.0, EPL-2.0 |
+| **Strong Copyleft** | High | Requires any software that links to or includes the library to be released under the same license. Examples: GPL-3.0, AGPL-3.0, SSPL-1.0 |
+| **Unknown** | Unknown | License could not be identified or is not in the known SPDX database |
+
+<Info>
+CybeDefend ships with a built-in classification for **100+ SPDX licenses**. You can override any of these at the organization level to match your specific compliance requirements.
+</Info>
+
+---
+
+## SPDX Expression Support
+
+Many packages declare their license using complex SPDX expressions. CybeDefend parses these expressions and evaluates the effective risk:
+
+### Operators
+
+| Operator | Meaning | Risk Evaluation |
+|----------|---------|-----------------|
+| `OR` | User may choose either license | Picks the **least restrictive** option |
+| `AND` | Both licenses apply | Picks the **most restrictive** option |
+| `WITH` | License with exception | Evaluates the base license with the exception applied |
+
+### Examples
+
+```
+MIT OR GPL-3.0-only
+→ Effective risk: None (MIT is the least restrictive choice)
+
+MIT AND GPL-3.0-only
+→ Effective risk: High (GPL-3.0 is the most restrictive, both apply)
+
+GPL-2.0-only WITH Classpath-exception-2.0
+→ Evaluated as GPL-2.0 with the Classpath exception
+```
+
+<Tip>
+When a package uses an `OR` expression, CybeDefend assumes you will choose the most permissive option, resulting in a lower effective risk.
+</Tip>
+
+---
+
+## License Summary Dashboard
+
+The license summary provides aggregated statistics for all SCA packages in a project:
+
+- **Total packages** scanned and how many have detected licenses
+- **Breakdown by category**: count of Permissive, Weak Copyleft, Strong Copyleft, and Unknown packages
+- **Ignored packages**: packages you have explicitly excluded from license analysis
+- **Per-license detail**: each individual SPDX license with its category, risk level, and package count
+
+You can filter results by **branch** and **package type** (npm, pip, maven, etc.) to focus on specific ecosystems.
+
+---
+
+## Managing Licenses
+
+### Viewing Packages by License
+
+Click on any license in the summary to see all packages using that license. For each package, you can see:
+
+- Package name and version
+- Ecosystem (npm, pip, maven, go, etc.)
+- Whether it is a transitive or direct dependency
+- Whether it is a dev dependency
+- Current ignore status
+
+### Assigning a License Manually
+
+When a package has no detected license (categorized as **Unknown**), you can manually assign an SPDX license ID:
+
+<Steps>
+  <Step title="Navigate to License Detail">
+    Go to the license summary and click on the **Unknown** category to see unidentified packages.
+  </Step>
+  <Step title="Select a Package">
+    Find the package you want to update.
+  </Step>
+  <Step title="Assign License">
+    Use the license assignment dropdown to select the correct SPDX identifier (e.g., `MIT`, `Apache-2.0`).
+  </Step>
+</Steps>
+
+### Ignoring a Package
+
+If a package is irrelevant to your license compliance analysis (e.g., internal tooling, test-only dependencies), you can toggle the **ignore** flag. Ignored packages are excluded from the license summary counts but remain visible in the detail view.
+
+---
+
+## Organization-Level Configuration
+
+### Customizing License Classifications
+
+Each organization can override the default risk classification for any SPDX license:
+
+<Steps>
+  <Step title="Open Organization Settings">
+    Navigate to **Settings → Licenses** in your organization.
+  </Step>
+  <Step title="Search and Filter">
+    Use the search bar and category filters to find the license you want to modify.
+  </Step>
+  <Step title="Change Category">
+    Select a new category (Permissive, Weak Copyleft, Strong Copyleft, or Unknown) for the license.
+  </Step>
+  <Step title="Save Changes">
+    Your overrides are saved and applied immediately to all projects in the organization.
+  </Step>
+</Steps>
+
+<Warning>
+Changing a license classification affects **all projects** in the organization. Coordinate with your legal and security teams before modifying classifications.
+</Warning>
+
+### Adding Custom Licenses
+
+If your project uses a license that is not in CybeDefend's built-in database, you can add it as a custom entry with your chosen classification.
+
+### Resetting Overrides
+
+You can reset all organization overrides to return to CybeDefend's default classifications. This action removes all custom classifications and cannot be undone.
+
+---
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Review Unknown Licenses First">
+    Packages with unknown licenses represent the highest uncertainty. Prioritize identifying and manually assigning licenses to these packages.
+  </Accordion>
+
+  <Accordion title="Align Classifications with Legal Policy">
+    Work with your legal team to determine which license categories are acceptable for your use case. Override CybeDefend's defaults if your organization has stricter or more lenient requirements.
+  </Accordion>
+
+  <Accordion title="Filter by Package Type">
+    Different ecosystems may have different license norms. Use the package type filter to analyze npm, pip, maven, and other ecosystems independently.
+  </Accordion>
+
+  <Accordion title="Use Ignore for Internal Packages">
+    Mark internal or first-party packages as ignored to keep your license summary focused on third-party dependencies.
+  </Accordion>
+
+  <Accordion title="Combine with Policy Management">
+    Use the [Policy Management](/latest/plateform-overview/key-features/policy-management) feature to create automated rules that block builds containing packages with unacceptable licenses.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+**Related:** [API Reference - SCA Licenses](/latest/api-reference/introduction) · [Managing Vulnerabilities](/latest/managing-vulnerabilities/project-vulnerability-list) · [Policy Management](/latest/plateform-overview/key-features/policy-management)

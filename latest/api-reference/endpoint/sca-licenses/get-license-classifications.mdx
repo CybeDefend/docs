@@ -1,0 +1,71 @@
+---
+title: 'Get License Classifications'
+description: 'Get all license classifications for an organization, including defaults and overrides'
+api: 'GET /organization/{organizationId}/licenses/classifications'
+---
+
+## Path Parameters
+
+<ParamField path="organizationId" type="string" required>
+  The UUID of the organization
+</ParamField>
+
+## Authorization
+
+Requires `read` permission on the organization.
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request succeeded
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="Classifications Object">
+    <ResponseField name="licenses" type="array">
+      <Expandable title="License Classification">
+        <ResponseField name="spdxId" type="string">
+          SPDX license identifier
+        </ResponseField>
+        <ResponseField name="name" type="string">
+          Human-readable license name
+        </ResponseField>
+        <ResponseField name="defaultCategory" type="string">
+          CybeDefend's default category: `PERMISSIVE`, `WEAK_COPYLEFT`, `STRONG_COPYLEFT`, or `UNKNOWN`
+        </ResponseField>
+        <ResponseField name="currentCategory" type="string">
+          Currently active category (may differ from default if overridden)
+        </ResponseField>
+        <ResponseField name="isOverridden" type="boolean">
+          Whether this license has been overridden at the organization level
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseExample>
+```json
+{
+  "success": true,
+  "data": {
+    "licenses": [
+      {
+        "spdxId": "MIT",
+        "name": "MIT License",
+        "defaultCategory": "PERMISSIVE",
+        "currentCategory": "PERMISSIVE",
+        "isOverridden": false
+      },
+      {
+        "spdxId": "BUSL-1.1",
+        "name": "Business Source License 1.1",
+        "defaultCategory": "WEAK_COPYLEFT",
+        "currentCategory": "STRONG_COPYLEFT",
+        "isOverridden": true
+      }
+    ]
+  }
+}
+```
+</ResponseExample>

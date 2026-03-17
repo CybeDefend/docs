@@ -1,0 +1,56 @@
+---
+title: 'Assign License to Package'
+description: 'Manually assign an SPDX license ID to a specific SCA package'
+api: 'PUT /project/{projectId}/sca/packages/{packageId}/license'
+---
+
+## Path Parameters
+
+<ParamField path="projectId" type="string" required>
+  The UUID of the project
+</ParamField>
+
+<ParamField path="packageId" type="string" required>
+  The UUID of the SCA package
+</ParamField>
+
+## Authorization
+
+Requires `change_vulnerability_state` permission on the project.
+
+## Request Body
+
+<ParamField body="spdxId" type="string" required>
+  The SPDX license identifier to assign (e.g., `MIT`, `Apache-2.0`, `GPL-3.0-only`)
+</ParamField>
+
+<RequestExample>
+```json
+{
+  "spdxId": "MIT"
+}
+```
+</RequestExample>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request succeeded
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Confirmation message
+</ResponseField>
+
+<ResponseExample>
+```json
+{
+  "success": true,
+  "message": "License assigned successfully"
+}
+```
+</ResponseExample>
+
+<Note>
+Assigning a license to a package that was previously categorized as **Unknown** will remove the Unknown placeholder and update the package's license list. This is particularly useful for internal packages or packages whose license metadata is missing from the registry.
+</Note>

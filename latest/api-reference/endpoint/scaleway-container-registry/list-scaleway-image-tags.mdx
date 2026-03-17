@@ -1,0 +1,115 @@
+---
+title: 'List Scaleway Image Tags'
+description: 'List tags for a specific Docker image in Scaleway Container Registry'
+api: 'GET /integrations/scaleway/container-registry/project/{projectId}/credentials/{credentialId}/images/{imageId}/tags'
+---
+
+## Path Parameters
+
+<ParamField path="projectId" type="string" required>
+  The UUID of the project
+</ParamField>
+
+<ParamField path="credentialId" type="string" required>
+  The UUID of the stored credential
+</ParamField>
+
+<ParamField path="imageId" type="string" required>
+  The Scaleway image UUID
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="page" type="number">
+  Page number (1-based). Default: `1`
+</ParamField>
+
+<ParamField query="pageSize" type="number">
+  Number of items per page. Default: `20`
+</ParamField>
+
+## Authorization
+
+Requires `read` permission on the project.
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request succeeded
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="Tags Response">
+    <ResponseField name="imageName" type="string">
+      The image name
+    </ResponseField>
+    <ResponseField name="tags" type="array">
+      <Expandable title="Tag Item">
+        <ResponseField name="tagId" type="string">
+          Scaleway tag UUID
+        </ResponseField>
+        <ResponseField name="name" type="string">
+          Tag name (e.g., `latest`, `v1.0.0`)
+        </ResponseField>
+        <ResponseField name="digest" type="string">
+          Image digest (SHA256)
+        </ResponseField>
+        <ResponseField name="size" type="number">
+          Tag size in bytes
+        </ResponseField>
+        <ResponseField name="status" type="string">
+          Tag status
+        </ResponseField>
+        <ResponseField name="createdAt" type="string">
+          ISO 8601 creation timestamp
+        </ResponseField>
+        <ResponseField name="updatedAt" type="string">
+          ISO 8601 last update timestamp
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="totalCount" type="number">
+      Total number of tags
+    </ResponseField>
+    <ResponseField name="page" type="number">
+      Current page number
+    </ResponseField>
+    <ResponseField name="pageSize" type="number">
+      Items per page
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseExample>
+```json
+{
+  "success": true,
+  "data": {
+    "imageName": "my-api",
+    "tags": [
+      {
+        "tagId": "d4e5f6a7-b8c9-0123-def0-234567890123",
+        "name": "v1.2.0",
+        "digest": "sha256:abc123...",
+        "size": 134217728,
+        "status": "ready",
+        "createdAt": "2026-03-15T09:00:00.000Z",
+        "updatedAt": "2026-03-15T09:00:00.000Z"
+      },
+      {
+        "tagId": "e5f6a7b8-c9d0-1234-ef01-345678901234",
+        "name": "latest",
+        "digest": "sha256:abc123...",
+        "size": 134217728,
+        "status": "ready",
+        "createdAt": "2026-03-15T09:00:00.000Z",
+        "updatedAt": "2026-03-15T09:00:00.000Z"
+      }
+    ],
+    "totalCount": 5,
+    "page": 1,
+    "pageSize": 20
+  }
+}
+```
+</ResponseExample>

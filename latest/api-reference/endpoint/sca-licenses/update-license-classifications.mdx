@@ -1,0 +1,69 @@
+---
+title: 'Update License Classifications'
+description: 'Update license classification overrides for an organization'
+api: 'PUT /organization/{organizationId}/licenses/classifications'
+---
+
+## Path Parameters
+
+<ParamField path="organizationId" type="string" required>
+  The UUID of the organization
+</ParamField>
+
+## Authorization
+
+Requires `manage` permission on the organization.
+
+## Request Body
+
+<ParamField body="overrides" type="array" required>
+  Array of license classification overrides to apply.
+  <Expandable title="Override Object">
+    <ParamField body="spdxId" type="string" required>
+      The SPDX license identifier to override (e.g., `MIT`, `BUSL-1.1`)
+    </ParamField>
+    <ParamField body="category" type="string" required>
+      The new category: `PERMISSIVE`, `WEAK_COPYLEFT`, `STRONG_COPYLEFT`, or `UNKNOWN`
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<RequestExample>
+```json
+{
+  "overrides": [
+    {
+      "spdxId": "BUSL-1.1",
+      "category": "STRONG_COPYLEFT"
+    },
+    {
+      "spdxId": "Artistic-2.0",
+      "category": "PERMISSIVE"
+    }
+  ]
+}
+```
+</RequestExample>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request succeeded
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Confirmation message
+</ResponseField>
+
+<ResponseExample>
+```json
+{
+  "success": true,
+  "message": "License classifications updated"
+}
+```
+</ResponseExample>
+
+<Warning>
+Overrides apply to **all projects** in the organization. Changing a license from Permissive to Strong Copyleft may surface new compliance issues across all projects.
+</Warning>

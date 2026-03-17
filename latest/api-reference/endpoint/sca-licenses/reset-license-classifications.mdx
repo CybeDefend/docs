@@ -1,0 +1,38 @@
+---
+title: 'Reset License Classifications'
+description: 'Reset all license classification overrides for an organization back to defaults'
+api: 'DELETE /organization/{organizationId}/licenses/classifications'
+---
+
+## Path Parameters
+
+<ParamField path="organizationId" type="string" required>
+  The UUID of the organization
+</ParamField>
+
+## Authorization
+
+Requires `manage` permission on the organization.
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request succeeded
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Confirmation message
+</ResponseField>
+
+<ResponseExample>
+```json
+{
+  "success": true,
+  "message": "All license classification overrides have been reset"
+}
+```
+</ResponseExample>
+
+<Warning>
+This action removes **all** organization-level license classification overrides and reverts to CybeDefend's default classifications. This cannot be undone.
+</Warning>

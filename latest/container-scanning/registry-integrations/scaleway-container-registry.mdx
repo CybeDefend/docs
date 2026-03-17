@@ -1,0 +1,117 @@
+---
+title: "Scaleway Container Registry"
+description: "Scan container images stored in Scaleway Container Registry."
+---
+
+**Scaleway Container Registry** is Scaleway's managed Docker registry service available across multiple European regions. CybeDefend integrates with Scaleway to scan your container images using API secret key authentication.
+
+## CybeDefend Configuration
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| **Scaleway Project ID** | Your Scaleway project UUID | `550e8400-e29b-41d4-a716-446655440001` |
+| **Region** | Scaleway region where the registry is hosted | `fr-par` |
+| **Namespace Name** | The name of your Scaleway Container Registry namespace | `my-namespace` |
+| **Secret Key** | Your Scaleway API secret key | `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx` |
+| **Description** (optional) | A label to help identify this credential | `Production registry` |
+
+### Available Regions
+
+| Region Code | Location |
+|-------------|----------|
+| `fr-par` | France, Paris |
+| `nl-ams` | Netherlands, Amsterdam |
+| `pl-waw` | Poland, Warsaw |
+
+## How to Get Your Scaleway API Secret Key
+
+<Steps>
+  <Step title="Access Scaleway Console">
+    Go to [console.scaleway.com](https://console.scaleway.com) and log in to your account.
+  </Step>
+
+  <Step title="Navigate to IAM">
+    Go to **Identity and Access Management (IAM)** → **API Keys**.
+  </Step>
+
+  <Step title="Create an API Key">
+    Click **Generate an API key**. Select the project scope and set the purpose to container registry access.
+  </Step>
+
+  <Step title="Copy the Secret Key">
+    Copy the **Secret Key** value. This is only shown once — store it securely.
+  </Step>
+
+  <Step title="Configure in CybeDefend">
+    In CybeDefend, go to your organization's **Container Registry** settings and add a new Scaleway credential with the secret key.
+  </Step>
+</Steps>
+
+<Warning>
+The secret key is only displayed once when created. If you lose it, you must generate a new API key.
+</Warning>
+
+## How It Works
+
+Once credentials are stored, CybeDefend can:
+
+1. **Browse namespaces** — List all container registry namespaces in your Scaleway project
+2. **List images** — View all Docker images within a namespace
+3. **List tags** — See all available tags for a specific image
+4. **Scan images** — Pull and scan any image for known vulnerabilities
+
+Credentials are stored with **AES-256-GCM encryption** and are never exposed in API responses.
+
+## Credential Management
+
+Credentials are managed at two levels:
+
+| Level | Actions | Permission Required |
+|-------|---------|-------------------|
+| **Organization** | Create and delete credentials | `manage_integration` |
+| **Project** | View credentials, browse images, start scans | `read` / `start_scan` |
+
+<Info>
+Credentials are created at the organization level and can be used across all projects within that organization.
+</Info>
+
+## Security Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Least Privilege" icon="shield-halved">
+    Create a dedicated API key with only Container Registry permissions.
+  </Card>
+  <Card title="Rotate Keys" icon="rotate">
+    Rotate API keys regularly and update stored credentials in CybeDefend.
+  </Card>
+  <Card title="Use Project Scope" icon="folder">
+    Scope API keys to specific projects rather than granting organization-wide access.
+  </Card>
+  <Card title="Audit Access" icon="chart-line">
+    Monitor API key usage in Scaleway's IAM audit logs.
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Authentication Failed" icon="circle-exclamation">
+    - Verify the secret key is correct and has not been revoked
+    - Check that the API key has Container Registry permissions
+    - Ensure the region matches the namespace location
+  </Accordion>
+  <Accordion title="Namespace Not Found" icon="magnifying-glass">
+    - Confirm the namespace name is spelled correctly (case-sensitive)
+    - Verify the namespace exists in the selected region
+    - Check that the API key's project scope includes the namespace
+  </Accordion>
+  <Accordion title="Permission Denied" icon="ban">
+    - Ensure the API key has `ContainerRegistryFullAccess` or equivalent policy
+    - Verify the API key is scoped to the correct Scaleway project
+  </Accordion>
+  <Accordion title="Scan Failed" icon="triangle-exclamation">
+    - Verify the image name and tag are correct
+    - Ensure the image exists in the specified namespace
+    - Check that the `container_scanning` feature is enabled for your plan
+  </Accordion>
+</AccordionGroup>

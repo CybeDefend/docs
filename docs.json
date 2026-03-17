@@ -38,6 +38,8 @@
                       "/latest/plateform-overview/key-features/policy-management",
                       "/latest/plateform-overview/key-features/rebac-management",
                       "/latest/plateform-overview/key-features/blsa-business-logic-security-analysis",
+                      "/latest/plateform-overview/key-features/license-compliance",
+                      "/latest/plateform-overview/key-features/exploitable-path",
                       "/latest/plateform-overview/key-features/sovereign-data-storage"
                     ]
                   },
@@ -164,7 +166,8 @@
                       "/latest/container-scanning/registry-integrations/google-container-registry",
                       "/latest/container-scanning/registry-integrations/red-hat-quay",
                       "/latest/container-scanning/registry-integrations/harbor",
-                      "/latest/container-scanning/registry-integrations/jfrog-artifactory"
+                      "/latest/container-scanning/registry-integrations/jfrog-artifactory",
+                      "/latest/container-scanning/registry-integrations/scaleway-container-registry"
                     ]
                   }
                 ]
@@ -335,6 +338,28 @@
                       "latest/api-reference/endpoint/results-&-vulnerabilities/get-vulnerability-by-id-with-similar-occurrences",
                       "latest/api-reference/endpoint/results-&-vulnerabilities/get-branches-from-vulnerability-detections",
                       "latest/api-reference/endpoint/results-&-vulnerabilities/batch-update-multiple-vulnerabilities"
+                    ]
+                  }
+                ]
+              },
+              {
+                "group": "SCA Licenses",
+                "pages": [
+                  {
+                    "group": "Project Licenses",
+                    "pages": [
+                      "latest/api-reference/endpoint/sca-licenses/get-license-summary",
+                      "latest/api-reference/endpoint/sca-licenses/get-packages-by-license",
+                      "latest/api-reference/endpoint/sca-licenses/assign-package-license",
+                      "latest/api-reference/endpoint/sca-licenses/toggle-package-license-ignore"
+                    ]
+                  },
+                  {
+                    "group": "Organization Classifications",
+                    "pages": [
+                      "latest/api-reference/endpoint/sca-licenses/get-license-classifications",
+                      "latest/api-reference/endpoint/sca-licenses/update-license-classifications",
+                      "latest/api-reference/endpoint/sca-licenses/reset-license-classifications"
                     ]
                   }
                 ]
@@ -560,6 +585,19 @@
                       "latest/api-reference/endpoint/jfrog-container-registry/list-docker-images-in-jfrog-artifactory-repository",
                       "latest/api-reference/endpoint/jfrog-container-registry/list-tags-for-a-docker-image-in-jfrog-artifactory",
                       "latest/api-reference/endpoint/jfrog-container-registry/start-jfrog-artifactory-container-image-scan"
+                    ]
+                  },
+                  {
+                    "group": "Scaleway",
+                    "pages": [
+                      "latest/api-reference/endpoint/scaleway-container-registry/store-scaleway-credentials",
+                      "latest/api-reference/endpoint/scaleway-container-registry/list-scaleway-credentials",
+                      "latest/api-reference/endpoint/scaleway-container-registry/get-scaleway-credential-details",
+                      "latest/api-reference/endpoint/scaleway-container-registry/delete-scaleway-credentials",
+                      "latest/api-reference/endpoint/scaleway-container-registry/list-scaleway-namespaces",
+                      "latest/api-reference/endpoint/scaleway-container-registry/list-scaleway-images",
+                      "latest/api-reference/endpoint/scaleway-container-registry/list-scaleway-image-tags",
+                      "latest/api-reference/endpoint/scaleway-container-registry/start-scaleway-container-scan"
                     ]
                   }
                 ]

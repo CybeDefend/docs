@@ -1,17 +1,17 @@
 ---
 title: "VS Code Extension"
-description: "Integrate CybeDefend security scanning directly into Visual Studio Code."
+description: "Integrate CybeDefend security scanning and AI-powered remediation directly into Visual Studio Code."
 ---
 
-Scan early, fix as you develop: integrate CybeDefend's powerful security scanning into your **VS Code** workflow.
+Scan. Detect. Fix. — Security meets AI, right in your editor.
 
 ---
 
 ## Overview
 
-The CybeDefend VS Code extension provides comprehensive security analysis directly within your IDE. Identify and address vulnerabilities in your code, dependencies, and infrastructure configurations without leaving Visual Studio Code.
+The CybeDefend VS Code extension brings comprehensive security analysis and AI-powered remediation directly into your development workflow. Identify vulnerabilities, get AI-generated fixes, and manage your security posture — all without leaving Visual Studio Code.
 
-<Card title="Install from Marketplace" icon="download" href="https://marketplace.visualstudio.com/items?itemName=CybeDefend.cybedefend-vscode">
+<Card title="Install from Marketplace" icon="download" href="https://marketplace.visualstudio.com/items?itemName=CybeDefend.cybedefend">
   Get the CybeDefend extension for VS Code
 </Card>
 
@@ -19,52 +19,131 @@ The CybeDefend VS Code extension provides comprehensive security analysis direct
 
 ## Key Features
 
-### Comprehensive Security Analysis
+<CardGroup cols={2}>
+  <Card title="5 Scan Types" icon="shield-halved">
+    SAST, SCA, IaC, Secrets, and CI/CD scanning in one extension
+  </Card>
+  <Card title="CybeAgent" icon="robot">
+    AI-powered assistant that analyzes and fixes vulnerabilities with full code context
+  </Card>
+  <Card title="DeepFix" icon="wrench">
+    Automated dependency upgrades for SCA vulnerabilities across 9 ecosystems
+  </Card>
+</CardGroup>
 
-- **Code Security (SAST)**: Find vulnerabilities in your custom code
-- **Dependencies Security (SCA)**: Detect known vulnerabilities in open-source libraries
-- **Infrastructure Security (IaC)**: Uncover misconfigurations in infrastructure-as-code files
+### Security Scanning
 
-### In-IDE Results
+| Scan Type | What It Detects |
+|-----------|-----------------|
+| **SAST** | SQL injection, XSS, path traversal, command injection — with taint analysis and data flow tracking |
+| **SCA** | Known CVEs in dependencies (npm, Maven, pip, Go, NuGet, RubyGems, Cargo, Swift, Packagist) |
+| **IaC** | Misconfigurations in Terraform, CloudFormation, Kubernetes, Docker |
+| **Secrets** | Leaked API keys, tokens, passwords, certificates |
+| **CI/CD** | Insecure pipeline configurations and overly permissive permissions |
 
-View scan summaries and detailed vulnerability information directly within dedicated VS Code panels.
+### Editor Integration
 
-### Direct Code Navigation
+- **Gutter icons** — Severity-colored markers on every vulnerable line (Critical, High, Medium, Low, Info)
+- **Diagnostics** — Native squiggly underlines visible in the Problems panel
+- **Context menu** — Right-click on vulnerable code to view details or trigger AI fix
+- **Status bar** — Live scan progress and result summary
+- **Code navigation** — Click any vulnerability to jump to the exact line of code
 
-Quickly jump from a vulnerability report to the exact line of code that needs attention.
+### CybeAgent — AI-Powered Fix
 
-### MCP Server Auto-Configuration
+Click **"Fix with CybeAgent"** on any vulnerability. The AI agent receives the full vulnerability context — severity, CWE, OWASP classification, data flow, code snippet, and remediation guidance — then proposes a precise code fix that you review and apply.
 
-<Frame>
-  <img src="/images/ide/vscode-mcp-config.png" alt="VS Code MCP Auto-Configuration" style={{ borderRadius: '0.5rem' }} />
-</Frame>
+### DeepFix — Automated Dependency Upgrades
 
-**One-click MCP setup**: Configure the Model Context Protocol server automatically with a single button click, enabling AI assistants (Cursor, Copilot Chat) to access your CybeDefend data.
+Automatically resolves safe version upgrades for SCA vulnerabilities. Supports **9 package ecosystems**: npm, Maven, pip/PyPI, Go, NuGet, Packagist, RubyGems, Cargo, and SwiftPM.
 
 ---
 
 ## Getting Started
 
-### 1. Install
+<Steps>
+  <Step title="Install">
+    Search for "**CybeDefend**" in the VS Code Extensions view (`Ctrl+Shift+X` / `Cmd+Shift+X`) and click **Install**.
 
-Search for "**CybeDefend**" in the VS Code Extensions view (`Ctrl+Shift+X` or `Cmd+Shift+X`) and click **Install**.
+    Alternatively, open Quick Open (`Ctrl+P` / `Cmd+P`) and run:
+    ```
+    ext install CybeDefend.cybedefend
+    ```
+  </Step>
+  <Step title="Select Your Region">
+    Open VS Code settings and set `cybedefend.region` to **eu** (Europe — default) or **us** (United States) depending on your CybeDefend instance.
+  </Step>
+  <Step title="Authenticate">
+    Click the CybeDefend icon in the Activity Bar and click **Login**. Your browser opens for a secure OAuth 2.0 authentication flow. After completing login, you are redirected back to VS Code automatically.
 
-### 2. Authenticate
-
-Open the CybeDefend view from the Activity Bar and click **Login**. Your browser will open and redirect you to the CybeDefend login page. After completing authentication, you will be redirected back to VS Code automatically.
-
-<Tip>
-No API key or Personal Access Token is needed for the VS Code extension — it uses a secure browser-based OAuth 2.0 login.
-</Tip>
-
-### 3. Configure Project
-
-Open your project folder. The extension will guide you to select the corresponding CybeDefend Organization and Project. You can also use the `CybeDefend: Update Project ID (Current Workspace)` command.
-
-### 4. Scan
-
-Open the CybeDefend view from the Activity Bar, navigate to the "Summary" panel, and click the **Start Vulnerability Scan** (▶️) icon.
+    <Tip>
+    No API key or Personal Access Token is needed — the extension uses secure browser-based OAuth 2.0 with PKCE.
+    </Tip>
+  </Step>
+  <Step title="Configure Project">
+    Open your project folder. The extension guides you to select the corresponding CybeDefend Organization and Project. You can also use the command `CybeDefend: Update Project ID (Current Workspace)`.
+  </Step>
+  <Step title="Scan">
+    Open the CybeDefend Security panel from the Activity Bar and click the **Start Vulnerability Scan** icon. Results appear directly in your editor with gutter icons and diagnostics.
+  </Step>
+</Steps>
 
 ---
 
-**Related:** [MCP Server Integration](/latest/plateform-overview/key-features/mcp-server-integration) · [Create Your Account](/latest/get-started/account-setup/create-account-organization) · [Personal Access Tokens](/latest/code-scanning/local-code-scanning/introduction-api-key)
+## File Exclusion
+
+Create a **`.cybedefend`** file at your project root to exclude files and directories from scans. It uses `.gitignore` syntax:
+
+```
+# Exclude test fixtures
+tests/fixtures/
+*.test.js
+
+# Exclude generated code
+dist/
+build/
+```
+
+<Info>
+Common directories like `node_modules`, `.git`, `dist`, `build`, `venv`, and `__pycache__` are excluded by default.
+</Info>
+
+---
+
+## Settings
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `cybedefend.region` | `eu` | Region (`eu` or `us`) — determines auth and API endpoints |
+| `cybedefend.enableCodeActions` | `true` | Show quick-fix code actions on vulnerabilities |
+| `cybedefend.allowedCommands` | `["git log", "git diff", "git show"]` | Terminal commands the AI agent can run |
+| `cybedefend.deniedCommands` | `[]` | Blocked terminal commands |
+| `cybedefend.commandExecutionTimeout` | `0` | Command timeout in seconds (0 = no limit) |
+| `cybedefend.apiRequestTimeout` | `600` | API request timeout in seconds |
+| `cybedefend.debug` | `false` | Enable debug logging |
+
+---
+
+## Vulnerability Management
+
+You can update vulnerability status directly from VS Code:
+
+| Status | Meaning |
+|--------|---------|
+| **To Verify** | Needs triage (default) |
+| **Confirmed** | Validated vulnerability |
+| **Not Exploitable** | False positive |
+| **Resolved** | Fixed |
+| **Ignored** | Accepted risk |
+
+---
+
+## Requirements
+
+- **VS Code** 1.84.0 or later
+- A **CybeDefend account** ([create one here](/latest/get-started/account-setup/create-account-organization))
+- Internet connection to the CybeDefend API
+
+---
+
+**Related:** [JetBrains Plugin](/latest/ide-integrations/jetbrains) · [Create Your Account](/latest/get-started/account-setup/create-account-organization) · [CybeDefend Ignore File](/latest/code-scanning/scanning-options/cybedefend-ignore-file)

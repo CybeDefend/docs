@@ -1,0 +1,110 @@
+---
+title: 'List Scaleway Images'
+description: 'List Docker images from a Scaleway Container Registry namespace'
+api: 'GET /integrations/scaleway/container-registry/project/{projectId}/credentials/{credentialId}/images'
+---
+
+## Path Parameters
+
+<ParamField path="projectId" type="string" required>
+  The UUID of the project
+</ParamField>
+
+<ParamField path="credentialId" type="string" required>
+  The UUID of the stored credential
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="namespaceId" type="string">
+  Scaleway namespace UUID to list images from. Defaults to the namespace associated with the credential.
+</ParamField>
+
+<ParamField query="page" type="number">
+  Page number (1-based). Default: `1`
+</ParamField>
+
+<ParamField query="pageSize" type="number">
+  Number of items per page. Default: `20`
+</ParamField>
+
+## Authorization
+
+Requires `read` permission on the project.
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request succeeded
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="Images Response">
+    <ResponseField name="images" type="array">
+      <Expandable title="Image Item">
+        <ResponseField name="imageId" type="string">
+          Scaleway image UUID
+        </ResponseField>
+        <ResponseField name="name" type="string">
+          Image name
+        </ResponseField>
+        <ResponseField name="namespaceId" type="string">
+          Namespace UUID the image belongs to
+        </ResponseField>
+        <ResponseField name="tagCount" type="number">
+          Number of tags for this image
+        </ResponseField>
+        <ResponseField name="size" type="number">
+          Image size in bytes
+        </ResponseField>
+        <ResponseField name="visibility" type="string">
+          Image visibility (`public` or `private`)
+        </ResponseField>
+        <ResponseField name="status" type="string">
+          Image status
+        </ResponseField>
+        <ResponseField name="createdAt" type="string">
+          ISO 8601 creation timestamp
+        </ResponseField>
+        <ResponseField name="updatedAt" type="string">
+          ISO 8601 last update timestamp
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="totalCount" type="number">
+      Total number of images
+    </ResponseField>
+    <ResponseField name="page" type="number">
+      Current page number
+    </ResponseField>
+    <ResponseField name="pageSize" type="number">
+      Items per page
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseExample>
+```json
+{
+  "success": true,
+  "data": {
+    "images": [
+      {
+        "imageId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+        "name": "my-api",
+        "namespaceId": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+        "tagCount": 5,
+        "size": 268435456,
+        "visibility": "private",
+        "status": "ready",
+        "createdAt": "2026-02-10T14:00:00.000Z",
+        "updatedAt": "2026-03-15T09:00:00.000Z"
+      }
+    ],
+    "totalCount": 12,
+    "page": 1,
+    "pageSize": 20
+  }
+}
+```
+</ResponseExample>

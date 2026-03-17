@@ -1,0 +1,56 @@
+---
+title: 'Toggle Package License Ignore'
+description: 'Toggle the ignore status for a package in license analysis'
+api: 'PUT /project/{projectId}/sca/packages/{packageId}/license-ignore'
+---
+
+## Path Parameters
+
+<ParamField path="projectId" type="string" required>
+  The UUID of the project
+</ParamField>
+
+<ParamField path="packageId" type="string" required>
+  The UUID of the SCA package
+</ParamField>
+
+## Authorization
+
+Requires `change_vulnerability_state` permission on the project.
+
+## Request Body
+
+<ParamField body="ignored" type="boolean" required>
+  Set to `true` to ignore the package in license analysis, or `false` to include it again.
+</ParamField>
+
+<RequestExample>
+```json
+{
+  "ignored": true
+}
+```
+</RequestExample>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request succeeded
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Confirmation message
+</ResponseField>
+
+<ResponseExample>
+```json
+{
+  "success": true,
+  "message": "Package license ignore status updated"
+}
+```
+</ResponseExample>
+
+<Tip>
+Ignored packages are excluded from the license summary counts but remain visible in the package detail view. Use this for internal packages or test dependencies that are not relevant to your license compliance.
+</Tip>

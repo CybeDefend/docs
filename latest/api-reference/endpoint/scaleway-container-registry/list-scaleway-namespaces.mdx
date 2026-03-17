@@ -1,0 +1,106 @@
+---
+title: 'List Scaleway Namespaces'
+description: 'List container registry namespaces accessible with stored credentials'
+api: 'GET /integrations/scaleway/container-registry/project/{projectId}/credentials/{credentialId}/namespaces'
+---
+
+## Path Parameters
+
+<ParamField path="projectId" type="string" required>
+  The UUID of the project
+</ParamField>
+
+<ParamField path="credentialId" type="string" required>
+  The UUID of the stored credential
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="page" type="number">
+  Page number (1-based). Default: `1`
+</ParamField>
+
+<ParamField query="pageSize" type="number">
+  Number of items per page. Default: `20`
+</ParamField>
+
+## Authorization
+
+Requires `read` permission on the project.
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request succeeded
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="Namespaces Response">
+    <ResponseField name="namespaces" type="array">
+      <Expandable title="Namespace Item">
+        <ResponseField name="id" type="string">
+          Scaleway namespace UUID
+        </ResponseField>
+        <ResponseField name="name" type="string">
+          Namespace name
+        </ResponseField>
+        <ResponseField name="region" type="string">
+          Scaleway region
+        </ResponseField>
+        <ResponseField name="endpoint" type="string">
+          Registry endpoint URL
+        </ResponseField>
+        <ResponseField name="imageCount" type="number">
+          Number of images in the namespace
+        </ResponseField>
+        <ResponseField name="size" type="number">
+          Total size in bytes
+        </ResponseField>
+        <ResponseField name="status" type="string">
+          Namespace status (e.g., `ready`, `deleting`)
+        </ResponseField>
+        <ResponseField name="createdAt" type="string">
+          ISO 8601 creation timestamp
+        </ResponseField>
+        <ResponseField name="updatedAt" type="string">
+          ISO 8601 last update timestamp
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    <ResponseField name="totalCount" type="number">
+      Total number of namespaces
+    </ResponseField>
+    <ResponseField name="page" type="number">
+      Current page number
+    </ResponseField>
+    <ResponseField name="pageSize" type="number">
+      Items per page
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseExample>
+```json
+{
+  "success": true,
+  "data": {
+    "namespaces": [
+      {
+        "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+        "name": "production-registry",
+        "region": "fr-par",
+        "endpoint": "rg.fr-par.scw.cloud/production-registry",
+        "imageCount": 12,
+        "size": 5368709120,
+        "status": "ready",
+        "createdAt": "2026-01-15T08:00:00.000Z",
+        "updatedAt": "2026-03-17T10:30:00.000Z"
+      }
+    ],
+    "totalCount": 1,
+    "page": 1,
+    "pageSize": 20
+  }
+}
+```
+</ResponseExample>

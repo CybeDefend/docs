@@ -1,0 +1,128 @@
+---
+title: 'Get Packages by License'
+description: 'Get all packages in a project that use a specific SPDX license'
+api: 'GET /project/{projectId}/results/sca/licenses/{spdxId}/packages'
+---
+
+## Path Parameters
+
+<ParamField path="projectId" type="string" required>
+  The UUID of the project
+</ParamField>
+
+<ParamField path="spdxId" type="string" required>
+  The SPDX license identifier (e.g., `MIT`, `Apache-2.0`, `GPL-3.0-only`). Use `UNKNOWN` to retrieve packages with no detected license.
+</ParamField>
+
+## Query Parameters
+
+<ParamField query="branch" type="string">
+  Filter by Git branch name
+</ParamField>
+
+<ParamField query="organizationId" type="string">
+  The UUID of the organization (required for permission resolution)
+</ParamField>
+
+<ParamField query="packageType" type="string[]">
+  Filter by package ecosystem (e.g., `npm`, `pip`, `maven`, `go`). Can be specified multiple times.
+</ParamField>
+
+## Authorization
+
+Requires `read_scan_result` permission on the project.
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the request succeeded
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="License Detail Object">
+    <ResponseField name="spdxId" type="string">
+      SPDX license identifier
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      Human-readable license name
+    </ResponseField>
+    <ResponseField name="category" type="string">
+      License category: `PERMISSIVE`, `WEAK_COPYLEFT`, `STRONG_COPYLEFT`, or `UNKNOWN`
+    </ResponseField>
+    <ResponseField name="risk" type="string">
+      Risk level: `NONE`, `MEDIUM`, `HIGH`, or `UNKNOWN`
+    </ResponseField>
+    <ResponseField name="riskDescription" type="string">
+      Human-readable description of the risk implications
+    </ResponseField>
+    <ResponseField name="totalCount" type="number">
+      Total number of packages using this license
+    </ResponseField>
+    <ResponseField name="packages" type="array">
+      <Expandable title="Package Item">
+        <ResponseField name="id" type="string">
+          Package UUID
+        </ResponseField>
+        <ResponseField name="packageName" type="string">
+          Package name (e.g., `lodash`, `express`)
+        </ResponseField>
+        <ResponseField name="packageVersion" type="string">
+          Package version
+        </ResponseField>
+        <ResponseField name="ecosystem" type="string">
+          Package ecosystem (npm, pip, maven, etc.)
+        </ResponseField>
+        <ResponseField name="licenses" type="string[]">
+          All SPDX license IDs associated with this package
+        </ResponseField>
+        <ResponseField name="isTransitive" type="boolean">
+          Whether this is a transitive (indirect) dependency
+        </ResponseField>
+        <ResponseField name="isDev" type="boolean">
+          Whether this is a dev-only dependency
+        </ResponseField>
+        <ResponseField name="isLicenseIgnored" type="boolean">
+          Whether this package is ignored in license analysis
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseExample>
+```json
+{
+  "success": true,
+  "data": {
+    "spdxId": "MIT",
+    "name": "MIT License",
+    "category": "PERMISSIVE",
+    "risk": "NONE",
+    "riskDescription": "Minimal restrictions on use, modification, and redistribution",
+    "totalCount": 85,
+    "packages": [
+      {
+        "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "packageName": "lodash",
+        "packageVersion": "4.17.21",
+        "ecosystem": "npm",
+        "licenses": ["MIT"],
+        "isTransitive": false,
+        "isDev": false,
+        "isLicenseIgnored": false
+      },
+      {
+        "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+        "packageName": "express",
+        "packageVersion": "4.18.2",
+        "ecosystem": "npm",
+        "licenses": ["MIT"],
+        "isTransitive": false,
+        "isDev": false,
+        "isLicenseIgnored": false
+      }
+    ]
+  }
+}
+```
+</ResponseExample>

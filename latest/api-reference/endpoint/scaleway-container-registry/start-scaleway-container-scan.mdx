@@ -1,0 +1,89 @@
+---
+title: 'Start Scaleway Container Scan'
+description: 'Start a container vulnerability scan for an image in Scaleway Container Registry'
+api: 'POST /integrations/scaleway/container-registry/project/{projectId}/scan'
+---
+
+## Path Parameters
+
+<ParamField path="projectId" type="string" required>
+  The UUID of the project
+</ParamField>
+
+## Authorization
+
+Requires `start_scan` permission on the project. The `container_scanning` feature must be enabled for your plan.
+
+## Request Body
+
+<ParamField body="credentialId" type="string" required>
+  The UUID of the stored Scaleway credential to use for authentication
+</ParamField>
+
+<ParamField body="imageName" type="string" required>
+  Full image name with tag (e.g., `my-api:v1.2.0` or `my-api:latest`)
+</ParamField>
+
+<ParamField body="branch" type="string">
+  Git branch name for tracking purposes
+</ParamField>
+
+<ParamField body="privateScan" type="boolean">
+  Whether the scan is private. Default: `false`
+</ParamField>
+
+<ParamField body="severities" type="string[]">
+  Filter results by severity levels (e.g., `["CRITICAL", "HIGH"]`). If omitted, all severities are returned.
+</ParamField>
+
+<RequestExample>
+```json
+{
+  "credentialId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "imageName": "my-api:v1.2.0",
+  "branch": "main",
+  "severities": ["CRITICAL", "HIGH", "MEDIUM"]
+}
+```
+</RequestExample>
+
+## Response
+
+<ResponseField name="success" type="boolean">
+  Whether the scan was started successfully
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <Expandable title="Scan Response">
+    <ResponseField name="scanId" type="string">
+      UUID of the created scan
+    </ResponseField>
+    <ResponseField name="message" type="string">
+      Status message
+    </ResponseField>
+    <ResponseField name="detectedLanguages" type="string[]">
+      Languages detected in the container image
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseExample>
+```json
+{
+  "success": true,
+  "data": {
+    "scanId": "f6a7b8c9-d0e1-2345-f012-456789012345",
+    "message": "Container scan started successfully",
+    "detectedLanguages": ["javascript", "python"]
+  }
+}
+```
+</ResponseExample>
+
+<Note>
+The scan runs asynchronously. Use the [Get Scan by ID](/latest/api-reference/endpoint/scan/get-a-scan-by-id) endpoint to check scan progress and retrieve results once completed.
+</Note>
+
+<Info>
+Before scanning, CybeDefend validates that the specified image exists in the namespace associated with the credential. If the image is not found, the request will fail with a `404 Not Found` error.
+</Info>
