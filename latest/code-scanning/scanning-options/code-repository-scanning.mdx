@@ -84,16 +84,43 @@ Below is a non-exhaustive list of **key files** we inspect:
 
 | Language/Framework  | File Examples                                                                                                      |
 |---------------------|--------------------------------------------------------------------------------------------------------------------|
-| **Node**            | `npm-shrinkwrap.json`, `yarn.lock`, `pnpm-lock.yaml`, `pnpm-lock.yml`, `bun.lock`, `bun.lockb`, `deno.lock`, `libman.json`, `package.json`, `package-lock.json` |
-| **Java**            | `gradle.lockfile`, `build.gradle`, `.jar`, `.war`, `.ear`, `pom.xml`                                               |
+| **Node**            | `npm-shrinkwrap.json`, `yarn.lock`, `pnpm-lock.yaml`, `pnpm-lock.yml`, `bun.lock`, `deno.lock`, `libman.json`, `package.json`, `package-lock.json` |
+| **Java**            | `gradle.lockfile`, `build.gradle`, `pom.xml`                                                                       |
 | **Swift**           | `Package.resolved`, `Podfile.lock`                                                                                 |
-| **.NET (NuGet)**    | `.deps.json`, `packages.lock.json`, `Packages.props`                                                               |
+| **.NET (NuGet)**    | `packages.lock.json`, `Packages.props`, `.csproj`, `.vbproj`, `.fsproj`, `.nuspec`                                 |
 | **Kotlin**          | `gradle.lockfile`                                                                                                   |
 | **Elixir**          | `mix.lock`                                                                                                          |
 | **C/C++**           | `conan.lock`                                                                                                        |
 | **Scala**           | `build.sbt`, `plugins.sbt`, `dependencies.scala`, `libraries.scala`, `.sbt.lock`                                    |
 | **Clojure**         | `deps.edn`                                                                                                          |
-| **Generic**         | `composer.json`, `requirements.txt`, `Pipfile`, `Pipfile.lock`, `poetry.lock`, `pyproject.toml`, `Gemfile`, `Gemfile.lock`, `Cargo.toml`, `Cargo.lock`, `go.mod`, `pubspec.yaml`, `pubspec.lock`, `packages.config`, `Package.swift`, `rebar.config`, `rebar3.config`, `rebar.lock`, `rebar3.lock`, `.gemspec`, `.csproj`, `.nuspec`, `.yml`, `.yaml` |
+| **Generic**         | `composer.json`, `requirements.txt`, `Pipfile`, `Pipfile.lock`, `poetry.lock`, `pyproject.toml`, `Gemfile`, `Gemfile.lock`, `Cargo.toml`, `Cargo.lock`, `go.mod`, `pubspec.yaml`, `pubspec.lock`, `packages.config`, `Package.swift`, `rebar.config`, `rebar3.config`, `rebar.lock`, `rebar3.lock`, `.gemspec`, `.yml`, `.yaml` |
+
+<Note>
+Files like `bun.lockb` (binary Bun lockfile), `.jar` / `.war` / `.ear` (Java archives), and `.deps.json` (.NET build output) are **not supported** for SCA parsing. Use their text-based equivalents instead (`bun.lock`, `pom.xml` / `build.gradle`, `packages.lock.json`).
+</Note>
+
+### Feature Support by Ecosystem
+
+Not all ecosystems support every SCA feature. The table below shows which features are available for each ecosystem:
+
+| Ecosystem | Dependency Detection | License Lookup | Exploitable Path |
+|-----------|:-------------------:|:--------------:|:----------------:|
+| **npm / Yarn / pnpm / Bun / Deno** | ✅ | ✅ | ✅ |
+| **pip / Poetry / Pipenv** | ✅ | ✅ | ✅ |
+| **Maven / Gradle** (Java, Kotlin) | ✅ | ✅ | ✅ |
+| **Scala** | ✅ | ✅ | ✅ |
+| **Go modules** | ✅ | ✅ | ✅ |
+| **NuGet** (.NET) | ✅ | ✅ | ✅ |
+| **Composer** (PHP) | ✅ | ✅ | ✅ |
+| **Cargo** (Rust) | ✅ | ✅ | ✅ |
+| **Swift PM / CocoaPods** | ✅ | ✅ | ✅ |
+| **Pub** (Dart/Flutter) | ✅ | ✅ | ✅ |
+| **Hex** (Elixir/Erlang) | ✅ | ✅ | ✅ |
+| **RubyGems** (Ruby) | ✅ | ✅ | ✅ |
+| **Clojure** (Clojars) | ✅ | ✅ | ✅ |
+| **Conan** (C/C++) | ✅ | ✅ | ✅ |
+| **GitHub Actions** | ✅ | ✅ | ✅ |
+| **Rebar** (Erlang) | ✅ | ✅ | ✅ |
 
 <Note>
 If you use special file names or custom project layouts, you can configure <strong>file-patterns</strong> in the <strong>CybeDefend dashboard</strong> to ensure they are recognized and scanned.
