@@ -31,10 +31,10 @@
                   {
                     "group": "Key Features",
                     "pages": [
+                      "/latest/plateform-overview/key-features/mcp-server-integration",
                       "/latest/plateform-overview/key-features/cybe-analysis",
                       "/latest/plateform-overview/key-features/cybe-autofix",
                       "/latest/plateform-overview/key-features/cybe-security-champion",
-                      "/latest/plateform-overview/key-features/mcp-server-integration",
                       "/latest/plateform-overview/key-features/policy-management",
                       "/latest/plateform-overview/key-features/rebac-management",
                       "/latest/plateform-overview/key-features/blsa-business-logic-security-analysis",
@@ -91,6 +91,7 @@
               {
                 "group": "Agent & AI Integration",
                 "pages": [
+                  "/latest/agent-ai-integration/cybe-mcp",
                   "/latest/agent-ai-integration/cybe-analysis-detail",
                   "/latest/agent-ai-integration/cybe-autofix-detail",
                   "/latest/agent-ai-integration/cybe-security-champion-detail"

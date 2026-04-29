@@ -1,81 +1,111 @@
 ---
-title: "MCP Server Integration"
-description: "Connect CybeDefend to your favorite AI coding assistants via the Model Context Protocol."
+title: "Cybe MCP Server"
+description: "The flagship CybeDefend feature. Connect your AI coding agent (Claude Code, Cursor, Copilot, Windsurf and others) to your CybeDefend tenant in one click. 18 typed tools over the Model Context Protocol, OAuth-discovered, browser-only sign-in. No API key, no local proxy."
 ---
-
-Integrate CybeDefend's security platform directly into your AI-powered IDE with our **MCP Server**—a secure-by-design companion for AI code assistants.
-
----
-
-## What is the CybeDefend MCP Server?
-
-The **Model Context Protocol (MCP) Server** plugs your favorite LLM (Cursor, Claude, VS Code Copilot Chat, Windsurf, etc.) into the CybeDefend platform, enabling your AI assistant to access vulnerability data and provide security guidance directly within your IDE.
-
----
-
-## Key Benefits
-
-| Benefit | What it enables |
-|---------|----------------|
-| **Direct Vulnerability Access** | Fetch SAST, IaC, and SCA findings using your project ID |
-| **In-IDE Remediation** | Jump to exact file/line with code snippets for inline fixes |
-| **Always Up-to-Date** | Pull latest results and statuses as scans complete |
-| **Zero-Setup** | One command, no local API proxies, pure STDIO |
 
 <Note>
-All endpoints are thin wrappers around CybeDefend's REST API—no data is stored locally.
+**Cybe MCP is the flagship feature of CybeDefend.** A single MCP server that any modern AI coding assistant can connect to in one click and use as its security backend: fetching findings, driving the status lifecycle, and pulling project-specific business-logic context before generating code.
 </Note>
 
 ---
 
-## Quick Start
+## What Cybe MCP gives your agent
 
-### Prerequisites
+| Surface | What the agent can do |
+|---|---|
+| **Read every finding** | List + drill into SAST, SCA, IaC, CI/CD, Secrets and Container findings, with file paths, line numbers, snippets, package trees and remediation hints. |
+| **Drive the lifecycle** | Move a finding through one of six statuses (`to_verify`, `confirmed`, `resolved`, `not_exploitable`, `proposed_not_exploitable`, `ignored`). Set priority, attach a comment. Each action lands in the audit trail. |
+| **Find similar issues** | One call returns the cluster of look-alike findings, so the agent can act on a class of false-positives or fix a pattern in one batch. |
+| **Pull business-logic context** | Before writing a payment endpoint, an auth flow or an export job, the agent calls `get_business_logic_context` and Security Champion returns the tenant-specific rules mined from your repo. The agent inlines them into its system prompt and writes secure code from the first line. |
 
-- Node ≥ 18
-- A CybeDefend API key with project-level access
+**18 typed tools, all wired to your CybeDefend Gateway**, all gated by your existing Permify scopes. A user's per-project permissions are authoritative; the MCP enforces nothing of its own.
 
-### Install Globally (Optional)
+---
 
-```bash
-npm i -g @cybedefend/mcp-server
+## Why it matters
+
+Most AI-in-AppSec tooling on the market today is a bolt-on: a panel that surfaces findings inside a single IDE. CybeDefend's MCP server flips the model. Instead of pushing data into one IDE, we publish a typed protocol that every modern AI coding assistant already speaks (Claude Code, Cursor, VS Code Copilot Chat, Windsurf, Continue, Cline, Zed, Claude Desktop). The agent the developer chose stays in charge; CybeDefend becomes its security backend.
+
+That single decision unlocks the rest of the platform:
+
+- **Inline fixes.** The agent applies the remediation in the same loop where it's writing code. No copy-paste, no second tool window.
+- **Triage from chat.** Tell the agent "mark every SQLi in `/api/users` as not-exploitable, with a comment pointing to the parameterised query helper". One prompt, two tool calls (`get_similar_vulnerabilities` + `update_vulnerability`), audit trail intact.
+- **Secure-by-default generation.** Business-logic context flows from your codebase to the agent before it generates the next line. The agent doesn't have to guess your tenant scope, refund cap, idempotency convention or audit pattern.
+
+---
+
+## Getting connected
+
+CybeDefend ships **two regional MCP endpoints**, isolated per region:
+
+<CardGroup cols={2}>
+  <Card title="EU region" icon="earth-europe">
+    `https://mcp-eu.cybedefend.com/mcp`
+
+    Backed by the EU CybeDefend tenant (Scaleway, Paris). GDPR / NIS2 / DORA-aligned.
+  </Card>
+  <Card title="US region" icon="earth-americas">
+    `https://mcp-us.cybedefend.com/mcp`
+
+    Backed by the US CybeDefend tenant (Google Cloud). SOC 2 controls in place.
+  </Card>
+</CardGroup>
+
+You point your AI assistant at the URL of the region your CybeDefend tenant lives in, and the assistant handles the rest. Authentication is **OAuth 2.1 with Dynamic Client Registration** (RFC 7591). The MCP client opens a browser tab, you sign in to CybeDefend the same way you sign in to the dashboard, the assistant receives a Bearer JWT, and you're connected. **No API key to manage. No PAT to rotate. No local proxy to run.**
+
+<Card title="Step-by-step setup for every AI assistant" icon="terminal" href="/latest/agent-ai-integration/cybe-mcp">
+  See the full how-to in **Agent & AI Integration → Cybe MCP**.
+</Card>
+
+---
+
+## What the agent loop looks like
+
+A single user prompt ("Add an endpoint to update user profile") produces this exchange under the hood, end-to-end through Cybe MCP:
+
+```text
+$ user: "Add an endpoint to update user profile"
+↳ claude.thinking…
+↳ cybe.mcp · context.fetch       · 156 files indexed
+↳ cybe.mcp · graph.walk          · auth.mw → users.repo
+↳ cybe.mcp · rules.inject        · tenant-scope, zod, audit, pii
+↳ claude · PATCH /users/:id (src/api/users.ts:42)
+↳ claude · requireOwner middleware enforced
+↳ claude · zod schema applied (input + output)
+↳ claude · audit.log(actor, "users.update")
+↳ cybe.mcp · scan.run            · checking diff
+↳ cybe.mcp · SQLi caught at users.ts:48
+↳ cybe.mcp · fix.apply           · parameterised query
+↳ cybe.mcp · scan.rerun          · diff is clean
+✓ 0 vulns · 0 violations · 4 rules met · ship · no human review needed
 ```
 
-Or use `npx` directly—no global install needed.
+The MCP layer is everything between the user prompt and the green check.
 
 ---
 
-## Supported AI Clients
+## Privacy, isolation and audit trail
 
-- **Cursor / Claude Desktop**
-- **VS Code with MCP extension**
-- **Windsurf**
-- **Docker (air-gapped CI)**
-
----
-
-## Available Tools
-
-The MCP server provides tools to interact with your CybeDefend projects:
-
-- **Scan**: `get_scan` - Current state, progress, counts
-- **Overview**: `get_project_overview` - Critical/high/… per scanner
-- **SAST**: `list_vulnerabilities_sast`, `get_vulnerability_sast`
-- **IaC**: `list_vulnerabilities_iac`, `get_vulnerability_iac`
-- **SCA**: `list_vulnerabilities_sca`, `get_vulnerability_sca`, `list_sca_packages`
+- **Region pinning.** EU MCP traffic stays on EU infrastructure (Scaleway, Paris). US MCP traffic stays on Google Cloud (US). The two regions are independent CybeDefend tenants. They do not share storage, identity or audit trail.
+- **No data crosses to a third-party LLM.** CybeDefend operates its own AI inference layer using open-weight Mistral models self-hosted on Scaleway. We do **not** call Anthropic, OpenAI or Google AI APIs. When *you* connect Claude Code or Cursor to our MCP, that agent runs on the agent vendor's infrastructure under your contract with that vendor; CybeDefend's role is only to answer the agent's tool calls.
+- **No code is stored at the MCP layer.** mcp-service is a thin transport in front of the CybeDefend Gateway. Every tool call is a REST request, the Gateway answers under your existing Permify scope, the response streams back to the agent. Nothing persists at rest in the MCP server.
+- **Every action is auditable.** Read-only tool calls (`list_…`, `get_…`) and write tool calls (`update_vulnerability`) are logged to your CybeDefend audit trail with the user identity that signed the OAuth handshake and the timestamp of the call.
 
 ---
 
-## Example Chat Prompts
+## Where it slots in the platform
 
-With your project configured, you can ask your AI assistant:
-
-- "Show critical SAST bugs in Java"
-- "How far along is scan abcd-efgh?"
-- "Details of vulnerability c0ffee"
-
-Your AI assistant will automatically call the appropriate tools and return formatted results.
-
----
-
-**Related:** [VS Code Extension](/latest/ide-integrations/vscode) · [Cybe Security Champion](/latest/plateform-overview/key-features/cybe-security-champion) · [GitHub Repository](https://github.com/CybeDefend/cybedefend-mcp-server)
+<CardGroup cols={2}>
+  <Card title="How to connect each agent" icon="plug" href="/latest/agent-ai-integration/cybe-mcp">
+    Concrete setup snippets for Claude Code, Claude Desktop, Cursor, VS Code Copilot Chat, Windsurf, Continue, Zed and any other MCP client.
+  </Card>
+  <Card title="Cybe Security Champion" icon="brain" href="/latest/plateform-overview/key-features/cybe-security-champion">
+    The agent behind `get_business_logic_context`. Crawls your repo, builds the knowledge graph, returns project-specific rules.
+  </Card>
+  <Card title="Cybe Analysis" icon="radar" href="/latest/plateform-overview/key-features/cybe-analysis">
+    The reachability + business-context engine that explains *why* a finding is exploitable. Same data the MCP serves to the agent.
+  </Card>
+  <Card title="Sovereign data storage" icon="shield-halved" href="/latest/plateform-overview/key-features/sovereign-data-storage">
+    EU + US isolated regions, the same model that backs the two regional MCP endpoints.
+  </Card>
+</CardGroup>
