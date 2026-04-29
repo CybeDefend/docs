@@ -1,0 +1,296 @@
+---
+title: "Cybe MCP, connect every AI agent"
+description: "Step-by-step setup for Claude Code, Claude Desktop, Cursor, VS Code Copilot Chat, Windsurf, Continue, Cline, Zed and any MCP-compatible client. Browser-only OAuth, two regional URLs, 18 typed tools."
+---
+
+<Note>
+**Browser sign-in, no API key.** Cybe MCP uses OAuth 2.1 with Dynamic Client Registration (RFC 7591). When you add the URL to your AI assistant, the assistant opens your browser, you sign in to CybeDefend exactly the way you sign in to the dashboard, and the agent receives a Bearer JWT scoped to your account. No PAT to manage. No local proxy. No `.env` to rotate.
+</Note>
+
+---
+
+## The two endpoints
+
+Pick the URL that matches the region your CybeDefend tenant lives in:
+
+| Region | URL | Backed by |
+|---|---|---|
+| EU | `https://mcp-eu.cybedefend.com/mcp` | EU tenant (Scaleway, Paris). GDPR / NIS2 / DORA-aligned. |
+| US | `https://mcp-us.cybedefend.com/mcp` | US tenant (Google Cloud). SOC 2 controls in place. |
+
+You can only sign in to the region that hosts your account. If you're not sure which one you signed up on, look at the URL of the dashboard you log into (`eu.cybedefend.com` vs `us.cybedefend.com`) and pick the matching MCP host.
+
+---
+
+## Setup per AI assistant
+
+Most modern MCP clients accept the URL directly and walk you through the OAuth handshake. The snippets below show the canonical config file for each client; substitute the EU URL with the US one if your tenant is in the US region.
+
+### Claude Code
+
+The CLI client supports `claude mcp add` for one-shot configuration:
+
+```bash
+# EU region
+claude mcp add --transport http cybedefend https://mcp-eu.cybedefend.com/mcp
+
+# US region
+claude mcp add --transport http cybedefend https://mcp-us.cybedefend.com/mcp
+```
+
+The first time the agent calls a Cybe tool, Claude Code opens a browser tab on `mcp-eu.cybedefend.com/oauth/authorize`, you sign in (or it auto-completes if your dashboard session is already alive), and the token is cached locally by the client. After that, the agent calls Cybe tools transparently in every session.
+
+Verify it landed:
+
+```bash
+claude mcp list
+# cybedefend  · connected · 18 tools
+```
+
+### Claude Desktop
+
+Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS), or the equivalent on Windows / Linux, and add:
+
+```json
+{
+  "mcpServers": {
+    "cybedefend": {
+      "transport": {
+        "type": "http",
+        "url": "https://mcp-eu.cybedefend.com/mcp"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Desktop. The first tool call opens the OAuth page in your default browser.
+
+### Cursor
+
+Cursor reads `~/.cursor/mcp.json` (global) or `<project>/.cursor/mcp.json` (per-project). Drop:
+
+```json
+{
+  "mcpServers": {
+    "cybedefend": {
+      "url": "https://mcp-eu.cybedefend.com/mcp"
+    }
+  }
+}
+```
+
+Open Cursor's Command Palette and run **MCP: Reload servers**. Cursor opens the OAuth page on the first tool call and persists the token.
+
+### VS Code Copilot Chat
+
+Recent versions of VS Code Copilot Chat support MCP via `<project>/.vscode/mcp.json`:
+
+```json
+{
+  "servers": {
+    "cybedefend": {
+      "type": "http",
+      "url": "https://mcp-eu.cybedefend.com/mcp"
+    }
+  }
+}
+```
+
+Run **MCP: Reload servers** from the Command Palette. The first call triggers the OAuth flow.
+
+### Windsurf
+
+Windsurf's MCP config lives at `~/.codeium/windsurf/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "cybedefend": {
+      "serverUrl": "https://mcp-eu.cybedefend.com/mcp"
+    }
+  }
+}
+```
+
+Reload Windsurf. Same OAuth-on-first-call flow.
+
+### Continue · Cline · Zed · any other MCP client
+
+Any client that follows the [MCP Streamable HTTP transport](https://modelcontextprotocol.io/specification) spec works. Three things to give the client:
+
+1. **URL**: `https://mcp-eu.cybedefend.com/mcp` (or `mcp-us`)
+2. **Transport**: HTTP / Streamable
+3. **Auth**: OAuth 2.0. The client should auto-discover via `/.well-known/oauth-protected-resource` and `/.well-known/oauth-authorization-server`, then perform Dynamic Client Registration on `/oauth/register`. Modern MCP clients implement this out of the box.
+
+---
+
+## What the OAuth flow looks like
+
+```text
+1. Agent → GET  https://mcp-eu.cybedefend.com/.well-known/oauth-protected-resource
+   ← { authorization_servers: ["https://mcp-eu.cybedefend.com"], … }
+
+2. Agent → GET  https://mcp-eu.cybedefend.com/.well-known/oauth-authorization-server
+   ← { authorization_endpoint, token_endpoint, registration_endpoint, … }
+
+3. Agent → POST https://mcp-eu.cybedefend.com/oauth/register      (RFC 7591 DCR)
+   ← { client_id }
+
+4. Agent opens the browser:
+   https://mcp-eu.cybedefend.com/oauth/authorize?client_id=…&redirect_uri=…&code_challenge=…
+   You sign in to CybeDefend (or the page auto-completes if the session is alive).
+
+5. Browser redirects back to the agent's local callback (a loopback URI on
+   localhost / 127.0.0.1 with a high port) carrying an authorization code.
+
+6. Agent → POST https://mcp-eu.cybedefend.com/oauth/token
+   ← { access_token: <Logto JWT>, refresh_token, expires_in }
+
+7. Agent → POST https://mcp-eu.cybedefend.com/mcp
+            with `Authorization: Bearer <access_token>`
+   ← MCP session opens, tool calls flow through.
+```
+
+The DCR step only accepts loopback redirect URIs (RFC 8252), which is what every native MCP client uses. The Bearer token in step 6 is a Logto-issued JWT. Every tool call after that lands on the CybeDefend Gateway, where Permify checks your per-project permissions exactly as it does for the dashboard. Your project-level access is authoritative; the MCP server enforces nothing of its own.
+
+---
+
+## The 18 tools
+
+All tools share the same shape: a typed JSON schema the agent's planner can reason about, and every one requires `projectId`. The two exceptions need a second argument: `get_business_logic_context` requires `user_intent` (a free-text description of what the agent is about to do), and `get_similar_vulnerabilities` requires `vulnerabilityId`. Every response carries the same finding identifier the dashboard uses, so an agent action and a human action on the same finding land in the same audit trail.
+
+### Read
+
+| Tool | Returns |
+|---|---|
+| `get_project_overview` | Severity counts per scanner plus last-scan trend. |
+| `get_branches` | Distinct branches that have findings on this project. |
+| `list_vulnerabilities_sast` | Paginated SAST findings. Filters: `severity`, `status`, `priority`, `language`, `searchQuery`, `branch`, `hasAutofix`. |
+| `get_vulnerability_sast` | Single SAST finding with code snippet, file path, line, taint sink. |
+| `list_vulnerabilities_sca` | Paginated SCA findings. Filters: `severity`, `status`, `priority`, `packageType`, `language`, `searchQuery`, `branch`, `hasAutofix`. |
+| `get_vulnerability_sca` | Single SCA finding with affected package, version, suggested bump. |
+| `list_sca_packages` | Full package tree for the project (direct, dev, transitive). |
+| `list_vulnerabilities_iac` | Paginated IaC findings with the standard filter set. |
+| `get_vulnerability_iac` | Single IaC finding with the file and resource block that produced it. |
+| `list_vulnerabilities_cicd` | Paginated CI/CD findings. |
+| `get_vulnerability_cicd` | Single CI/CD finding with the workflow file and step. |
+| `list_vulnerabilities_secret` | Paginated secret-leak findings. |
+| `get_vulnerability_secret` | Single secret finding with provider, location, validation status. |
+| `list_vulnerabilities_container` | Paginated container findings with runtime context. |
+| `get_vulnerability_container` | Single container finding with image layer and base image info. |
+| `get_similar_vulnerabilities` | Returns a vulnerability alongside its similar occurrences across the project. Required: `projectId`, `vulnerabilityId`. Optional: `pathFilter`. Useful to apply a single status change to a class of look-alike findings. |
+
+### Write
+
+| Tool | Effect |
+|---|---|
+| `update_vulnerability` | Set status (`to_verify`, `confirmed`, `resolved`, `not_exploitable`, `proposed_not_exploitable`, `ignored`), set priority (`critical_urgent`, `urgent`, `normal`, `low`, `very_low`), or attach a comment. Audit-logged. |
+
+### Context
+
+| Tool | Returns |
+|---|---|
+| `get_business_logic_context` | Calls Cybe Security Champion. Returns the project-specific rules mined from the repo (tenant scope, refund caps, idempotency keys, audit patterns), formatted as a system prompt the agent can inline before generating code. Required: `projectId`, `user_intent`. Optional: `branch` (defaults to `main`). The first call against a project is slower because Security Champion is building the knowledge graph; subsequent calls in the same session reuse it. |
+
+---
+
+## Example prompts
+
+Once connected, you can drive the platform from the agent's chat:
+
+| Prompt | Tools the agent calls |
+|---|---|
+| "Show critical SAST findings on the `develop` branch." | `list_vulnerabilities_sast` (severity=critical, branch=develop) |
+| "Open finding `vs_8a3b` and tell me what's exploitable." | `get_vulnerability_sast` |
+| "Mark every SQLi in `/api/users` as `not_exploitable`, comment 'fixed by parameterised query helper'." | `get_similar_vulnerabilities` then `update_vulnerability` |
+| "Are there any leaked secrets in this project?" | `list_vulnerabilities_secret` |
+| "I'm about to add `/payments`. What rules does this project enforce?" | `get_business_logic_context` |
+| "Walk me through every package in our SCA tree, sorted by CVE count." | `list_sca_packages` plus `list_vulnerabilities_sca` |
+| "Trend on critical findings for the last 7 days." | `get_project_overview` |
+
+The agent picks the right tool. You don't have to know the schemas.
+
+---
+
+## Pinning a default project
+
+Most agents let you set environment variables on the MCP server entry. Cybe MCP doesn't require any (auth is OAuth, not env-based), but you can pin a default project so the agent doesn't ask you for `projectId` on every call.
+
+The convention varies per client. For clients that respect a top-level `env` block:
+
+```json
+{
+  "mcpServers": {
+    "cybedefend": {
+      "url": "https://mcp-eu.cybedefend.com/mcp",
+      "env": {
+        "CYBEDEFEND_PROJECT_ID": "<your-project-uuid>"
+      }
+    }
+  }
+}
+```
+
+If your client doesn't forward env vars to MCP servers (Claude Desktop, for instance), prompt-pin instead. Drop a sentence at the top of your system prompt: *"Always call CybeDefend tools with `projectId: <uuid>` unless the user names a different project."*
+
+---
+
+## Troubleshooting
+
+<Accordion title="The browser opens but the OAuth page won't load">
+
+Make sure your AI assistant is allowed to open `https://mcp-eu.cybedefend.com` (or `mcp-us`). Some corporate networks block dynamic client registration on first contact. The call is to `/oauth/register`. Whitelist the host.
+
+</Accordion>
+
+<Accordion title="`401 WWW-Authenticate: Bearer` on every tool call">
+
+The Bearer JWT expired (default lifetime is short for security). Modern MCP clients silently refresh on `401`. If yours doesn't, sign out and back in via the agent's MCP server panel.
+
+</Accordion>
+
+<Accordion title="`403 forbidden` on a specific finding">
+
+Your CybeDefend account doesn't have the Permify scope to read that project. Permify is the source of truth. Ask the project owner to grant you access via the dashboard, the MCP will reflect the change immediately on the next call.
+
+</Accordion>
+
+<Accordion title="`get_business_logic_context` is slow on first call">
+
+Expected. Security Champion is building the knowledge graph from your codebase the first time it sees a project. Subsequent calls in the same session reuse the cached graph. If you regularly want fresh context, trigger a re-index from the dashboard's project settings.
+
+</Accordion>
+
+<Accordion title="I'm behind a corporate proxy / air-gapped">
+
+The MCP server URL must be reachable from the agent's machine. For air-gapped environments, contact us about an on-premise deployment of mcp-service alongside Logto and the CybeDefend Gateway. The same image we ship to Scaleway is available for self-hosting.
+
+</Accordion>
+
+---
+
+## What if I just want a REST API instead?
+
+Cybe MCP is a thin transport layer in front of the CybeDefend Gateway REST API. Every MCP tool maps to a Gateway endpoint, so if your agent doesn't speak MCP, or if you're scripting outside an agent context, you can hit the same data over plain HTTP.
+
+See the [API Reference](/latest/api-reference/introduction) for the full surface. Auth in that flow is via Personal Access Token rather than browser OAuth.
+
+---
+
+## Related docs
+
+<CardGroup cols={2}>
+  <Card title="Cybe MCP, feature overview" icon="star" href="/latest/plateform-overview/key-features/mcp-server-integration">
+    The product-level pitch and where MCP sits in the platform.
+  </Card>
+  <Card title="Cybe Security Champion" icon="brain" href="/latest/agent-ai-integration/cybe-security-champion-detail">
+    The agent behind `get_business_logic_context`.
+  </Card>
+  <Card title="Cybe Autofix" icon="wand-magic-sparkles" href="/latest/agent-ai-integration/cybe-autofix-detail">
+    The fix-generation pipeline the agent triggers via `update_vulnerability` workflows.
+  </Card>
+  <Card title="API Reference" icon="code" href="/latest/api-reference/introduction">
+    Direct REST surface, for non-MCP clients.
+  </Card>
+</CardGroup>
