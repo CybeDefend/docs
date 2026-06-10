@@ -1,0 +1,243 @@
+---
+title: "VibeDefend, one command to wire every agent"
+description: "VibeDefend is the one-shot installer that connects Claude Code, Cursor, OpenAI Codex, Windsurf and VS Code Copilot to CybeDefend. It registers the MCP server and the hook layer in a single command — business and security rules land in the agent's context before each edit, dangerous actions are hard-blocked, and a gap analysis catches undocumented rules at the end of substantive sessions. npx one-liner, macOS / Linux / Windows, Node ≥ 18.17."
+---
+
+<Note>
+**VibeDefend is the automated path to Cybe MCP — plus everything around it.** The [Cybe MCP](/latest/agent-ai-integration/cybe-mcp) page walks you through adding the MCP URL to each client by hand. VibeDefend does that for you, and goes further: it wires a **hook layer** so the right business and security rules arrive in the agent's context *at the moment it edits code*, hard-blocks denied actions, and runs a gap analysis at the end of each substantive session. One command, every detected agent.
+</Note>
+
+---
+
+## Install
+
+```bash
+npx -y @cybedefend/vibedefend@latest install
+```
+
+Works on **macOS, Linux and Windows** — PowerShell, cmd, bash, zsh, fish, Git Bash, pick any. Requires **Node 18.17 or later**, which most users already have because Claude Code / Cursor / Codex ship a bundled Node.
+
+The installer is fully interactive: pick a region, pick which agents to wire (they're auto-detected), confirm. That's it.
+
+Prefer a global install?
+
+```bash
+npm install -g @cybedefend/vibedefend && vibedefend install
+# pnpm and yarn work the same way
+```
+
+---
+
+## MCP alone vs. MCP + hooks
+
+Connecting the MCP server by hand (the [Cybe MCP](/latest/agent-ai-integration/cybe-mcp) flow) gives your agent a **passive** security backend: it can list findings, drill into a vulnerability, drive the status lifecycle and pull business-logic context — *when you ask it to*.
+
+VibeDefend adds the **active** layer on top. The hooks fire on the agent's own lifecycle events, so security shows up without anyone prompting for it:
+
+| Moment | What VibeDefend does | Why it matters |
+|---|---|---|
+| **Before an edit** (`Edit` / `Write` / `MultiEdit`) | Injects the business + security rules relevant to *this* change into the agent's context. | The agent writes secure, on-policy code from the first line instead of being corrected afterwards. |
+| **On any tool call** | **Action Guards** evaluate the call against your guard policy and hard-block on deny. | A `rm -rf`, a write to a protected path, or a fetch to a blocked host is stopped before it runs — not flagged after. |
+| **At session start** | Loads the CybeDefend doctrine and opens the **proposals inbox** (Accept / Reject picker). | The agent starts every session knowing your rules, and you clear pending rule proposals up front. |
+| **At session end** (`Stop`) | Runs a **gap analysis** once the session crosses the edit threshold. | Surfaces the business rules you relied on but never wrote down, and proposes them for review. |
+| **On long sessions** (`PreCompact`) | Same gap analysis, fired before the context window is compacted. | Long sessions don't lose their rule-gap review just because the transcript got summarised. |
+| **Per prompt** (Claude Code) | A lightweight doctrine backstop on every user prompt. | Keeps the CybeDefend flow intact even when another skill auto-activates and would otherwise take over the turn. |
+
+The MCP server is what the hooks call under the hood. VibeDefend installs both, so you get the tools *and* the moments that use them.
+
+---
+
+## Supported agents
+
+VibeDefend auto-detects and wires whichever of these you have installed. Unchecked agents stay untouched — re-run `vibedefend install` any time to toggle one on or off.
+
+| Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot |
+|---|:---:|:---:|:---:|:---:|:---:|
+| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Business + Security Rules** *(injected pre-edit)* | ✅ | ✅ | ✅ | ⚠️ writes only | ✅ |
+| **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired |
+| **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ |
+| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **PreCompact** *(long-session gap analysis)* | ✅ | ✅ | ❌ no event | ❌ no event | ✅ |
+| **Doctrine backstop** *(per-prompt reminder)* | ✅ | ❌ | ✱ via MCP³ | ❌ | ❌ |
+| **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 |
+
+**Legend** — ✅ supported · ⚠️ supported with caveats · ❌ not exposed by the agent · ✱ alternate mechanism
+
+¹ Windsurf's `pre_write_code` hook hard-blocks on file writes only. For non-write tool calls (Read / Bash / WebFetch) the installer drops a snippet into `.windsurfrules` instructing the agent to call `cybe_guards_check` via MCP before sensitive actions — soft enforcement that relies on the model following its rules file.
+
+² Windsurf has no native SessionStart event. VibeDefend wires `pre_user_prompt`, which fires on every turn. The hook is idempotent and cheap (one GET to the proposals endpoint, returns "0 pending" once the inbox is empty), so the per-turn cost is negligible.
+
+³ Codex follows the doctrine via the MCP server's `Server.instructions` field on each session, which removes the need for a per-prompt reminder hook.
+
+---
+
+## The install flow, step by step
+
+`vibedefend install` walks you through four prompts and then signs you in.
+
+<Steps>
+  <Step title="Pick a region">
+    Choose **Production — EU** or **Production — US**. VibeDefend registers an MCP server named `cybedefend` pointing at that region's endpoint and wires the hooks to call the matching Gateway — you never type a URL. The two regions are independent CybeDefend tenants; sign in to the one that hosts your account (`eu.cybedefend.com` vs `us.cybedefend.com`).
+  </Step>
+  <Step title="Pick which agents to wire">
+    VibeDefend prints a detection table (one row per agent, with a version badge) and a multi-select. Detected, supported agents are pre-checked; a version that's too old is shown disabled with an "update this client" hint; an agent you don't have yet is still selectable, so you can pre-wire hooks before you install it.
+  </Step>
+  <Step title="Tune the hook config">
+    Four questions, each with a tuned default:
+
+    - **Enable the session-end gap analysis?** — default **on**. Without it, the gap analysis never runs.
+    - **Edits threshold to trigger it?** — default **3**. Typos and one-line fixes won't fire it; a real feature will. Lower to `1` to fire on any session that had an edit, raise it if your team does frequent tiny commits in long sessions.
+    - **Enable automatic background updates?** — default **on**. Hooks self-refresh so you never re-run install (see [Keeping VibeDefend current](#keeping-vibedefend-current)).
+    - **Enable auto-propose mode?** — default **off** *(not recommended)*. Off means rule proposals need an explicit chat-side "yes". On means the agent drafts and pushes proposals without asking first — you still review them at the next session start.
+  </Step>
+  <Step title="Sign in">
+    If VibeDefend has no stored credentials, it runs the login flow automatically: OAuth 2.0 Authorization Code + PKCE opens your browser to the CybeDefend sign-in page, receives the callback locally, and stores the token bundle in your OS keychain. If your browser already has a dashboard session, this completes instantly. The refresh token persists for 14 days.
+  </Step>
+</Steps>
+
+---
+
+## Link a project
+
+After install, drop one tiny file at the root of each repo you want monitored — a `.cybedefend/config.json` with your project UUID:
+
+```json
+{ "projectId": "<your-cybedefend-project-uuid>" }
+```
+
+Grab the UUID from the project page on the [EU dashboard](https://eu.cybedefend.com) or the [US dashboard](https://us.cybedefend.com). You can also override it per shell or per project with the `CYBEDEFEND_PROJECT_ID` environment variable.
+
+---
+
+## Commands
+
+```text
+vibedefend install            Set up MCP + hooks (interactive)
+vibedefend update             Upgrade the binary if newer, then refresh hooks
+vibedefend update --self      Upgrade only the CLI binary (don't touch hooks)
+vibedefend status             Read-only install report (region, agents, API check)
+vibedefend doctor             Diagnose the install and repair what's fixable
+vibedefend login              (Re-)authenticate against the CybeDefend API
+vibedefend --help             Full help
+```
+
+`vibedefend doctor` takes `--check` for a dry-run (report only, change nothing) and `--yes` to apply every fix without the confirmation prompt. `vibedefend login` takes `--force` to re-authenticate even when credentials are already stored.
+
+---
+
+## Keeping VibeDefend current
+
+At install you're asked **"Enable automatic background updates? (recommended)"**. Leave it on and you never update by hand: the SessionStart hook checks npm at most once a day and, when a newer version is published, upgrades `@cybedefend/vibedefend` in the background — the next session picks it up via the self-resolving runner shim. Opt out (or pin a version, or run in a locked-down environment) and you instead get a one-line nudge.
+
+To update manually at any time:
+
+```bash
+vibedefend update     # upgrades the binary if newer, then refreshes hooks
+```
+
+(`vibedefend update --self` upgrades only the binary, without touching hooks.)
+
+<Warning>
+**One-time bootstrap for installs older than 1.2.0.** Those versions shipped a *frozen* copy of the hook runner with no update logic, so `vibedefend update` alone can't upgrade the binary. Do it explicitly once:
+
+```bash
+npm i -g @cybedefend/vibedefend@latest   # or: vibedefend update --self
+vibedefend update                         # render the self-resolving shim
+```
+
+After that, updates are hands-off (or one `vibedefend update`) as above.
+</Warning>
+
+---
+
+## Tunables
+
+The gap-analysis threshold and auto-propose mode are chosen at install and stored in your VibeDefend config. To change them, re-run `vibedefend install` and answer the hook-config prompts again:
+
+| Setting | What it controls |
+|---|---|
+| Review threshold | Edits before the session-end gap analysis fires (default `3`; `1` fires on any session that had an edit). |
+| Auto-propose | Whether the agent proposes rules without asking first (default off). |
+
+One override is read live from the environment, so you can set it per shell or per project — handy when a repo's UUID differs from the default:
+
+| Variable | Effect |
+|---|---|
+| `CYBEDEFEND_PROJECT_ID` | Override the project UUID from `.cybedefend/config.json`. |
+
+---
+
+## Codex setup gotcha
+
+Codex 0.131+ requires you to approve each hook from the `/hooks` panel **inside Codex** *before* it fires. After running `vibedefend install`, open Codex, run `/hooks`, and trust the `cybedefend` entries — until you do, the panel shows `Installed N / Active 0` and the hooks stay dormant.
+
+---
+
+## VibeDefend or the manual MCP setup?
+
+Both connect your agent to the same CybeDefend tenant. The difference is how much of the platform comes along.
+
+| | VibeDefend | [Manual MCP setup](/latest/agent-ai-integration/cybe-mcp) |
+|---|---|---|
+| **Setup** | One command, all detected agents at once | Edit each client's config file by hand |
+| **MCP tools** (read findings, triage, context) | ✅ | ✅ |
+| **Rules injected before each edit** | ✅ | — |
+| **Action Guards (hard block)** | ✅ | — |
+| **Session-end gap analysis** | ✅ | — |
+| **Best for** | Day-to-day coding where you want security in the loop automatically | Any MCP client VibeDefend doesn't auto-wire (Continue, Cline, Zed, Claude Desktop…), or when you only want the read/triage tools |
+
+You can also do both: run VibeDefend for the agents it supports and add the raw MCP URL by hand to any other client.
+
+---
+
+## Troubleshooting
+
+<Accordion title="Codex shows `Installed N / Active 0`">
+
+Codex gates hooks behind manual approval — see [Codex setup gotcha](#codex-setup-gotcha) above. Open Codex, run `/hooks`, and trust the `cybedefend` entries.
+
+</Accordion>
+
+<Accordion title="Hooks don't seem to run after install">
+
+Run `vibedefend status` for a read-only report of region, wired agents and a live API check, then `vibedefend doctor` to diagnose and repair what's fixable (`vibedefend doctor --check` reports without changing anything). Confirm the repo has a `.cybedefend/config.json` with a valid `projectId` — without a linked project the rule-fetch and gap-analysis hooks have nothing to call.
+
+</Accordion>
+
+<Accordion title="It asked me to sign in even though Codex was already connected">
+
+Expected, once. Codex's MCP-scoped token (`aud: cybedefend-mcp`) has limited Permify rights and can't call the Gateway endpoints the runtime hooks use, which need a user token (`aud: cybedefend-api`). They aren't interchangeable. One Logto sign-in (instant if your browser already has a dashboard session) issues the right token; the refresh token then persists for 14 days.
+
+</Accordion>
+
+<Accordion title="I pin versions / run in a locked-down environment">
+
+Decline the "automatic background updates" prompt at install (or it's disabled automatically when VibeDefend can't self-resolve a global install). You then get a one-line nudge when a new version ships and update on your own schedule with `vibedefend update`.
+
+</Accordion>
+
+<Accordion title="I'm on Windows">
+
+Fully supported — no Git Bash or WSL required. The hook runner is a single bundled Node script that runs the same way on Linux, macOS and Windows.
+
+</Accordion>
+
+---
+
+## Related docs
+
+<CardGroup cols={2}>
+  <Card title="Cybe MCP, connect every AI agent" icon="plug" href="/latest/agent-ai-integration/cybe-mcp">
+    The manual setup and the full reference for the 18 MCP tools VibeDefend wires up for you.
+  </Card>
+  <Card title="Cybe MCP, feature overview" icon="star" href="/latest/plateform-overview/key-features/mcp-server-integration">
+    The product-level pitch and where the MCP layer sits in the platform.
+  </Card>
+  <Card title="Cybe Security Champion" icon="brain" href="/latest/agent-ai-integration/cybe-security-champion-detail">
+    The agent behind the business-logic rules VibeDefend injects before each edit.
+  </Card>
+  <Card title="Cybe Autofix" icon="wand-magic-sparkles" href="/latest/agent-ai-integration/cybe-autofix-detail">
+    The fix-generation pipeline the agent can drive once it's connected.
+  </Card>
+</CardGroup>

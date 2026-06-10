@@ -53,9 +53,14 @@ CybeDefend ships **two regional MCP endpoints**, isolated per region:
 
 You point your AI assistant at the URL of the region your CybeDefend tenant lives in, and the assistant handles the rest. Authentication is **OAuth 2.1 with Dynamic Client Registration** (RFC 7591). The MCP client opens a browser tab, you sign in to CybeDefend the same way you sign in to the dashboard, the assistant receives a Bearer JWT, and you're connected. **No API key to manage. No PAT to rotate. No local proxy to run.**
 
-<Card title="Step-by-step setup for every AI assistant" icon="terminal" href="/latest/agent-ai-integration/cybe-mcp">
-  See the full how-to in **Agent & AI Integration → Cybe MCP**.
-</Card>
+<CardGroup cols={2}>
+  <Card title="One-command setup with VibeDefend" icon="bolt" href="/latest/agent-ai-integration/vibedefend">
+    Register the MCP plus the hook layer for Claude Code, Cursor, Codex, Windsurf and Copilot in a single `npx` install.
+  </Card>
+  <Card title="Step-by-step manual setup" icon="terminal" href="/latest/agent-ai-integration/cybe-mcp">
+    Add the MCP URL to any client by hand — the full how-to in **Agent & AI Integration → Cybe MCP**.
+  </Card>
+</CardGroup>
 
 ---
 

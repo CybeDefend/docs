@@ -91,6 +91,7 @@
               {
                 "group": "Agent & AI Integration",
                 "pages": [
+                  "/latest/agent-ai-integration/vibedefend",
                   "/latest/agent-ai-integration/cybe-mcp",
                   "/latest/agent-ai-integration/cybe-analysis-detail",
                   "/latest/agent-ai-integration/cybe-autofix-detail",

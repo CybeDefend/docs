@@ -7,6 +7,10 @@ description: "Step-by-step setup for Claude Code, Claude Desktop, Cursor, VS Cod
 **Browser sign-in, no API key.** Cybe MCP uses OAuth 2.1 with Dynamic Client Registration (RFC 7591). When you add the URL to your AI assistant, the assistant opens your browser, you sign in to CybeDefend exactly the way you sign in to the dashboard, and the agent receives a Bearer JWT scoped to your account. No PAT to manage. No local proxy. No `.env` to rotate.
 </Note>
 
+<Tip>
+**Want this done in one command?** [VibeDefend](/latest/agent-ai-integration/vibedefend) registers this MCP server for Claude Code, Cursor, Codex, Windsurf and VS Code Copilot — and wires the hook layer (rules before each edit, action guards, session-end gap analysis) — in a single `npx` install. This page is the manual setup, and the reference for the tools VibeDefend connects on your behalf.
+</Tip>
+
 ---
 
 ## The two endpoints
@@ -281,6 +285,9 @@ See the [API Reference](/latest/api-reference/introduction) for the full surface
 ## Related docs
 
 <CardGroup cols={2}>
+  <Card title="VibeDefend, one-command setup" icon="bolt" href="/latest/agent-ai-integration/vibedefend">
+    Skip the manual config — install this MCP plus the hook layer for every detected agent in one command.
+  </Card>
   <Card title="Cybe MCP, feature overview" icon="star" href="/latest/plateform-overview/key-features/mcp-server-integration">
     The product-level pitch and where MCP sits in the platform.
   </Card>
