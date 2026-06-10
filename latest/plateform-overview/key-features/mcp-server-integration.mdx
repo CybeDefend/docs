@@ -14,7 +14,7 @@ description: "The flagship CybeDefend feature. Connect your AI coding agent (Cla
 | Surface | What the agent can do |
 |---|---|
 | **Read every finding** | List + drill into SAST, SCA, IaC, CI/CD, Secrets and Container findings, with file paths, line numbers, snippets, package trees and remediation hints. |
-| **Drive the lifecycle** | Move a finding through one of six statuses (`to_verify`, `confirmed`, `resolved`, `not_exploitable`, `proposed_not_exploitable`, `ignored`). Set priority, attach a comment. Each action lands in the audit trail. |
+| **Drive the lifecycle** | Move a finding through one of four statuses (`to_verify`, `confirmed`, `resolved`, `ignored`). Set priority, attach a comment. Each action lands in the audit trail. |
 | **Find similar issues** | One call returns the cluster of look-alike findings, so the agent can act on a class of false-positives or fix a pattern in one batch. |
 | **Pull business-logic context** | Before writing a payment endpoint, an auth flow or an export job, the agent calls `get_business_logic_context` and Security Champion returns the tenant-specific rules mined from your repo. The agent inlines them into its system prompt and writes secure code from the first line. |
 
@@ -29,7 +29,7 @@ Most AI-in-AppSec tooling on the market today is a bolt-on: a panel that surface
 That single decision unlocks the rest of the platform:
 
 - **Inline fixes.** The agent applies the remediation in the same loop where it's writing code. No copy-paste, no second tool window.
-- **Triage from chat.** Tell the agent "mark every SQLi in `/api/users` as not-exploitable, with a comment pointing to the parameterised query helper". One prompt, two tool calls (`get_similar_vulnerabilities` + `update_vulnerability`), audit trail intact.
+- **Triage from chat.** Tell the agent "mark every SQLi in `/api/users` as resolved, with a comment pointing to the parameterised query helper". One prompt, two tool calls (`get_similar_vulnerabilities` + `update_vulnerability`), audit trail intact.
 - **Secure-by-default generation.** Business-logic context flows from your codebase to the agent before it generates the next line. The agent doesn't have to guess your tenant scope, refund cap, idempotency convention or audit pattern.
 
 ---

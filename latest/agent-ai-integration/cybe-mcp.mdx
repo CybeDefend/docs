@@ -189,7 +189,7 @@ All tools share the same shape: a typed JSON schema the agent's planner can reas
 
 | Tool | Effect |
 |---|---|
-| `update_vulnerability` | Set status (`to_verify`, `confirmed`, `resolved`, `not_exploitable`, `proposed_not_exploitable`, `ignored`), set priority (`critical_urgent`, `urgent`, `normal`, `low`, `very_low`), or attach a comment. Audit-logged. |
+| `update_vulnerability` | Set status (`to_verify`, `confirmed`, `resolved`, `ignored`), set priority (`critical_urgent`, `urgent`, `normal`, `low`, `very_low`), or attach a comment. Audit-logged. |
 
 ### Context
 
@@ -207,7 +207,7 @@ Once connected, you can drive the platform from the agent's chat:
 |---|---|
 | "Show critical SAST findings on the `develop` branch." | `list_vulnerabilities_sast` (severity=critical, branch=develop) |
 | "Open finding `vs_8a3b` and tell me what's exploitable." | `get_vulnerability_sast` |
-| "Mark every SQLi in `/api/users` as `not_exploitable`, comment 'fixed by parameterised query helper'." | `get_similar_vulnerabilities` then `update_vulnerability` |
+| "Mark every SQLi in `/api/users` as `resolved`, comment 'fixed by parameterised query helper'." | `get_similar_vulnerabilities` then `update_vulnerability` |
 | "Are there any leaked secrets in this project?" | `list_vulnerabilities_secret` |
 | "I'm about to add `/payments`. What rules does this project enforce?" | `get_business_logic_context` |
 | "Walk me through every package in our SCA tree, sorted by CVE count." | `list_sca_packages` plus `list_vulnerabilities_sca` |

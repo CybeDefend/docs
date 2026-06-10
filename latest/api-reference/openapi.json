@@ -4464,8 +4464,6 @@
                 "type": "string",
                 "enum": [
                   "to_verify",
-                  "not_exploitable",
-                  "proposed_not_exploitable",
                   "resolved",
                   "confirmed",
                   "ignored"
@@ -4682,8 +4680,6 @@
                 "type": "string",
                 "enum": [
                   "to_verify",
-                  "not_exploitable",
-                  "proposed_not_exploitable",
                   "resolved",
                   "confirmed",
                   "ignored"
@@ -4900,8 +4896,6 @@
                 "type": "string",
                 "enum": [
                   "to_verify",
-                  "not_exploitable",
-                  "proposed_not_exploitable",
                   "resolved",
                   "confirmed",
                   "ignored"
@@ -5118,8 +5112,6 @@
                 "type": "string",
                 "enum": [
                   "to_verify",
-                  "not_exploitable",
-                  "proposed_not_exploitable",
                   "resolved",
                   "confirmed",
                   "ignored"
@@ -5366,8 +5358,6 @@
                 "type": "string",
                 "enum": [
                   "to_verify",
-                  "not_exploitable",
-                  "proposed_not_exploitable",
                   "resolved",
                   "confirmed",
                   "ignored"
@@ -5631,8 +5621,6 @@
                 "type": "string",
                 "enum": [
                   "to_verify",
-                  "not_exploitable",
-                  "proposed_not_exploitable",
                   "resolved",
                   "confirmed",
                   "ignored"
@@ -6536,7 +6524,6 @@
                 "confirmed",
                 "in_review",
                 "resolved",
-                "not_exploitable",
                 "ignored"
               ]
             }
@@ -7508,8 +7495,6 @@
                 "type": "string",
                 "enum": [
                   "to_verify",
-                  "not_exploitable",
-                  "proposed_not_exploitable",
                   "resolved",
                   "confirmed",
                   "ignored"
@@ -7726,8 +7711,6 @@
                 "type": "string",
                 "enum": [
                   "to_verify",
-                  "not_exploitable",
-                  "proposed_not_exploitable",
                   "resolved",
                   "confirmed",
                   "ignored"
@@ -7944,8 +7927,6 @@
                 "type": "string",
                 "enum": [
                   "to_verify",
-                  "not_exploitable",
-                  "proposed_not_exploitable",
                   "resolved",
                   "confirmed",
                   "ignored"
@@ -8162,8 +8143,6 @@
                 "type": "string",
                 "enum": [
                   "to_verify",
-                  "not_exploitable",
-                  "proposed_not_exploitable",
                   "resolved",
                   "confirmed",
                   "ignored"
@@ -8382,8 +8361,6 @@
                 "type": "string",
                 "enum": [
                   "to_verify",
-                  "not_exploitable",
-                  "proposed_not_exploitable",
                   "resolved",
                   "confirmed",
                   "ignored"
@@ -20917,8 +20894,6 @@
               "type": "string",
               "enum": [
                 "to_verify",
-                "not_exploitable",
-                "proposed_not_exploitable",
                 "resolved",
                 "confirmed",
                 "ignored"
@@ -21024,8 +20999,6 @@
             "description": "Status of the vulnerability",
             "enum": [
               "to_verify",
-              "not_exploitable",
-              "proposed_not_exploitable",
               "resolved",
               "confirmed",
               "ignored"
@@ -21068,13 +21041,11 @@
             "description": "New status of the vulnerability",
             "enum": [
               "to_verify",
-              "not_exploitable",
-              "proposed_not_exploitable",
               "resolved",
               "confirmed",
               "ignored"
             ],
-            "example": "not_exploitable"
+            "example": "ignored"
           },
           "priority": {
             "type": "string",
@@ -21092,7 +21063,7 @@
             "type": "string",
             "description": "Comment about the vulnerability (max 512 chars)",
             "maxLength": 512,
-            "example": "Marked as not exploitable after security review"
+            "example": "Marked as ignored after security review"
           }
         },
         "required": [
@@ -21109,8 +21080,8 @@
             "example": [
               {
                 "vulnerabilityId": "69da14be-ce56-46d1-8da0-25927da0876f",
-                "status": "not_exploitable",
-                "comment": "Reviewed and marked as not exploitable"
+                "status": "ignored",
+                "comment": "Reviewed and marked as ignored"
               },
               {
                 "vulnerabilityId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
