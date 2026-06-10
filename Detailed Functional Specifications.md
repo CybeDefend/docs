@@ -370,7 +370,7 @@ The CybeDefend platform is designed for multiple user personas across the softwa
 **3. Vulnerability Management**
 
 - Unified dashboard for all security findings
-- Multiple status tracking (To Verify, Confirmed, Not Exploitable, Resolved, etc.)
+- Multiple status tracking (To Verify, Confirmed, Ignored, Resolved, etc.)
 - Risk level assignment (Critical, High, Medium, Low)
 - Priority management (Critical Urgent, Urgent, Normal, Low, Very Low)
 - Comment system for team collaboration
@@ -1380,11 +1380,9 @@ Each vulnerability progresses through states reflecting team actions:
 |--------|-------------|----------|
 | **To Verify** | Newly detected, awaiting validation | Default state for new findings |
 | **Confirmed** | Validated as real vulnerability requiring fix | After manual or AI verification |
-| **Not Exploitable** | Determined not exploitable in current context | After analysis shows false positive |
-| **Proposed Not Exploitable** | Suggested as non-exploitable, pending approval | Team member proposal needing lead confirmation |
 | **Resolved** | Fixed and no longer detected in scans | Automatic when vulnerability absent in new scan |
 | **In Progress** | Actively being worked on | During remediation |
-| **Ignored** | Accepted risk, will not fix | Business decision to accept vulnerability |
+| **Ignored** | Accepted risk or false positive, will not fix | Business decision, or confirmed false positive |
 
 **Automatic Status Updates:**
 
@@ -1502,7 +1500,7 @@ When previously resolved vulnerability reappears:
 
 **Automatic Actions:**
 
-1. **False Positive Detection**: Update status to "Not Exploitable" with justification
+1. **False Positive Detection**: Update status to "Ignored" with justification
 2. **Priority Assignment**: Set priority based on contextual analysis
 3. **Expert Comments**: Add detailed analysis to each finding
 4. **Grouping**: Identify related vulnerabilities
@@ -2194,7 +2192,7 @@ When accessing from organization context:
   - Color-coded indicators (Red for Critical, Orange for High, Yellow for Medium, Green for Low)
   - Percentage distribution
   - Trend indicators (↑ increased, ↓ decreased, → stable compared to previous period)
-- **By Status**: Distribution across To Verify, Confirmed, Resolved, Not Exploitable, Ignored
+- **By Status**: Distribution across To Verify, Confirmed, Resolved, Ignored
 - **By Priority**: Critical Urgent, Urgent, Normal, Low, Very Low distribution
 - **By Scanner Type**: SAST, SCA, IaC, Container counts with visual segmentation
 
@@ -2602,8 +2600,6 @@ The vulnerability management interface is the primary workspace for security tea
 
 - ☐ To Verify
 - ☐ Confirmed
-- ☐ Not Exploitable
-- ☐ Proposed Not Exploitable
 - ☐ Resolved
 - ☐ In Progress
 - ☐ Ignored
@@ -2682,7 +2678,7 @@ Selection checkboxes on each row enable bulk operations:
 - **Add Comment**: Add same comment to all selected
 - **Export Selection**: Export filtered/selected vulnerabilities
 - **Request AI Analysis**: Trigger Cybe Analysis on selected (if not already analyzed)
-- **Mark as False Positive**: Batch mark as Not Exploitable
+- **Mark as False Positive**: Batch mark as Ignored
 
 **5. Vulnerability Detail View**
 
@@ -2780,7 +2776,7 @@ Clicking any vulnerability opens a comprehensive detail panel (modal or side pan
   - Clear explanation of why it's a false positive
   - Evidence from dataflow analysis
   - Sanitization/validation mechanisms detected
-  - Recommendation to mark as "Not Exploitable"
+  - Recommendation to mark as "Ignored"
 
 **Regenerate Analysis Button**: Request fresh AI analysis if code changed
 
@@ -3901,7 +3897,7 @@ For each detected SAST vulnerability (or selected vulnerability groups):
 - **History Tracking**: Check for re-detections of previous vulnerabilities
 - **Status Assignment**: 
   - New vulnerabilities: "To Verify"
-  - AI-confirmed false positives: "Not Exploitable"
+  - AI-confirmed false positives: "Ignored"
   - Previously resolved but reappeared: "To Verify" (history preserved)
 - **Notification Triggers**: Email alerts for critical findings (if enabled)
 - **Dashboard Updates**: Real-time push to web interface
@@ -4018,7 +4014,7 @@ For each detected SAST vulnerability (or selected vulnerability groups):
    - Evaluate priority suggestions
 3. **Validate Each Finding**:
    - **Confirmed**: Real, exploitable vulnerability → Change status to "Confirmed"
-   - **False Positive**: Not exploitable → Change status to "Not Exploitable"
+   - **False Positive**: Confirmed false positive → Change status to "Ignored"
    - **Needs Investigation**: Unclear → Assign to developer for deeper analysis
 4. **Assign Priorities**:
    - Manual override if disagreeing with AI priority
@@ -4034,7 +4030,7 @@ For each detected SAST vulnerability (or selected vulnerability groups):
 - Developers can review vulnerabilities assigned to their code
 - Use IDE extension to see findings in context
 - Add comments with investigation notes
-- Propose status changes (e.g., "Proposed Not Exploitable")
+- Propose status changes (e.g., "Ignored")
 
 **Status Change Workflow:**
 
@@ -4044,27 +4040,11 @@ For each detected SAST vulnerability (or selected vulnerability groups):
 - Requires remediation
 - Ready for fix assignment
 
-**"To Verify" → "Not Exploitable"**:
+**"To Verify" → "Ignored"**:
 
 - Determined to be false positive
 - Removed from active remediation queue
 - Comment explaining reasoning recommended
-
-**"To Verify" → "Proposed Not Exploitable"**:
-
-- Developer suggests it's false positive
-- Requires security lead approval
-- Comment with justification required
-
-**"Proposed Not Exploitable" → "Not Exploitable"**:
-
-- Security lead approves proposal
-- Status finalized
-
-**"Proposed Not Exploitable" → "Confirmed"**:
-
-- Security lead rejects proposal
-- Vulnerability requires fix
 
 **"Confirmed" → "In Progress"**:
 
