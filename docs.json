@@ -32,6 +32,7 @@
                     "group": "Key Features",
                     "pages": [
                       "/latest/plateform-overview/key-features/mcp-server-integration",
+                      "/latest/plateform-overview/key-features/cybe-chat",
                       "/latest/plateform-overview/key-features/cybe-analysis",
                       "/latest/plateform-overview/key-features/cybe-autofix",
                       "/latest/plateform-overview/key-features/cybe-security-champion",
@@ -39,7 +40,11 @@
                       "/latest/plateform-overview/key-features/rebac-management",
                       "/latest/plateform-overview/key-features/blsa-business-logic-security-analysis",
                       "/latest/plateform-overview/key-features/license-compliance",
+                      "/latest/plateform-overview/key-features/ai-bom",
                       "/latest/plateform-overview/key-features/exploitable-path",
+                      "/latest/plateform-overview/key-features/cvss-4-scoring",
+                      "/latest/plateform-overview/key-features/priority-scoring",
+                      "/latest/plateform-overview/key-features/cyber-risk-score",
                       "/latest/plateform-overview/key-features/sovereign-data-storage"
                     ]
                   },
@@ -92,6 +97,7 @@
                 "group": "Agent & AI Integration",
                 "pages": [
                   "/latest/agent-ai-integration/cybe-mcp",
+                  "/latest/agent-ai-integration/cybe-chat-detail",
                   "/latest/agent-ai-integration/cybe-analysis-detail",
                   "/latest/agent-ai-integration/cybe-autofix-detail",
                   "/latest/agent-ai-integration/cybe-security-champion-detail"
@@ -101,7 +107,10 @@
                 "group": "IDE Integrations",
                 "pages": [
                   "/latest/ide-integrations/vscode",
-                  "/latest/ide-integrations/jetbrains"
+                  "/latest/ide-integrations/jetbrains",
+                  "/latest/ide-integrations/cursor",
+                  "/latest/ide-integrations/windsurf",
+                  "/latest/ide-integrations/antigravity"
                 ]
               },
               {
@@ -177,7 +186,20 @@
                 "group": "Managing Vulnerabilities",
                 "pages": [
                   "/latest/managing-vulnerabilities/project-vulnerability-list",
-                  "/latest/managing-vulnerabilities/updating-vulnerabilities"
+                  "/latest/managing-vulnerabilities/updating-vulnerabilities",
+                  "/latest/managing-vulnerabilities/top-vulnerabilities"
+                ]
+              },
+              {
+                "group": "Issue Tracker Integrations",
+                "pages": [
+                  "/latest/issue-tracker-integrations/jira"
+                ]
+              },
+              {
+                "group": "Notifications",
+                "pages": [
+                  "/latest/notifications/slack"
                 ]
               }
             ]

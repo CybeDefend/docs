@@ -1,0 +1,212 @@
+---
+title: "Slack"
+description: "Connect your Slack workspace to receive CybeDefend scan results, security alerts, and reports directly in your team channels."
+---
+
+The **Slack integration** lets CybeDefend push security notifications into the channels your team already uses. Once connected, you can map any project to a Slack channel and receive scan completions, zero-day alerts, and periodic security reports — without leaving Slack.
+
+---
+
+## What You Get
+
+<CardGroup cols={2}>
+  <Card title="Scan Complete" icon="circle-check">
+    A summary of every scan: total findings, severity breakdown, and per-scanner counts (SAST, SCA, IaC, secrets, containers).
+  </Card>
+  <Card title="Zero-Day Alerts" icon="bell">
+    Instant notifications when newly disclosed vulnerabilities affect packages already in your projects.
+  </Card>
+  <Card title="Weekly Reports" icon="calendar-week">
+    A 7-day summary of open findings, new vulnerabilities, and resolved issues per project.
+  </Card>
+  <Card title="Monthly Reports" icon="calendar">
+    A monthly rollup with severity distribution and trend indicators to share with stakeholders.
+  </Card>
+</CardGroup>
+
+---
+
+## Prerequisites
+
+- You must have **Administrator** or **Manager** privileges on the CybeDefend organization (the `manage_integration` permission).
+- You must be a **workspace admin** in Slack, or have permission to install Slack apps in your workspace.
+
+<Note>
+The Slack integration is configured at the **organization level**. Once connected, every project in the organization can map a channel — but each project can only target a single channel.
+</Note>
+
+---
+
+## 1. Connect Your Slack Workspace
+
+<Steps>
+  <Step title="Open Organization Integrations">
+    From the CybeDefend dashboard, go to your **Organization settings → Integrations**, then click **Slack**.
+  </Step>
+
+  <Step title="Click Connect to Slack">
+    A Slack authorization window opens. You will be asked to choose the workspace to install the CybeDefend app into.
+  </Step>
+
+  <Step title="Authorize the CybeDefend App">
+    Slack will list the permissions the app needs:
+
+    - `chat:write` — post messages in channels the app is a member of
+    - `channels:read` — list public channels in the workspace
+    - `groups:read` — list private channels the app is invited to
+
+    Click **Allow** to complete installation.
+  </Step>
+
+  <Step title="Confirmation">
+    The popup closes automatically and the integration modal shows your workspace name with a **Connected** badge. You are now ready to map channels to projects.
+  </Step>
+</Steps>
+
+<Tip>
+If your Slack workspace requires admin approval for third-party apps, the install request is sent to your workspace administrator. Installation completes once it is approved.
+</Tip>
+
+---
+
+## 2. Map a Channel to a Project
+
+Each project routes its notifications to one Slack channel. The mapping is configured from the project itself.
+
+<Steps>
+  <Step title="Open Project Notification Settings">
+    Navigate to your project → **Settings → Notifications**.
+  </Step>
+
+  <Step title="Pick a Slack Channel">
+    Click the **Slack channel selector**. A searchable dropdown lists all accessible channels in the connected workspace — public channels and private channels the app has been invited to.
+  </Step>
+
+  <Step title="Select & Save">
+    Pick a channel (e.g. `#security-alerts`). The CybeDefend bot will automatically join public channels selected here.
+  </Step>
+</Steps>
+
+<Note>
+**Private channels:** The CybeDefend bot cannot auto-join private channels. You must invite it manually with `/invite @CybeDefend` inside the channel before notifications can be delivered.
+</Note>
+
+To **remove** the mapping, click the **×** next to the channel name. The project will stop sending notifications to Slack but the workspace integration remains active.
+
+---
+
+## Notification Anatomy
+
+All CybeDefend Slack messages share a consistent layout: a colored sidebar indicating severity, a header with the project name, a compact breakdown, and an action button that deep-links into the CybeDefend dashboard.
+
+| Color | Meaning |
+|-------|---------|
+| 🔴 Red | At least one **Critical** finding |
+| 🟠 Orange | At least one **High** finding |
+| 🟡 Yellow | At least one **Medium** finding |
+| 🔵 Blue | Only **Low** findings, or informational |
+| 🟢 Green | Clean scan — no vulnerabilities |
+
+### Example: Scan Complete
+
+```
+✅ Scan Complete
+my-frontend-app  —  `main`  ·  SAST · SCA
+
+5 vulnerabilities found
+🔴 1 critical  ·  🟠 2 high  ·  🟡 2 medium
+
+[ View Results ]
+```
+
+### Example: Zero-Day Alert
+
+```
+🚨 Zero-Day Vulnerability Alert
+2 new vulnerabilities detected in api-backend
+
+🔴 CVE-2025-12345 — CRITICAL · CVSS 9.8
+🟠 CVE-2025-67890 — HIGH · CVSS 7.5
+
+[ View Details ]
+```
+
+---
+
+## Permissions Reference
+
+| Action | CybeDefend permission | Scope |
+|--------|----------------------|-------|
+| Connect / disconnect Slack | `manage_integration` | Organization |
+| List workspace channels | `manage_integration` | Organization |
+| Map a channel to a project | `manage_integration` + `update` | Organization + Project |
+| View a project's mapped channel | `start_scan` | Project |
+
+---
+
+## Disconnect Slack
+
+Disconnecting Slack removes the integration **and all project channel mappings** in the organization.
+
+<Steps>
+  <Step title="Open the Slack integration modal">
+    Organization settings → Integrations → **Slack**.
+  </Step>
+  <Step title="Click Disconnect">
+    Confirm in the dialog. CybeDefend will revoke the bot token and delete the workspace mapping.
+  </Step>
+</Steps>
+
+<Warning>
+Disconnecting is **irreversible from the dashboard**: project–channel mappings are deleted on disconnect. You will need to reconfigure them after re-installing the app.
+</Warning>
+
+---
+
+## Security & Privacy
+
+<CardGroup cols={2}>
+  <Card title="Encrypted Tokens" icon="lock">
+    The Slack bot token is encrypted at rest using **AES-256-GCM** before being stored in CybeDefend's database.
+  </Card>
+  <Card title="Least-Privilege Scopes" icon="shield-check">
+    The integration requests only the scopes needed to list channels and post messages — no message reading, no user identity scopes.
+  </Card>
+  <Card title="No Code in Messages" icon="code">
+    CybeDefend never sends source code, secrets, or vulnerable file contents to Slack. Messages only include metadata (counts, severities, CVE IDs, deep links).
+  </Card>
+  <Card title="Revoke Anytime" icon="rotate-left">
+    Disconnecting from CybeDefend revokes the bot token. You can also remove the app directly from your Slack workspace admin panel.
+  </Card>
+</CardGroup>
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="No notifications are arriving" icon="circle-question">
+    - Verify the workspace is still **Connected** in Organization settings → Integrations.
+    - Confirm the project has a channel mapped (Project → Settings → Notifications).
+    - For **private channels**, ensure the CybeDefend bot has been invited with `/invite @CybeDefend`.
+    - Check that your organization is not in a **read-only** billing state — notification dispatch is gated by writability.
+  </Accordion>
+
+  <Accordion title="The channel selector is empty" icon="list">
+    - The bot lists **public channels** and **private channels it is already a member of**. Invite the bot to any private channel you want to use.
+    - If even public channels are missing, try disconnecting and re-installing the Slack app to refresh the workspace token.
+  </Accordion>
+
+  <Accordion title="Installation popup closes without connecting" icon="circle-exclamation">
+    - Verify popups are not blocked for the CybeDefend dashboard origin.
+    - Make sure your Slack workspace allows installation of third-party apps. If admin approval is required, your request is pending in the Slack admin console.
+  </Accordion>
+
+  <Accordion title="`not_in_channel` error" icon="user-slash">
+    The bot tried to post in a channel it is not a member of. For public channels, re-select the channel in the project settings — CybeDefend will attempt to auto-join. For private channels, invite the bot manually.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+**Related:** [Managing Vulnerabilities](/latest/managing-vulnerabilities/project-vulnerability-list) · [Policy Management](/latest/plateform-overview/key-features/policy-management) · [Account Setup](/latest/get-started/account-setup/assigning-roles)

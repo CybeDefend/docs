@@ -1,0 +1,188 @@
+---
+title: 'AI-BOM & EU AI Act Compliance'
+description: 'Inventory every AI component in your code — models, datasets, frameworks, agents, MCP servers, guardrails — and assess compliance with the EU AI Act'
+---
+
+## Overview
+
+The **AI-BOM** (AI Bill of Materials) scanner builds a complete inventory of the artificial intelligence and machine-learning components used by your project. It discovers AI models, ML frameworks, AI SDKs, datasets, vector stores, agents, MCP servers, guardrails and model weight files directly from your source code and dependency manifests — then maps each component to the obligations of **Regulation (EU) 2024/1689 (the EU AI Act)**.
+
+AI-BOM is a dedicated scanner type, alongside SAST, SCA, Container, IaC and Secret scanning. Unlike the others, it does not report vulnerabilities — it produces a **structured inventory** of your AI supply chain and the regulatory context that applies to it.
+
+<CardGroup cols={2}>
+  <Card title="AI Component Inventory" icon="microchip">
+    Automatically discovers models, frameworks, SDKs, datasets, agents, MCP servers and guardrails across your codebase
+  </Card>
+  <Card title="EU AI Act Mapping" icon="scale-balanced">
+    Classifies each component by risk category and links it to the applicable articles and obligations
+  </Card>
+  <Card title="CycloneDX 1.6 ML-BOM" icon="file-code">
+    Output follows the standard CycloneDX 1.6 Machine Learning profile, ready to export and share
+  </Card>
+  <Card title="Model Weight Detection" icon="cube">
+    Detects and fingerprints loose model weight files (.safetensors, .gguf, .onnx, .pt…) on disk
+  </Card>
+</CardGroup>
+
+---
+
+## What Gets Detected
+
+The AI-BOM scanner inventories AI/ML usage from several angles — imported packages, declared dependencies, hard-coded model identifiers and model files present in the repository.
+
+| Component family | Examples |
+|------------------|----------|
+| **AI models** | LLMs (GPT, Claude, Gemini, Llama…), embeddings, vision and speech models |
+| **ML frameworks** | PyTorch, TensorFlow, Transformers, LangChain, LlamaIndex, scikit-learn |
+| **AI SDKs & services** | Provider client libraries and hosted inference APIs |
+| **Datasets & vector stores** | Vector databases, dataset loaders, retrieval stores |
+| **AI applications** | Streamlit, Gradio, Chainlit and similar AI app frameworks |
+| **Inference infrastructure** | Local inference engines and serving runtimes |
+| **Agents, MCP servers & guardrails** | Agent frameworks, Model Context Protocol servers, safety/guardrail libraries |
+| **Model weight files** | `.safetensors`, `.gguf`, `.ggml`, `.onnx`, `.pt`, `.pth`, `.h5`, `.pkl`, `.tflite`… |
+
+<Info>
+Regular dependencies that have nothing to do with AI are **not** included — the AI-BOM focuses exclusively on AI/ML-relevant components. Code-level vulnerabilities remain the job of the SAST and SCA scanners.
+</Info>
+
+---
+
+## How Detection Works
+
+The scanner combines multiple detection layers so that components are found even when one signal is missing:
+
+1. **Dependency manifests** — parses Python `requirements*.txt`, `setup.py` and `pyproject.toml` to discover declared AI packages and pin their versions. UTF-8 and UTF-16 (Windows-generated) manifests are both supported.
+2. **Source code analysis** — scans source files for AI-related imports and for hard-coded model identifiers (e.g. `"gpt-4o"`, `"claude-..."`, `"meta-llama/Llama-..."`) that would otherwise go unrecorded.
+3. **Model weight files** — discovers model artifacts on disk by extension, records them as components and fingerprints them with a SHA-256 hash.
+4. **Version & evidence enrichment** — attaches versions from manifests and records the exact file location where each component was found.
+
+### Coverage
+
+- **Primary language:** Python (`.py`)
+- **Additional languages:** JavaScript / TypeScript, Go, Java, Kotlin, Ruby, Rust, C#, C/C++, Shell, and configuration files (YAML / TOML / JSON, Dockerfiles)
+
+Build and vendor directories (`node_modules`, `venv`, `__pycache__`, `dist`, `build`, `.git`, …) are automatically excluded from the inventory.
+
+---
+
+## Component Types
+
+Every component is classified using the **CycloneDX 1.6** native component types:
+
+| Type | Typical AI usage |
+|------|------------------|
+| `machine-learning-model` | LLMs, embeddings, vision models, model weight files |
+| `framework` | PyTorch, TensorFlow, LangChain, Transformers |
+| `library` | AI SDKs, ML utility libraries |
+| `data` | Datasets, vector stores, retrieval sources |
+| `application` | AI app frameworks (Streamlit, Gradio, …) |
+| `container` | Inference engines and serving runtimes |
+| `file` | Loose model weight files detected on disk |
+
+---
+
+## Inventory Output
+
+For each detected component, the AI-BOM records a rich, standards-aligned set of fields:
+
+- **Identity** — `name`, `version`, `type`, `purl` (Package URL) and `source` (e.g. a model hub, a package registry, a Git repository, or a local file)
+- **Licenses** — SPDX identifiers extracted from the component, including composite expressions
+- **Evidence** — the file path (and line where available) proving where the component is used
+- **Hashes** — SHA-256 fingerprints for model weight files
+- **External references** — links to model cards, documentation and source repositories
+- **Model card** — for ML models, structured metadata such as model parameters, quantitative analysis and considerations (when available)
+- **Tags & metadata** — additional classification labels and key/value metadata
+
+The complete inventory is also available as a raw **CycloneDX 1.6 ML-BOM** JSON document that you can export and feed into other tools or share with auditors.
+
+---
+
+## EU AI Act Compliance
+
+Beyond the inventory, the AI-BOM evaluates your AI components against **Regulation (EU) 2024/1689**.
+
+### Risk Categories
+
+Each component is mapped to an EU AI Act risk category:
+
+| Category | Meaning |
+|----------|---------|
+| **Prohibited** | Practices banned under the EU AI Act (e.g. social scoring, certain biometric uses) |
+| **High** | High-risk uses subject to strict obligations (e.g. employment screening, law enforcement, biometric identification) |
+| **Limited** | Uses requiring transparency towards users (e.g. chatbots, synthetic/AI-generated content) |
+| **Minimal** | Default category for components with minimal regulatory obligations |
+
+### General-Purpose AI & Systemic Risk
+
+The scanner identifies **General-Purpose AI (GPAI)** models and flags those that may fall under **systemic-risk** provisions (Article 51 and following), so you can quickly see which components carry the heaviest obligations.
+
+### Compliance Report
+
+A per-framework compliance report aggregates the analysis for a project and branch:
+
+- Total components evaluated
+- Breakdown by risk category
+- Count of components flagged for systemic risk
+- Applicable **obligations** and **articles**, with the components each one applies to
+
+<Tip>
+The AI-BOM inventory and compliance report together form the kind of technical record (in the spirit of the EU AI Act's Annex IV) that you can present to demonstrate visibility over your AI supply chain.
+</Tip>
+
+---
+
+## Enabling AI-BOM
+
+AI-BOM scanning is configured per project.
+
+<Steps>
+  <Step title="Open Project Scanning Settings">
+    Navigate to your project's scanning configuration, where you choose which analysis types to run (SAST, SCA, IaC, Container, Secret, AI-BOM).
+  </Step>
+  <Step title="Enable AI-BOM">
+    Turn on the **AI-BOM** analysis type for the project.
+  </Step>
+  <Step title="Run a Scan">
+    Launch a scan as usual. When it completes, the AI-BOM inventory and compliance report are available for the scanned branch.
+  </Step>
+</Steps>
+
+---
+
+## Viewing Results
+
+Once a scan completes, the AI-BOM results are available in the project dashboard:
+
+- **Component inventory** — the full list of detected AI components, filterable by **branch** and **component type**
+- **Per-component detail** — identity, licenses, evidence (where it was found), external references and model card metadata
+- **Compliance view** — the EU AI Act risk breakdown, GPAI / systemic-risk flags and the applicable obligations
+
+---
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Review High-Risk and Prohibited Components First">
+    Start with components mapped to the **Prohibited** and **High** risk categories — these carry the strongest regulatory obligations under the EU AI Act.
+  </Accordion>
+
+  <Accordion title="Track GPAI and Systemic-Risk Models">
+    General-purpose AI models, and especially those flagged for systemic risk, come with additional obligations. Keep an eye on these as your AI usage grows.
+  </Accordion>
+
+  <Accordion title="Check Model Licenses">
+    AI models often ship under non-standard or restrictive licenses. Use the recorded license information to confirm your usage is permitted.
+  </Accordion>
+
+  <Accordion title="Export the CycloneDX ML-BOM">
+    Export the raw CycloneDX 1.6 ML-BOM to share with auditors, feed into governance tooling, or keep as part of your technical documentation.
+  </Accordion>
+
+  <Accordion title="Re-scan on Every Branch">
+    AI usage changes quickly. Run AI-BOM on the branches you care about so the inventory stays current.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+**Related:** [License Compliance](/latest/plateform-overview/key-features/license-compliance) · [Policy Management](/latest/plateform-overview/key-features/policy-management) · [Managing Vulnerabilities](/latest/managing-vulnerabilities/project-vulnerability-list)

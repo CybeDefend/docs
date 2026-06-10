@@ -1,0 +1,109 @@
+---
+title: "Cybe Chat"
+description: "The in-dashboard AI security assistant. Ask Cybe anything about your security posture across every project you can access, drive actions on findings from a single chat, and pick up where you left off thanks to RGPD-compliant memory."
+---
+
+<Note>
+**Cybe Chat is the assistant baked into the CybeDefend dashboard.** It talks to the same MCP toolset that powers our IDE integrations, but with a UI tuned for SecOps and engineering managers: cross-project posture, human-in-the-loop write actions, persistent memory, and a quota-aware streaming experience.
+</Note>
+
+---
+
+## What Cybe Chat gives you
+
+| Scope | Example prompts |
+|---|---|
+| **All accessible projects** | *"Where are the most critical findings across our portfolio?"* — *"Which teams have unaddressed criticals older than 30 days?"* — *"Compare the SCA exposure between our payment and back-office repos."* |
+| **A specific project** | *"What changed in this project's posture since last week?"* — *"Walk me through the open SAST findings on `develop`."* — *"List packages with known CVEs and a fix available."* |
+| **The current page** | *"Summarise this vulnerability."* — *"Is there a similar pattern elsewhere?"* — *"Propose a status update."* The scope auto-locks to whatever you are looking at. |
+
+Cybe Chat sees only what your CybeDefend account is permitted to see. Permify is the single source of truth — the chat reflects your team and project scopes exactly the way the dashboard does.
+
+---
+
+## Why it matters
+
+Most security platforms ask you to click through five pages to answer "what's the riskiest thing on my plate right now?". Cybe Chat collapses that into one question.
+
+- **Cross-project posture from one prompt.** Instead of switching between dashboards, ask in plain English. Cybe walks your accessible projects, aggregates findings, and answers with citations back to the right view in the UI.
+- **Actions, not just answers.** When the right next step is "mark these SQLi findings as not-exploitable" or "raise this CVE to critical", Cybe proposes the action and waits for your approval. Every write is human-confirmed before it lands.
+- **Same engine as your IDE.** Cybe Chat and the [Cybe MCP server](/latest/plateform-overview/key-features/mcp-server-integration) share the same typed toolset and the same Permify-backed authorization. The view you have in the dashboard is the view your AI agents have in Cursor, Claude Code or VS Code.
+- **Memory that respects your data rights.** Cybe remembers your last conversation, your preferences and the context you opened the drawer on. You can read, edit and delete every entry from the chat settings — GDPR-compliant by design.
+
+---
+
+## Human-in-the-loop write actions
+
+Cybe Chat can call the same 18 typed MCP tools as your IDE agents. Read tools (`list_vulnerabilities_*`, `get_project_overview`, …) run silently. **Write tools always require explicit user approval.**
+
+When Cybe proposes an action — for example, updating the status of a finding — a card appears in the conversation:
+
+```text
+Cybe proposes:
+  update_vulnerability
+  project · payments-api
+  finding   · vs_8a3b · SQLi on /api/users
+  set status → not_exploitable
+  comment   → "fixed by parameterised query helper"
+
+  [ Confirm ]  [ Reject ]
+```
+
+Confirming the card re-checks your Permify scope at execution time. If your access was revoked between the proposal and the confirmation, the action is rejected on the spot. Every confirmed action lands in your CybeDefend audit trail with your user identity and timestamp — the same audit surface as a manual change in the dashboard.
+
+---
+
+## Cross-project posture, in practice
+
+Cybe Chat introduces an **all-accessible-projects** scope that no other surface of the platform exposes today. From a single prompt, Cybe can:
+
+- Aggregate severity counts across every project your account can read.
+- Surface the top contributors to your overall risk (project, scanner, language, branch).
+- Compare two projects side by side.
+- Highlight outliers — a project that suddenly accumulated criticals, a package showing up in many repos, a finding pattern recurring across teams.
+
+The scope is gated by Permify. If you only see five projects, Cybe only sees five projects. There is no "admin override" that bypasses your team boundaries.
+
+---
+
+## Memory you control
+
+Cybe Chat remembers two kinds of state for you:
+
+- **Conversations**: every thread you have started, so you can pick up where you left off.
+- **Preferences**: the last conversation you opened, whether the drawer should auto-open on dashboard load, and similar UI hints.
+
+A dedicated settings panel inside the drawer lets you:
+
+- View the sanitised memory entries Cybe stores about you.
+- Update a single preference (e.g. disable auto-open).
+- **Permanently delete** any memory entry. The deletion is immediate and irreversible — it does not "soft-delete" or queue for backup expiry.
+
+This matches our public stance on AI usage and privacy: see [LLM usage privacy](/latest/plateform-overview/security-privacy/llm-usage-privacy) for the full picture.
+
+---
+
+## Quota, errors, and feedback
+
+The chat streams answers token by token over SSE. If anything goes wrong — service unavailable, plan quota exceeded, downstream rate limit, malformed prompt — a red banner appears below the chat header with a clear, dismissible error code. You see exactly why the answer stopped.
+
+Every Cybe response carries a thumbs-up / thumbs-down. Thumbs-down opens a tag picker (`wrong verdict`, `missing context`, `inaccurate`, `ambiguous`, `incomplete`, `off-topic`) plus an optional correction field. The feedback feeds back into Cybe's evaluation harness and is also visible to your account admin, so the team can act on patterns.
+
+---
+
+## Where it slots in the platform
+
+<CardGroup cols={2}>
+  <Card title="How to use Cybe Chat" icon="comments" href="/latest/agent-ai-integration/cybe-chat-detail">
+    The hands-on guide: opening the drawer, picking a scope, approving actions, managing memory.
+  </Card>
+  <Card title="Cybe MCP server" icon="plug" href="/latest/plateform-overview/key-features/mcp-server-integration">
+    Same toolset, exposed to Claude Code, Cursor, VS Code Copilot Chat, Windsurf and any MCP-compatible agent.
+  </Card>
+  <Card title="Cybe Security Champion" icon="brain" href="/latest/plateform-overview/key-features/cybe-security-champion">
+    The project-specific code consultation engine. Use it to chat about *how* to fix; use Cybe Chat to act on *what* is exposed.
+  </Card>
+  <Card title="LLM usage privacy" icon="shield-halved" href="/latest/plateform-overview/security-privacy/llm-usage-privacy">
+    What Cybe Chat does, and does not, send to a model. Memory retention and deletion guarantees.
+  </Card>
+</CardGroup>

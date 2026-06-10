@@ -1,0 +1,171 @@
+---
+title: 'Priority Scoring'
+description: 'Composite priority that blends CVSS 4.0, EPSS, exploitability and business context into a single 0–100 score'
+---
+
+## Overview
+
+Severity alone does not tell you what to fix first. CybeDefend computes a **Priority Score** for every detection — a weighted blend of four orthogonal signals — and exposes both the final score and the **per-signal contributions** so triage decisions are fully transparent.
+
+<CardGroup cols={2}>
+  <Card title="Multi-signal" icon="layer-group">
+    CVSS 4.0 environmental score · EPSS percentile · Exploitability · Business context
+  </Card>
+  <Card title="0–100 Score" icon="gauge-high">
+    A single user-facing number (`priorityScore`) sortable across all scanners
+  </Card>
+  <Card title="Priority Levels" icon="bars-staggered">
+    Mapped into Critical Urgent · Urgent · Normal · Low · Very Low buckets
+  </Card>
+  <Card title="Full Decomposition" icon="square-poll-vertical">
+    Each detection exposes the exact contribution of every signal
+  </Card>
+</CardGroup>
+
+---
+
+## The formula
+
+The internal composite score is a weighted sum of four normalized signals, each in `[0, 1]`:
+
+```
+compositeScore = w1·CVSS4_norm  +  w2·EPSS_percentile  +  w3·Exploitability  +  w4·Context
+```
+
+The user-facing **`priorityScore`** is `compositeScore × 100` (rounded to one decimal, bounded to `[0, 100]`).
+
+### Default weights
+
+| Weight | Signal | Default |
+|--------|--------|---------|
+| `w1` | CVSS 4.0 (environmental score / 10) | **0.35** |
+| `w2` | EPSS percentile (probability of exploit in the wild) | **0.25** |
+| `w3` | Exploitability (verdict-driven) | **0.25** |
+| `w4` | Context (business criticality + data classification) | **0.15** |
+
+<Info>
+Weights are configured at the platform level (`PRIORITY_WEIGHT_*` env vars) and must always sum to `1.0`. When EPSS is unknown for a detection, `w2` is dropped and `w1 / w3 / w4` are renormalized so the score remains comparable.
+</Info>
+
+---
+
+## Signals in detail
+
+### 1. CVSS 4.0 (environmental)
+
+The CVSS 4.0 **environmental** score is preferred; the base score is used as a fallback, and finally a severity-default if no vector is available. The score is divided by 10 to land in `[0, 1]`. See [CVSS 4.0 Scoring](/latest/plateform-overview/key-features/cvss-4-scoring) for how that score is built.
+
+### 2. EPSS percentile
+
+EPSS (Exploit Prediction Scoring System) percentile estimates the probability that a vulnerability will be exploited in the next 30 days, relative to all other CVEs. CybeDefend ingests EPSS for SCA and Container findings where a CVE identifier is available.
+
+### 3. Exploitability
+
+A qualitative verdict mapped to a numeric score:
+
+| Verdict | Score | Meaning |
+|---------|-------|---------|
+| `not_exploitable` | 0.05 | Demonstrated false positive / unreachable code path |
+| `theoretical` | 0.35 | Default before deeper analysis |
+| `proven` | 0.75 | Confirmed exploitable in this codebase |
+| `actively_exploited` | 0.95 | Known to be exploited in the wild |
+
+<Tip>
+For SCA detections, when **Exploitable Path** marks a dependency as **unused**, the exploitability contribution is forced to `0` — even before the verdict pipeline runs.
+</Tip>
+
+The verdict can come from three sources, persisted in `exploitabilitySource`:
+
+- **`static`** — heuristics on file path (test / vendor / example code is demoted) and reachability.
+- **`agent`** — Cybe Analysis LLM verdict with rationale.
+- **`manual`** — overridden by a user.
+
+### 4. Context
+
+The Context signal averages two project-level inputs:
+
+| Business Criticality | Modifier | Data Classification | Modifier |
+|----------------------|----------|---------------------|----------|
+| Mission Critical | 1.0 | Regulated | 1.0 |
+| High | 0.7 | Confidential | 0.7 |
+| Medium | 0.4 | Internal | 0.4 |
+| Low | 0.2 | Public | 0.2 |
+| Unspecified | 0.5 (neutral) | Unspecified | 0.5 (neutral) |
+
+`Context = (BusinessCriticality + DataClassification) / 2`
+
+---
+
+## Priority levels
+
+The composite score is mapped to a discrete priority level used by filters, dashboards, and policy rules:
+
+| Composite Score | Priority |
+|-----------------|----------|
+| ≥ 0.80 | **Critical Urgent** |
+| ≥ 0.60 | **Urgent** |
+| ≥ 0.40 | **Normal** |
+| ≥ 0.20 | **Low** |
+| < 0.20 | **Very Low** |
+
+<Info>
+Thresholds are configurable platform-wide (`PRIORITY_THRESHOLD_*` env vars).
+</Info>
+
+---
+
+## Manual override
+
+A user with the right permission can pin a priority manually on a detection. When set:
+
+- The composite score is **no longer recalculated** automatically.
+- The detection is flagged with `priorityManualOverride: true` and `isManualOverride: true` in the decomposition response.
+- Subsequent scans, Security Context changes, or EPSS refreshes will not touch the priority until the override is cleared.
+
+---
+
+## Inspect the calculation
+
+Every detection exposes a **priority decomposition** endpoint that returns the exact composition of its score:
+
+```http
+GET /project/{projectId}/results/{type}/{vulnerabilityId}/priority-decomposition
+```
+
+Response (abbreviated):
+
+```json
+{
+  "decomposition": {
+    "priority": "urgent",
+    "compositeScore": 0.674,
+    "cvss4Contribution": 0.287,
+    "epssContribution": 0.142,
+    "exploitContribution": 0.188,
+    "contextContribution": 0.057,
+    "w1": 0.35,
+    "w2": 0.25,
+    "w3": 0.25,
+    "w4": 0.15,
+    "isManualOverride": false
+  }
+}
+```
+
+<Tip>
+Use the decomposition to explain to a developer **why** a vulnerability landed at a given priority — particularly useful when the Security Context or exploitability verdict moves a finding up or down.
+</Tip>
+
+---
+
+## How it impacts your workflow
+
+- **Sorting** — the Vulnerability List can be sorted by Priority Score across all scanners.
+- **Filtering** — filter by priority level (Critical Urgent, Urgent, Normal, Low, Very Low).
+- **Top Vulnerabilities widget** — see the [Top Vulnerabilities](/latest/managing-vulnerabilities/top-vulnerabilities) page.
+- **Policies** — Policy Management can gate merges/deploys on priority-level rules.
+- **Reports** — emailed reports group findings by priority instead of raw severity.
+
+---
+
+**Related:** [CVSS 4.0 Scoring](/latest/plateform-overview/key-features/cvss-4-scoring) · [Exploitable Path](/latest/plateform-overview/key-features/exploitable-path) · [Policy Management](/latest/plateform-overview/key-features/policy-management) · [Top Vulnerabilities](/latest/managing-vulnerabilities/top-vulnerabilities)

@@ -1,0 +1,127 @@
+---
+title: 'CybeRisk Score'
+description: 'Risk-based prioritization at the project level: a single CVSS-weighted score that ranks every project by how much real risk it carries'
+---
+
+## Overview
+
+[Priority Scoring](/latest/plateform-overview/key-features/priority-scoring) tells you *which finding to fix first inside a project*. The **CybeRisk Score** answers the level above it, *which project carries the most risk right now*, so security teams can prioritize **across an entire portfolio**, not just within a single repository.
+
+It is a single number computed by summing a CVSS-weighted point contribution over every **active** vulnerability on a project's reference branch. Higher-severity findings contribute disproportionately more points, so the score reflects both the **volume** and the **severity** of open risk.
+
+<CardGroup cols={2}>
+  <Card title="Project-Level" icon="diagram-project">
+    One risk number per project, aggregated across all six scanners
+  </Card>
+  <Card title="CVSS-Weighted" icon="weight-hanging">
+    Critical findings contribute up to 20× more points than Low ones
+  </Card>
+  <Card title="Unbounded Scale" icon="infinity">
+    Not capped at 100. A large, risky project can score in the hundreds
+  </Card>
+  <Card title="Full Breakdown" icon="square-poll-vertical">
+    Per-scan-type contributions and the top 5 risk contributors
+  </Card>
+</CardGroup>
+
+---
+
+## The formula
+
+The CybeRisk Score is the **rounded sum** of each active vulnerability's point contribution:
+
+```
+CybeRiskScore = round( Σ pointsFromVuln(v) )   for every active vulnerability v
+```
+
+Each vulnerability is mapped to points by linearly interpolating its effective CVSS inside its severity band:
+
+| CVSS band | Points formula | Range |
+|-----------|----------------|-------|
+| **Critical** `[9.0, 10.0]` | `15 + (cvss − 9) × 5` | 15 → 20 |
+| **High** `[7.0, 9.0)` | `5 + (cvss − 7) × (5 / 1.9)` | 5 → ~10.3 |
+| **Medium** `[4.0, 7.0)` | `2 + (cvss − 4) × (2 / 2.9)` | 2 → ~3.4 |
+| **Low** `[0.1, 4.0)` | `1` (constant) | 1 |
+
+<Info>
+The scale is **deliberately unbounded**. Unlike a normalized 0–100 score, a sum lets a project with 50 critical findings clearly outrank one with 5, so the number grows with the real backlog of risk.
+</Info>
+
+### Which CVSS is used
+
+The effective CVSS is resolved in priority order, falling back to a severity midpoint when no vector exists at all:
+
+<Steps>
+  <Step title="Environmental CVSS 4.0">
+    The project-adjusted [CVSS 4.0 environmental score](/latest/plateform-overview/key-features/cvss-4-scoring) is preferred.
+  </Step>
+  <Step title="Base CVSS 4.0, then CVSS 3.x">
+    Used when no environmental score is available.
+  </Step>
+  <Step title="Severity midpoint fallback">
+    For findings with no CVSS at all (typically SAST, IaC and Secrets), the midpoint of the severity band is used: **Critical = 17.5**, **High = 7.5**, **Medium = 3**, **Low = 1**.
+  </Step>
+</Steps>
+
+---
+
+## What counts toward the score
+
+Only **active** vulnerabilities on the project's **reference branch** are included:
+
+- `to_verify`
+- `proposed_not_exploitable`
+- `confirmed`
+
+Resolved, ignored and confirmed-not-exploitable findings are excluded, so the score always reflects the *current* open risk.
+
+<Info>
+When a project has no reference branch configured, the score falls back to the `main` (then `master`) branch. An explicit "all branches" selection is treated the same way, so the score stays branch-scoped and comparable.
+</Info>
+
+---
+
+## Risk levels
+
+The numeric score maps to a categorical level used for filtering, dashboards and portfolio views:
+
+| CybeRisk Score | Level |
+|----------------|-------|
+| ≥ 80 | **Critical** |
+| ≥ 50 | **High** |
+| ≥ 20 | **Medium** |
+| < 20 | **Low** |
+
+<Tip>
+**`low` is the floor.** Even a project with a score of 0 or no vulnerabilities reads as *Low*, there is no `none` level. This keeps every project on the same comparable scale.
+</Tip>
+
+---
+
+## Where it appears
+
+- **Project overview**: the headline risk indicator with its breakdown and top contributors.
+- **Organization overview**: projects are ranked and filterable by CybeRisk level (`critical`, `high`, `medium`, `low`) to surface the riskiest projects in a portfolio.
+- **Project listings**: each project carries both `cyberRiskScore` (for sorting) and `cyberRiskLevel` (for grouping/filtering).
+
+<Note>
+The CybeRisk Score replaces the legacy bounded `riskScore` / `riskLevel` (0–100) project metric. The thresholds for the levels are unchanged, but the score itself is now an unbounded sum so it scales with the true backlog of risk.
+</Note>
+
+---
+
+## CybeRisk Score vs Priority Score
+
+These two scores work at different altitudes and complement each other:
+
+| | **Priority Score** | **CybeRisk Score** |
+|---|---|---|
+| **Scope** | One vulnerability | One project (reference branch) |
+| **Question** | What do I fix first *here*? | Which project is *riskiest*? |
+| **Scale** | 0–100 (normalized) | Unbounded sum of points |
+| **Signals** | CVSS 4.0 · EPSS · Exploitability · Context | CVSS-weighted point sum across active findings |
+| **Use** | In-project triage, Top Vulnerabilities | Portfolio prioritization, executive reporting |
+
+---
+
+**Related:** [Priority Scoring](/latest/plateform-overview/key-features/priority-scoring) · [CVSS 4.0 Scoring](/latest/plateform-overview/key-features/cvss-4-scoring) · [Top Vulnerabilities](/latest/managing-vulnerabilities/top-vulnerabilities) · [Exploitable Path](/latest/plateform-overview/key-features/exploitable-path)

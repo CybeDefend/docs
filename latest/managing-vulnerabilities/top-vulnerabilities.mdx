@@ -1,0 +1,147 @@
+---
+title: 'Top Vulnerabilities'
+description: 'A unified Top N list of the highest-priority vulnerabilities across every scanner in a project'
+---
+
+## Overview
+
+The **Top Vulnerabilities** view answers the single most important triage question — *"if I had time for only five fixes today, which ones should I take?"*
+
+It ranks **active** vulnerabilities across **every scanner** (SAST, SCA, IAC, Container, CICD, Secrets) on a single composite priority score, so the most urgent items always surface first — regardless of which scanner detected them.
+
+<CardGroup cols={2}>
+  <Card title="Cross-Scanner" icon="grip">
+    One ranked list across SAST · SCA · IAC · Container · CICD · Secrets
+  </Card>
+  <Card title="Priority-Based" icon="ranking-star">
+    Sorted by composite Priority Score, not raw severity
+  </Card>
+  <Card title="Active Only" icon="filter">
+    Excludes resolved / ignored detections automatically
+  </Card>
+  <Card title="Configurable Size" icon="sliders">
+    Default Top 5 — request any N via the API
+  </Card>
+</CardGroup>
+
+---
+
+## What "Top" means
+
+Each detection is scored by the platform's [Priority Scoring](/latest/plateform-overview/key-features/priority-scoring) engine — a weighted blend of CVSS 4.0 environmental score, EPSS percentile, exploitability verdict and project Security Context. The Top Vulnerabilities list returns the **N highest composite scores** across the project.
+
+Only detections in an **active** state are eligible:
+
+- `to_verify`
+- `proposed_not_exploitable`
+- `confirmed`
+
+Resolved, ignored, fixed and false-positive findings are excluded — the list is always a current to-do.
+
+<Info>
+A re-scored detection (after a Security Context change or an exploitability verdict update) can enter or leave the Top in real time. There is no daily snapshot — the ranking is computed on demand.
+</Info>
+
+---
+
+## API reference
+
+```http
+GET /project/{projectId}/results/top-vulnerabilities?limit=5
+```
+
+| Parameter | In | Type | Description |
+|-----------|----|------|-------------|
+| `projectId` | path | UUID | The project to query |
+| `limit` | query | integer | Number of items to return. Defaults to **5** |
+
+### Response shape
+
+```json
+{
+  "items": [
+    {
+      "id": "b41…",
+      "vulnerabilityType": "sca",
+      "name": "CVE-2024-12345",
+      "description": "Prototype pollution in lodash",
+      "severity": "critical",
+      "compositeScore": 0.842,
+      "cvss4EnvironmentalScore": 9.4,
+      "exploitabilityVerdict": "proven",
+      "exploitabilityReason": "Reachable from production code path",
+      "exploitabilityScoreReason": "Used in src/server/index.ts",
+      "exploitabilitySource": "agent",
+      "filePath": null,
+      "line": null,
+      "cveId": "CVE-2024-12345",
+      "cwe": [],
+      "packageName": "lodash"
+    }
+  ]
+}
+```
+
+| Field | Notes |
+|-------|-------|
+| `vulnerabilityType` | One of `sast`, `iac`, `cicd`, `secret`, `sca`, `container` |
+| `compositeScore` | Internal 0–1 composite priority (× 100 = user-facing Priority Score) |
+| `cvss4EnvironmentalScore` | The project-adjusted CVSS 4.0 score used in the calculation |
+| `exploitabilitySource` | `agent`, `manual` or `static` — see [Priority Scoring](/latest/plateform-overview/key-features/priority-scoring) |
+| `filePath` / `line` | Populated for SAST, IAC, CICD and Secrets findings |
+| `cveId` / `packageName` | Populated for SCA and Container findings |
+| `cwe` | CWE identifiers for code-based findings |
+
+---
+
+## How items are selected
+
+<Steps>
+  <Step title="Fetch the top of each detection table">
+    For each scanner table, the service pre-loads `max(limit × 4, 20)` rows ordered by stored `priorityScore DESC`. This keeps the candidate pool large enough that re-scoring with the current Security Context cannot demote a true winner.
+  </Step>
+  <Step title="Re-compute composite scores">
+    Each candidate is re-scored with the project's current Security Context (business criticality, data classification) so the ranking always reflects the latest configuration — not the score stored at the time of the scan.
+  </Step>
+  <Step title="Merge and sort">
+    All candidates from all scanners are merged and sorted by `compositeScore` descending. The first `limit` items are returned.
+  </Step>
+</Steps>
+
+<Warning>
+Detections with a **manual priority override** keep their stored score and are included in the ranking unchanged. If you want them re-evaluated, clear the override first.
+</Warning>
+
+---
+
+## Where it appears
+
+- **Project dashboard** — the *Top 5* widget on the project overview.
+- **Email reports** — periodic vulnerability reports start with the project's Top items.
+- **Cybe MCP & API** — agents and external integrations consume the same endpoint to brief developers on the day's priorities.
+
+---
+
+## Best practices
+
+<AccordionGroup>
+  <Accordion title="Fill in your Security Context first">
+    The Top list is most useful once the project's **Internet Exposure**, **Environment**, **Data Classification** and **Business Criticality** are set. Without context, the CVSS environmental score and the Context signal fall back to neutral defaults and the ranking becomes a CVSS-only sort.
+  </Accordion>
+
+  <Accordion title="Use Top 5 for daily triage, Top 25 for sprint planning">
+    The default `limit=5` matches what a developer can realistically address in a day. A wider `limit=25` is better suited to weekly grooming or release-readiness reviews.
+  </Accordion>
+
+  <Accordion title="Trust the verdict, not just the CVSS">
+    A `not_exploitable` verdict from Cybe Analysis can keep a CVSS 9.8 out of the Top — that is by design. Review the `exploitabilityReason` before reopening.
+  </Accordion>
+
+  <Accordion title="Combine with Policies">
+    Pair the Top list with a [Policy](/latest/plateform-overview/key-features/policy-management) that blocks merges when any Top item is in the `Critical Urgent` bucket. Triage becomes self-enforcing.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+**Related:** [Priority Scoring](/latest/plateform-overview/key-features/priority-scoring) · [CVSS 4.0 Scoring](/latest/plateform-overview/key-features/cvss-4-scoring) · [Project Vulnerability List](/latest/managing-vulnerabilities/project-vulnerability-list) · [Updating Vulnerabilities](/latest/managing-vulnerabilities/updating-vulnerabilities)
