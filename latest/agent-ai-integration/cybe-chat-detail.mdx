@@ -1,0 +1,232 @@
+---
+title: "Cybe Chat, the in-dashboard AI assistant"
+description: "Open Cybe from any page in the CybeDefend dashboard, pick a scope (all projects, one project, one finding), approve or reject AI-driven actions on your findings, manage your chat memory. Streaming answers, audit trail, GDPR-compliant memory."
+---
+
+<Note>
+**No setup needed.** Cybe Chat ships enabled on every CybeDefend tenant. Anyone who can sign in to the dashboard can use it — the chat reflects your Permify scope exactly the way the dashboard does. There is no API key to provision, no extra OAuth flow, no client to install.
+</Note>
+
+---
+
+## Opening the chat
+
+Cybe Chat lives behind a **floating button** in the bottom-right corner of every dashboard page. The button shows a small Cybe avatar with a violet pulse. The first time you sign in, a welcome card appears above the button to introduce the assistant.
+
+- Click the button to open the drawer.
+- The drawer slides in from the right and takes about a third of the screen on a desktop layout.
+- Press `Esc` or click the `×` button to close it.
+- If Cybe is still streaming an answer in the background when you close the drawer, the floating button pulses violet to let you know there is new content; reopening clears the indicator.
+
+---
+
+## Picking a scope
+
+The first control in the drawer is a **scope picker** at the top of the conversation. The scope tells Cybe what it can see and how broadly it can reason.
+
+<Tabs>
+<Tab title="Current page">
+The default when you open the chat from a project page, a finding detail page, or a project overview. Cybe locks the scope to the page you are on and prepends a small banner like *"Project Overview · acme-payments-api"* so you know what the assistant is analysing.
+
+Pick this when you want a quick triage of what you are already looking at, without typing the project name.
+</Tab>
+<Tab title="A specific project">
+Switch the scope picker to **Project** to pick any project your account can read. Each project entry shows its current risk level (critical / high / medium / low) so you can jump to the most exposed repos first.
+
+Pick this when you want to drive a focused conversation around one repo — "walk me through SAST on `develop`", "list packages with a fix available", "what changed since last week".
+</Tab>
+<Tab title="All accessible projects">
+Switch to **All accessible projects** to ask cross-project questions. Cybe will aggregate over every project your Permify scope grants you. If your tenant has 200 projects and you only have access to 12, Cybe only walks those 12.
+
+Pick this when you need posture answers: portfolio risk, outliers, team-level summaries, recurring patterns across repos.
+
+<Tip>
+There is a hard cap of **200 projects** considered per question. If your scope is larger, Cybe will flag the answer with a `truncated: true` notice so you know to narrow the scope.
+</Tip>
+</Tab>
+<Tab title="A specific vulnerability">
+When you open the chat on a finding detail page, the scope auto-locks to that finding. Cybe pre-loads the finding payload (file, line, snippet, sink, package, etc.) and answers immediately within that context.
+
+Pick this for one-off triage decisions: "is this exploitable?", "what's the right status?", "are there similar ones elsewhere?".
+</Tab>
+</Tabs>
+
+You can change the scope at any time during a conversation — Cybe simply re-anchors the next answer.
+
+---
+
+## Asking Cybe a question
+
+The chat input accepts up to 4,000 characters. Markdown-aware shortcuts work:
+
+- `Enter` sends the message.
+- `Shift + Enter` adds a line break.
+- A red square button replaces the send arrow while Cybe is streaming, so you can stop a long answer at any time.
+
+Cybe's responses arrive **token by token** over SSE. The drawer renders Markdown, syntax-highlighted code blocks, and **citations**: most answers include in-line links back to the dashboard view, the finding detail page, or the policy that triggered the recommendation. Click a citation to jump straight to that view.
+
+---
+
+## Human-in-the-loop actions
+
+When Cybe needs to **change** something — update a vulnerability status, raise its priority, attach a comment — it never executes silently. The assistant emits a **pending action card** in the conversation:
+
+```text
+Cybe proposes:
+  update_vulnerability
+  project   · acme-payments-api
+  finding   · vs_8a3b · SQL injection on /api/users
+  set status → not_exploitable
+  comment   → "fixed by parameterised query helper"
+
+  [ Confirm ]   [ Reject ]
+```
+
+- **Confirm** runs the tool. Cybe re-checks your Permify scope at execution time. If your access was revoked between the proposal and the confirmation, the card flips to red with a `PERMISSION_DENIED` label and nothing happens.
+- **Reject** opens a small free-text field for an optional reason. Cybe acknowledges the rejection in the thread and continues the conversation.
+
+Confirmed actions are written to your **CybeDefend audit trail** under your user identity, exactly as if you had clicked the button from the regular vulnerability page. The audit entry distinguishes "manual UI change" from "chat-confirmed AI action", so you can later filter for AI-driven changes.
+
+<Warning>
+**Read actions** (listing findings, fetching a snippet, summarising posture) run silently with no confirmation prompt. They are safe by design: Cybe can only ever see what your account is already permitted to see.
+</Warning>
+
+---
+
+## History and resuming a conversation
+
+The drawer header carries a **history icon** on the top-left. Clicking it slides the conversation list in:
+
+- Conversations are sorted by recency.
+- A search field lets you find a thread by title or message content.
+- Click a conversation to load it; Cybe re-anchors to the scope it was created with.
+
+Cybe also has a small **context-resume** behaviour: when you reopen the drawer on the same page you were on previously, Cybe offers to resume the matching conversation instead of starting a new one. Decline the offer and a fresh thread is created.
+
+---
+
+## Memory and preferences (GDPR)
+
+Cybe stores two kinds of memory about you:
+
+- **Conversations** — every thread you start, retained until you delete it.
+- **Preferences** — the last conversation you opened, whether the drawer should auto-open on dashboard load, and small UI hints. *No content from your messages is ever stored as a "preference"*.
+
+A **settings panel** inside the drawer (gear icon) lets you:
+
+- See a sanitised summary of every memory entry Cybe holds about you.
+- Toggle preferences (auto-open, default scope, etc.).
+- **Permanently delete** a single memory entry. The deletion is immediate; there is no soft-delete or background queue.
+
+If you want to wipe **everything**, contact your CybeDefend admin or use the account-deletion workflow in the dashboard — those flows clear all of Cybe Chat's memory in the same transaction.
+
+See [LLM usage privacy](/latest/plateform-overview/security-privacy/llm-usage-privacy) for the full policy on what Cybe Chat does and does not send to a model.
+
+---
+
+## Feedback on Cybe's answers
+
+Below every Cybe response, a small **thumbs-up / thumbs-down** pair appears.
+
+- **Thumbs-up** marks the answer as helpful. No follow-up panel.
+- **Thumbs-down** opens a tag picker:
+  - `Wrong verdict` — Cybe drew the wrong conclusion (e.g., marked exploitable when it isn't).
+  - `Missing context` — Cybe should have looked at something it didn't.
+  - `Inaccurate` — factual error in the answer.
+  - `Ambiguous` — the answer was not clear enough.
+  - `Incomplete` — Cybe stopped short.
+  - `Off-topic` — Cybe answered a different question.
+  - Optional free-text correction field at the bottom.
+
+Submitted feedback is visible to your account admin and feeds into Cybe's evaluation harness.
+
+---
+
+## Error banners and quota
+
+If something goes wrong — service unavailable, plan quota exceeded, downstream rate limit — a **red banner** appears below the chat header. The banner shows:
+
+- A short error title (e.g., *"Quota exceeded"*, *"Service unavailable"*).
+- A dismissible `×` button.
+- When relevant, a link to the billing or support page.
+
+Cybe Chat is **rate-limited per user** to protect the platform: 15 requests per 60-second window on the streaming endpoint. Burst above that and you will see a `THROTTLED` banner; wait a few seconds and resume.
+
+Other common banners:
+
+| Banner | What it means | What to do |
+|---|---|---|
+| `QUOTA_EXCEEDED` | Your plan's monthly AI budget is consumed. | Upgrade plan, or wait for the next billing cycle. |
+| `PERMISSION_DENIED` | Cybe tried to read or write a resource you no longer have access to. | Check with the project owner; if you regained access, retry. |
+| `SERVICE_UNAVAILABLE` | The MCP or LLM backend is degraded. | Retry in a few seconds. |
+| `BAD_REQUEST` | Your prompt was malformed or under 5 characters. | Rephrase and resend. |
+
+---
+
+## Cybe Chat vs Cybe MCP vs Security Champion
+
+It is easy to confuse the three Cybe assistants. They share toolsets and authorization, but they sit in different surfaces:
+
+| Surface | What it does | Where it lives |
+|---|---|---|
+| **Cybe Chat** | Cross-project posture, in-dashboard actions with HITL approval, memory across sessions. | The CybeDefend dashboard, no setup needed. |
+| **Cybe MCP** | The same 18 typed tools, exposed to your AI coding assistant. The agent in your IDE reads findings and proposes status changes from there. | Your IDE: Claude Code, Cursor, VS Code Copilot Chat, Windsurf, JetBrains, etc. See the [setup guide](/latest/agent-ai-integration/cybe-mcp). |
+| **Cybe Security Champion** | Conversation about a project's **code**: how to fix a finding, what a pattern means, why a CVE matters in this repo's architecture. Backed by the project's knowledge graph. | Inside a finding detail page, and via the `get_business_logic_context` tool in MCP / Cybe Chat. |
+
+Rough rule of thumb:
+- "**What is exposed across our portfolio?**" → Cybe Chat.
+- "**Fix this finding in my codebase, right now**." → Cybe MCP in your IDE.
+- "**Help me understand this finding**." → Security Champion.
+
+---
+
+## Troubleshooting
+
+<Accordion title="The drawer won't open">
+
+The chat button is a floating element. If a corporate browser extension or content-security-policy overlay strips it, you may not see the button. Try a private window or a different browser, and report it to your CybeDefend admin.
+
+</Accordion>
+
+<Accordion title="Cybe says it can't see a project I expect to have access to">
+
+Permify is the source of truth. Open the project page directly in another tab — if you can't reach it manually, you don't have the scope either. Ask the project owner to grant you access; Cybe will see the new project on the next prompt without needing a refresh.
+
+</Accordion>
+
+<Accordion title="A pending action card flips to red with `PERMISSION_DENIED`">
+
+Cybe re-checks your scope at confirmation time. If your access was revoked between the moment Cybe proposed the action and the moment you clicked Confirm, the write is refused. This is by design — there is no race condition where a stale scope can mutate data.
+
+</Accordion>
+
+<Accordion title="My answer stopped mid-sentence with a red banner">
+
+Cybe streams via SSE. A network hiccup, a quota event, or a corporate proxy that buffers SSE poorly will surface as a red banner. Reopen the thread, ask Cybe to continue from where it stopped, or retry the prompt.
+
+</Accordion>
+
+<Accordion title="I want to wipe all my memory">
+
+The settings panel deletes entries one by one. To wipe everything in a single step, use the account-deletion workflow (Dashboard → Profile → Delete account) or contact your tenant admin. Both flows clear all Cybe Chat memory in the same transaction.
+
+</Accordion>
+
+---
+
+## Related docs
+
+<CardGroup cols={2}>
+  <Card title="Cybe Chat, feature overview" icon="star" href="/latest/plateform-overview/key-features/cybe-chat">
+    The product pitch, where Cybe Chat sits in the platform.
+  </Card>
+  <Card title="Cybe MCP, connect every AI agent" icon="plug" href="/latest/agent-ai-integration/cybe-mcp">
+    Bring the same toolset into your IDE.
+  </Card>
+  <Card title="Cybe Security Champion" icon="brain" href="/latest/agent-ai-integration/cybe-security-champion-detail">
+    Project-specific code consultation, the third Cybe assistant.
+  </Card>
+  <Card title="LLM usage privacy" icon="shield-halved" href="/latest/plateform-overview/security-privacy/llm-usage-privacy">
+    What Cybe Chat sends to a model, what it stores, and how to delete it.
+  </Card>
+</CardGroup>

@@ -1,0 +1,190 @@
+---
+title: "Jira Cloud"
+description: "Connect Atlassian Jira Cloud to turn CybeDefend vulnerabilities into trackable tickets, with two-way status sync via webhooks."
+---
+
+The Jira integration lets you push CybeDefend findings (SAST, SCA, IaC, Container, Secret) into your Atlassian Jira Cloud projects as tickets — either manually for selected vulnerabilities or **automatically after every scan**. Ticket status, priority, and assignee are kept in sync with CybeDefend in near real-time through Jira webhooks.
+
+<Note>
+Only **Jira Cloud** is supported. Jira Data Center / Server is not currently compatible because the integration relies on Atlassian's OAuth 2.0 (3LO) flow and Cloud webhook APIs.
+</Note>
+
+---
+
+## What you get
+
+- **Ticket creation** for one or many vulnerabilities, with three grouping strategies (per vulnerability, per type, per file).
+- **Rich descriptions** in Atlassian Document Format (ADF), including CVSS, CWE/OWASP tags, file location, fix recommendations, and a direct link back to the CybeDefend view.
+- **Severity → priority mapping** (Critical → Highest, High → High, …) applied to each issue.
+- **Auto-create after scan** to file tickets without human intervention (configurable per project).
+- **Branch allow-list** so tickets are only created for findings on branches you care about (e.g. `main`, `develop`).
+- **Live status sync** via Jira webhooks — status, assignee, priority, and project moves are reflected in CybeDefend automatically.
+- **Link to existing issue** for vulnerabilities already tracked under another ticket.
+- **Duplicate protection** — open tickets are reused; closed tickets do not re-open silently.
+
+---
+
+## Prerequisites
+
+<Steps>
+  <Step title="Atlassian account with site access">
+    You need a user that has access to the target Jira Cloud site and can install OAuth apps for it.
+  </Step>
+  <Step title="Required Jira scopes">
+    The OAuth app requests the following scopes:
+    - `read:jira-work` — list projects, read issues
+    - `write:jira-work` — create and update tickets
+    - `read:jira-user` — resolve assignees
+    - `manage:jira-webhook` — register the status-sync webhook
+    - `offline_access` — refresh tokens automatically
+  </Step>
+  <Step title="CybeDefend permission">
+    You must hold the `manage_integration` permission on the organization (Owner or Admin).
+  </Step>
+</Steps>
+
+---
+
+## 1. Connect Jira to your organization
+
+<Steps>
+  <Step title="Open organization integrations">
+    In CybeDefend, go to **Organization Settings → Integrations** and select **Jira**.
+  </Step>
+  <Step title="Start the OAuth flow">
+    Click **Connect Jira**. You will be redirected to Atlassian to authorize the CybeDefend app. A CSRF state token is stored server-side for 10 minutes — finish the flow within that window.
+  </Step>
+  <Step title="Choose your Jira site">
+    Approve access for the Jira Cloud site you want to use. If multiple sites are accessible to your Atlassian account, the integration uses the **first accessible site** returned by Atlassian.
+  </Step>
+  <Step title="Wait for installation to complete">
+    On callback, CybeDefend exchanges the authorization code for an access token, encrypts it with AES-256-GCM, and registers a webhook so issue updates flow back automatically.
+  </Step>
+</Steps>
+
+<Note>
+Tokens are encrypted at rest. Refresh is automatic — you do not need to re-authorize unless the integration is uninstalled from the Atlassian side.
+</Note>
+
+---
+
+## 2. Map a CybeDefend project to a Jira project
+
+The OAuth connection is at the **organization** level. Each CybeDefend project then points to a single Jira project that will receive its tickets.
+
+<Steps>
+  <Step title="Open project settings">
+    From the project view, go to **Settings → Integrations → Jira**.
+  </Step>
+  <Step title="Pick the Jira project">
+    Select the destination Jira project from the dropdown. CybeDefend fetches up to 100 projects from the connected site, ordered by name.
+  </Step>
+  <Step title="Restrict by branch (optional)">
+    Add up to **50 branches** (e.g. `main`, `develop`, `release/*`) to the allow-list. Vulnerabilities detected on any other branch will be **silently skipped** when creating tickets. Leave the list empty to allow all branches.
+  </Step>
+  <Step title="Enable auto-create (optional)">
+    Toggle **Auto-create tickets after scans** if you want every new finding (matching the branch allow-list) to be filed automatically once a scan completes.
+  </Step>
+</Steps>
+
+<Tip>
+For triage-heavy projects, leave **auto-create off** and use the **per vulnerability type** mode manually — you'll get one ticket per CWE/CVE rather than one ticket per occurrence, which is far easier to action.
+</Tip>
+
+---
+
+## 3. Create tickets for vulnerabilities
+
+From the vulnerability list (SAST, SCA, IaC, Container, Secret), select one or more findings and choose **Create Jira issues**. You pick the **grouping mode**:
+
+| Mode | Behavior | When to use |
+| --- | --- | --- |
+| **Per vulnerability** | One Jira ticket per individual detection (`vulnerabilityId + filePath + line`, or `vulnId + package@version` for SCA). | Fine-grained tracking, small batches. |
+| **Per vulnerability type** | One ticket per rule / CVE, grouping all occurrences. | Default — best signal-to-noise ratio. |
+| **Per file** | One ticket per `(scanner, file path)`. SCA tickets group by dependency manifest. | Code reviews organized by file owner. |
+
+### What's in the ticket
+
+- **Summary** — human-readable name (e.g. `lodash: Prototype pollution in lodash.merge`) with a `[CybeDefend]` prefix and a count suffix when grouped.
+- **Description** (ADF) — severity, CVSS, CWE/OWASP, fix recommendation, code snippet for SAST, package details for SCA, and a deep link back to the matching CybeDefend view (filtered by name).
+- **Priority** — mapped from severity: Critical → Highest, High → High, Medium → Medium, Low → Low, Info → Lowest.
+- **Issue type** — `Bug` if available, otherwise `Task`, then `Story`, falling back to the first non-subtask type in the project's create-meta.
+
+<Note>
+Before creating a ticket, CybeDefend checks for an **existing open ticket** with the same group key, or vulnerabilities already linked to a non-terminal ticket (`open`, `in progress`, …). Duplicates are skipped, not re-filed. Tickets in `done`, `closed`, `resolved`, or `deleted` states do not block re-creation.
+</Note>
+
+---
+
+## 4. Link to an existing Jira issue
+
+If a ticket already exists for the work, you can attach CybeDefend vulnerabilities to it instead of creating a new one.
+
+<Steps>
+  <Step title="Pick the vulnerabilities">
+    Select the findings in the CybeDefend vulnerability list and choose **Link to existing Jira issue**.
+  </Step>
+  <Step title="Enter the issue key">
+    Provide the Jira key (e.g. `TRI-142`). CybeDefend validates the key exists and reads its current summary and status.
+  </Step>
+  <Step title="Confirm">
+    CybeDefend records the mapping and **appends** a "Linked CybeDefend vulnerabilities" section to the existing Jira description — your original description is never overwritten.
+  </Step>
+</Steps>
+
+---
+
+## 5. Status synchronization
+
+CybeDefend registers a **dynamic webhook** at install time, listening to `jira:issue_updated` and `jira:issue_deleted` for every project on the site. When a ticket changes in Jira, CybeDefend updates the linked vulnerabilities within seconds:
+
+- **Status** — reflected as `issueState` (e.g. `in progress`, `done`).
+- **Priority** — stored on the mapping.
+- **Assignee** — the Jira display name is mirrored.
+- **Project key** — if a ticket is **moved between Jira projects**, the new key is detected via the changelog and all mappings are updated.
+- **Deleted issues** — marked as `deleted` in CybeDefend.
+
+Dynamic webhooks expire after 30 days; CybeDefend refreshes them periodically through a background cron, so no manual action is needed.
+
+<Tip>
+If a webhook ever misses an event, you can trigger a **manual sync** from the project's Jira integration panel — CybeDefend will pull the latest status for each linked ticket and detect any project moves at the same time.
+</Tip>
+
+---
+
+## 6. Disconnecting Jira
+
+Disconnecting from **Organization Settings → Integrations → Jira → Disconnect** will:
+
+1. Remove the OAuth integration and stored tokens.
+2. Delete every per-project Jira configuration (mapping, allowed branches, auto-create setting).
+3. Remove every vulnerability ↔ Jira issue mapping for the organization.
+4. **Leave the Jira tickets untouched** — they remain in Jira and are no longer linked back to CybeDefend.
+
+To use Jira again afterwards, simply re-run the connect flow.
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="“No Jira Cloud sites accessible” during install">
+    Your Atlassian account does not have access to any Jira Cloud site, or your administrator has restricted OAuth apps for the site. Ask your Jira admin to grant access or approve the CybeDefend app.
+  </Accordion>
+  <Accordion title="“No Jira project configured” when creating a ticket">
+    The CybeDefend project has no mapping yet. Open **Project Settings → Integrations → Jira** and select a destination Jira project.
+  </Accordion>
+  <Accordion title="Tickets are not being auto-created after a scan">
+    Check three things: (1) **Auto-create** is enabled on the CybeDefend project, (2) the scan's branch is in the **allow-list** (or the list is empty), (3) the vulnerability isn't already linked to an open Jira ticket — duplicates are intentionally skipped.
+  </Accordion>
+  <Accordion title="Status changes in Jira don't appear in CybeDefend">
+    The webhook may have been removed at the Jira side, or the webhook expired. Disconnect and reconnect the integration to re-register it, or use the manual **Sync status** action on the project's Jira panel.
+  </Accordion>
+  <Accordion title="“Invalid or expired OAuth state” on callback">
+    The CSRF state token lives for 10 minutes. Restart the install flow from CybeDefend instead of refreshing the Atlassian callback page.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+**Related:** [Project Vulnerability List](/latest/managing-vulnerabilities/project-vulnerability-list) · [Updating Vulnerabilities](/latest/managing-vulnerabilities/updating-vulnerabilities)

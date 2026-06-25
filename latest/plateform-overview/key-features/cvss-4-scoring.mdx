@@ -1,0 +1,108 @@
+---
+title: 'CVSS 4.0 Scoring'
+description: 'Modern severity scoring with environmental adjustments based on your project security context'
+---
+
+## Overview
+
+CybeDefend computes a **CVSS 4.0** score for every vulnerability — across SAST, SCA, IAC, Container, CICD and Secrets. The platform stores two distinct values:
+
+- a **Base Score**, derived from the vulnerability's intrinsic properties (attack vector, complexity, impact on confidentiality / integrity / availability),
+- an **Environmental Score**, recomputed for each project from the **Security Context** you configure, so the same CVE can legitimately score differently across projects.
+
+<CardGroup cols={2}>
+  <Card title="CVSS 4.0 Native" icon="shield-halved">
+    Latest FIRST.org standard with Vulnerable / Subsequent system impact metrics
+  </Card>
+  <Card title="CVSS 3.x Compatible" icon="arrows-rotate">
+    Legacy CVSS 3.1 vectors are automatically converted to a CVSS 4.0 base vector
+  </Card>
+  <Card title="Environmental Adjustments" icon="sliders">
+    Project context (exposure, environment, data class) reshapes the score
+  </Card>
+  <Card title="Severity Fallback" icon="circle-info">
+    If no vector is available, severity (Critical / High / Medium / Low) drives a sensible default
+  </Card>
+</CardGroup>
+
+---
+
+## How the score is built
+
+For each detection, CybeDefend resolves a CVSS 4.0 base vector with the following priority:
+
+1. **Direct CVSS 4.0 vector** if provided by the scanner or advisory.
+2. **CVSS 3.1 vector** — converted into an equivalent CVSS 4.0 base vector (AV/AC/PR/UI/VC/VI/VA mapping, AT defaulted to None, scope handled).
+3. **Severity-only fallback** — uses a curated default vector per severity tier.
+
+The resulting **base score** is stored once. The **environmental score** is then recomputed every time the project's Security Context changes.
+
+<Info>
+Both the base vector and the full environmental vector (including `MAV`, `MAT`, `MPR`, `CR`, `IR`, `AR`, `MSC`, `MSI`, `MSA` modifiers) are persisted so the scoring is fully auditable.
+</Info>
+
+---
+
+## Environmental modifiers
+
+The Security Context of the project drives the environmental adjustments applied to the base vector:
+
+| Context field | CVSS 4.0 metric(s) | Effect |
+|---------------|--------------------|--------|
+| **Internet Exposure** (`public` / `internal` / `airgapped`) | `MAV` (Modified Attack Vector) | Network → Adjacent → Local as exposure shrinks |
+| **Network Segmentation** (`flat` / `segmented` / `microsegmented`) | `MAT` (Modified Attack Requirements) | Segmented networks raise attack requirements |
+| **Environment** (`development` / `staging` / `production`) | `MPR`, `CR`, `IR`, `AR` defaults | Dev raises required privileges; prod sets high CIA requirements |
+| **Data Classification** (`public` / `internal` / `confidential` / `regulated`) | `CR`, `MSC` | Regulated data boosts confidentiality requirement and subsequent confidentiality |
+| **Business Criticality** (`low` / `medium` / `high` / `mission_critical`) | `AR`, `MSA` | Mission-critical workloads boost availability requirement |
+| **Handles PII** | `CR:H`, `MSC:H` | PII processing raises confidentiality weight |
+| **Handles Payment Data** | `CR:H`, `IR:H`, `MSC:H`, `MSI:H` | Payment processing raises confidentiality and integrity |
+| **Safety-Critical** | `IR:H`, `AR:H`, `MSI:H`, `MSA:H` | Safety workloads raise integrity and availability |
+
+<Tip>
+Explicit `dataClassification` / `businessCriticality` values override the `environment`-derived defaults. PII / Payment / Safety boosts are applied last and can only **upgrade** previous values, never downgrade them.
+</Tip>
+
+---
+
+## Where to see the scores
+
+- **Vulnerability list** — sortable by CVSS Score (SCA) and severity.
+- **Vulnerability detail** — displays both Base Score and Environmental Score, the full CVSS 4.0 vector, and a human-readable explanation of each component.
+- **Top Vulnerabilities** widget — surfaces the highest-priority items, including the environmental CVSS score per detection.
+- **API** — every detection returned by the REST API exposes `cvss4BaseScore`, `cvss4EnvironmentalScore`, `cvss4Vector` and `cvss4EnvironmentalVector`.
+
+---
+
+## Recalculation triggers
+
+Environmental scores are automatically recomputed when:
+
+<Steps>
+  <Step title="Security Context changes">
+    Any update to the project's Security Context (exposure, environment, data class, criticality, PII / Payment / Safety toggles) re-enqueues a CVSS recalculation for all active detections.
+  </Step>
+  <Step title="A new scan ingests detections">
+    Newly ingested vulnerabilities are scored with the current Security Context as part of the ingestion pipeline.
+  </Step>
+  <Step title="A scoring source changes">
+    When a more authoritative CVSS source becomes available (e.g. NVD publishes a CVSS 4.0 vector for a CVE previously scored from CVSS 3.1), the score is upgraded.
+  </Step>
+</Steps>
+
+<Warning>
+If the Security Context contains `unspecified` fields, the corresponding modifier is **skipped** rather than guessed — the base vector is preserved for that axis. Fill the context in **Project Settings** to get the most accurate environmental score.
+</Warning>
+
+---
+
+## Severity vs. Score
+
+Severity buckets (`Critical`, `High`, `Medium`, `Low`) remain available for filtering and reporting, but the **environmental CVSS score** is what the platform uses internally as the CVSS dimension of the [Priority Score](/latest/plateform-overview/key-features/priority-scoring).
+
+<Info>
+Severity displayed in the UI follows the standard CVSS 4.0 mapping: ≥ 9.0 Critical · ≥ 7.0 High · ≥ 4.0 Medium · > 0 Low · 0 None.
+</Info>
+
+---
+
+**Related:** [Priority Scoring](/latest/plateform-overview/key-features/priority-scoring) · [Top Vulnerabilities](/latest/managing-vulnerabilities/top-vulnerabilities) · [Exploitable Path](/latest/plateform-overview/key-features/exploitable-path)

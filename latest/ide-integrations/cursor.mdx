@@ -1,0 +1,70 @@
+---
+title: "Cursor"
+description: "Install the CybeDefend extension in Cursor by downloading the .vsix file from the Open VSX Registry."
+---
+
+Scan. Detect. Fix. — Security meets AI, right in your editor.
+
+---
+
+## Overview
+
+Cursor supports VS Code extensions, but does not connect to the Open VSX Registry by default. To install CybeDefend in Cursor, you need to **download the `.vsix` file** and install it manually.
+
+---
+
+## Getting Started
+
+<Steps>
+  <Step title="Download the .vsix file">
+    Go to the CybeDefend extension page on Open VSX and download the latest `.vsix` file:
+
+    <Card title="Download from Open VSX" icon="download" href="https://open-vsx.org/extension/cybedefend/cybedefend">
+      Download the CybeDefend `.vsix` file
+    </Card>
+
+    On the extension page, click the **Download** button to get the `.vsix` file.
+  </Step>
+  <Step title="Install in Cursor">
+    Open Cursor and install the extension using one of these methods:
+
+    **Option A — Command Palette:**
+    1. Open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
+    2. Type **"Extensions: Install from VSIX..."**
+    3. Select the downloaded `.vsix` file
+
+    **Option B — Terminal:**
+    ```bash
+    cursor --install-extension path/to/cybedefend-cybedefend-<version>.vsix
+    ```
+  </Step>
+  <Step title="Configure & Scan">
+    Follow the same setup steps as VS Code: select your region, authenticate via OAuth 2.0, configure your project, and start scanning.
+
+    <Tip>
+    See the [VS Code Extension guide](/latest/ide-integrations/vscode#getting-started) for detailed step-by-step instructions — the workflow is identical.
+    </Tip>
+  </Step>
+</Steps>
+
+<Warning>
+When a new version of CybeDefend is released, you will need to download and install the updated `.vsix` file manually. Cursor does not auto-update extensions installed from `.vsix` files.
+</Warning>
+
+---
+
+## Features
+
+All features from the VS Code extension are available in Cursor:
+
+- **5 scan types** — SAST, SCA, IaC, Secrets, CI/CD
+- **CybeAgent** — AI-powered vulnerability analysis and fix suggestions
+- **DeepFix** — Automated dependency upgrades across 9 ecosystems
+- **Editor integration** — Gutter icons, diagnostics, context menu, status bar
+- **Vulnerability management** — Update status directly from the IDE
+
+For full feature details, see the [VS Code Extension](/latest/ide-integrations/vscode) documentation.
+
+---
+
+**Related:** [VS Code Extension](/latest/ide-integrations/vscode) · [Windsurf](/latest/ide-integrations/windsurf) · [Antigravity](/latest/ide-integrations/antigravity) · [MCP Server Integration](/latest/plateform-overview/key-features/mcp-server-integration)
