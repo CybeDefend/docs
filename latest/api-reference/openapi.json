@@ -13086,6 +13086,72 @@
         "tags": [
           "ECR Container Registry"
         ]
+      },
+      "get": {
+        "description": "Returns all AWS Elastic Container Registry credentials stored at organization level (sanitized, no secrets exposed) with the count of linked projects.",
+        "operationId": "EcrContainerRegistryOrganizationController_listOrgCredentials",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "description": "CybeDefend organization ID",
+            "schema": {
+              "format": "uuid",
+              "example": "550e8400-e29b-41d4-a716-446655440000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of credentials retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EcrOrgCredentialDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Unauthorized",
+                    "statusCode": 401,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions to manage integrations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Forbidden",
+                    "statusCode": 403,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List organization ECR credentials",
+        "tags": [
+          "ECR Container Registry"
+        ]
       }
     },
     "/integrations/ecr/container-registry/organization/{organizationId}/credentials/{credentialId}": {
@@ -18152,6 +18218,514 @@
         "summary": "Resolve enterprise SSO connectors by email domain",
         "tags": [
           "SSO"
+        ]
+      }
+    },
+    "/integrations/ecr/container-registry/organization/{organizationId}/credentials/prepare-iam-role": {
+      "post": {
+        "description": "Generates a unique external ID and returns the trust + permission policies the customer attaches to a role in their own AWS account. Use the returned external ID and the created role ARN with the store credentials endpoint (credentialType=iam_role).",
+        "operationId": "EcrContainerRegistryOrganizationController_prepareIamRole",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "description": "CybeDefend organization ID",
+            "schema": {
+              "format": "uuid",
+              "example": "550e8400-e29b-41d4-a716-446655440000",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Project + region the IAM-role integration targets",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EcrPrepareIamRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Setup instructions generated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EcrPrepareIamRoleResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Bad Request",
+                    "statusCode": 400,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Unauthorized",
+                    "statusCode": 401,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions to manage integrations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Forbidden",
+                    "statusCode": 403,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Prepare an IAM-role-based ECR integration",
+        "tags": [
+          "ECR Container Registry"
+        ]
+      }
+    },
+    "/integrations/ecr/container-registry/organization/{organizationId}/credentials/{credentialId}/projects": {
+      "get": {
+        "description": "Returns the full set of project ids currently linked to an organization-level ECR credential.",
+        "operationId": "EcrContainerRegistryOrganizationController_getCredentialProjects",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "description": "CybeDefend organization ID",
+            "schema": {
+              "format": "uuid",
+              "example": "550e8400-e29b-41d4-a716-446655440000",
+              "type": "string"
+            }
+          },
+          {
+            "name": "credentialId",
+            "required": true,
+            "in": "path",
+            "description": "Credential ID",
+            "schema": {
+              "format": "uuid",
+              "example": "550e8400-e29b-41d4-a716-446655440001",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Linked projects retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Unauthorized",
+                    "statusCode": 401,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions to manage integrations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Forbidden",
+                    "statusCode": 403,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Credential not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Resource not found",
+                    "statusCode": 404,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List projects linked to an ECR credential",
+        "tags": [
+          "ECR Container Registry"
+        ]
+      },
+      "put": {
+        "description": "Replaces the full set of projects linked to an organization-level ECR credential. An empty array unlinks the credential from every project.",
+        "operationId": "EcrContainerRegistryOrganizationController_setCredentialProjects",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "description": "CybeDefend organization ID",
+            "schema": {
+              "format": "uuid",
+              "example": "550e8400-e29b-41d4-a716-446655440000",
+              "type": "string"
+            }
+          },
+          {
+            "name": "credentialId",
+            "required": true,
+            "in": "path",
+            "description": "Credential ID",
+            "schema": {
+              "format": "uuid",
+              "example": "550e8400-e29b-41d4-a716-446655440001",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Full set of linked project ids (replaces existing links)",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EcrSetCredentialProjectsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Linked projects updated successfully"
+          },
+          "400": {
+            "description": "Invalid request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Bad Request",
+                    "statusCode": 400,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Unauthorized",
+                    "statusCode": 401,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions to manage integrations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Forbidden",
+                    "statusCode": 403,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Credential not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Resource not found",
+                    "statusCode": 404,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Set projects linked to an ECR credential",
+        "tags": [
+          "ECR Container Registry"
+        ]
+      }
+    },
+    "/integrations/container-registry/organization/{organizationId}/credentials/{registryType}/{credentialId}/projects": {
+      "get": {
+        "description": "Returns the full set of project ids currently linked to an organization-level container-registry credential, for the given registry type.",
+        "operationId": "ContainerRegistryCredentialsController_getCredentialProjects",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "registryType",
+            "required": true,
+            "in": "path",
+            "description": "Registry type (gcr|acr|dockerhub|gitlab|quay|harbor|jfrog|scaleway|ecr)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "credentialId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Linked projects retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Unauthorized",
+                    "statusCode": 401,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions to manage integrations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Forbidden",
+                    "statusCode": 403,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List projects linked to a container-registry credential",
+        "tags": [
+          "Container Registry Credentials"
+        ]
+      },
+      "put": {
+        "description": "Replaces the full set of projects linked to an organization-level container-registry credential. An empty array unlinks the credential from every project.",
+        "operationId": "ContainerRegistryCredentialsController_setCredentialProjects",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "registryType",
+            "required": true,
+            "in": "path",
+            "description": "Registry type (gcr|acr|dockerhub|gitlab|quay|harbor|jfrog|scaleway|ecr)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "credentialId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCredentialProjectsBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Linked projects updated successfully"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Unauthorized",
+                    "statusCode": 401,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions to manage integrations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Forbidden",
+                    "statusCode": 403,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Set projects linked to a container-registry credential",
+        "tags": [
+          "Container Registry Credentials"
+        ]
+      }
+    },
+    "/integrations/container-registry/organization/{organizationId}/bulk-apply": {
+      "post": {
+        "description": "Creates (or rotates) one credential of the given registry type and links it to a set of projects in a single call. Unknown or foreign-organization projects are skipped and reported in the response.",
+        "operationId": "ContainerRegistryCredentialsController_bulkApply",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkApplyCredentialDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Credential stored and linked; partial-success report returned"
+          },
+          "400": {
+            "description": "Invalid request body"
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Unauthorized",
+                    "statusCode": 401,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Insufficient permissions to manage integrations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Forbidden",
+                    "statusCode": 403,
+                    "timestamp": "2025-02-18T12:31:18.491Z",
+                    "path": "/example/path"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Bulk-apply a container-registry credential to projects",
+        "tags": [
+          "Container Registry Credentials"
         ]
       }
     }
@@ -24054,14 +24628,32 @@
       "EcrStoreCredentialsDto": {
         "type": "object",
         "properties": {
+          "name": {
+            "type": "string",
+            "description": "Display name for the credential",
+            "example": "ECR Prod"
+          },
+          "credentialId": {
+            "type": "string",
+            "description": "Existing credential id to update (rotation/type switch)"
+          },
           "projectId": {
             "type": "string",
-            "description": "CybeDefend project ID to associate this credential with",
+            "description": "Deprecated: credentials are org-level. Ignored.",
             "example": "097bbbf4-d1eb-4512-9950-684445279808"
+          },
+          "credentialType": {
+            "type": "string",
+            "description": "Authentication mode",
+            "enum": [
+              "static_keys",
+              "iam_role"
+            ],
+            "default": "static_keys"
           },
           "awsAccountId": {
             "type": "string",
-            "description": "AWS Account ID (12 digits)",
+            "description": "AWS Account ID (12 digits) — required for static_keys mode",
             "example": "123456789012"
           },
           "awsRegion": {
@@ -24071,13 +24663,22 @@
           },
           "awsAccessKeyId": {
             "type": "string",
-            "description": "AWS Access Key ID",
+            "description": "AWS Access Key ID — required for static_keys mode",
             "example": "AKIAIOSFODNN7EXAMPLE"
           },
           "awsSecretAccessKey": {
             "type": "string",
-            "description": "AWS Secret Access Key",
+            "description": "AWS Secret Access Key — required for static_keys mode",
             "example": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+          },
+          "roleArn": {
+            "type": "string",
+            "description": "IAM role ARN to assume — required for iam_role mode. e.g. arn:aws:iam::123456789012:role/cybedefend-ecr",
+            "example": "arn:aws:iam::123456789012:role/cybedefend-ecr"
+          },
+          "externalId": {
+            "type": "string",
+            "description": "External ID enforced in the role trust policy (iam_role mode). Use the value returned by the prepare-iam-role endpoint."
           },
           "description": {
             "type": "string",
@@ -24086,11 +24687,8 @@
           }
         },
         "required": [
-          "projectId",
-          "awsAccountId",
-          "awsRegion",
-          "awsAccessKeyId",
-          "awsSecretAccessKey"
+          "name",
+          "awsRegion"
         ]
       },
       "EcrCredentialResponseDto": {
@@ -24113,8 +24711,21 @@
           },
           "awsAccessKeyId": {
             "type": "string",
-            "description": "AWS Access Key ID",
+            "description": "AWS Access Key ID (static_keys mode only)",
             "example": "AKIAIOSFODNN7EXAMPLE"
+          },
+          "credentialType": {
+            "type": "string",
+            "description": "Authentication mode",
+            "enum": [
+              "static_keys",
+              "iam_role"
+            ]
+          },
+          "roleArn": {
+            "type": "string",
+            "description": "IAM role ARN (iam_role mode only)",
+            "example": "arn:aws:iam::123456789012:role/cybedefend-ecr"
           },
           "description": {
             "type": "string",
@@ -24131,7 +24742,6 @@
           "id",
           "awsAccountId",
           "awsRegion",
-          "awsAccessKeyId",
           "createdAt"
         ]
       },
@@ -25608,8 +26218,18 @@
           },
           "projectId": {
             "type": "string",
-            "description": "CybeDefend project ID this credential belongs to",
+            "description": "Legacy 1:1 owning project ID (empty for org-level credentials such as ECR)",
             "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "linkedProjectIds": {
+            "description": "Projects this org-level credential is linked to via the N:N link table (ECR)",
+            "example": [
+              "550e8400-e29b-41d4-a716-446655440000"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "name": {
             "type": "string",
@@ -25694,6 +26314,14 @@
                 "$ref": "#/components/schemas/JfrogCredentialDetailsDto"
               }
             ]
+          },
+          "scalewayDetails": {
+            "description": "Scaleway-specific details",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ScalewayCredentialDetailsDto"
+              }
+            ]
           }
         },
         "required": [
@@ -25770,6 +26398,13 @@
             "items": {
               "$ref": "#/components/schemas/ContainerRegistryCredentialDto"
             }
+          },
+          "scaleway": {
+            "description": "Scaleway Container Registry credentials",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContainerRegistryCredentialDto"
+            }
           }
         },
         "required": [
@@ -25781,7 +26416,8 @@
           "ecr",
           "quay",
           "harbor",
-          "jfrog"
+          "jfrog",
+          "scaleway"
         ]
       },
       "CreatePolicyBodyDto": {
@@ -26850,6 +27486,333 @@
           "total",
           "page",
           "pageSize"
+        ]
+      },
+      "BulkApplyCredentialDto": {
+        "type": "object",
+        "properties": {
+          "registryType": {
+            "type": "string",
+            "description": "Registry type to create the credential for",
+            "enum": [
+              "gcr",
+              "acr",
+              "dockerhub",
+              "gitlab",
+              "quay",
+              "harbor",
+              "jfrog",
+              "scaleway",
+              "ecr"
+            ]
+          },
+          "projectIds": {
+            "description": "Project ids to link the new credential to",
+            "example": [
+              "097bbbf4-d1eb-4512-9950-684445279808"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "name": {
+            "type": "string",
+            "description": "Display name for the credential"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description for this credential"
+          },
+          "gcpProjectId": {
+            "type": "string",
+            "description": "GCP project ID (gcr only)"
+          },
+          "registryHostname": {
+            "type": "string",
+            "description": "GCR registry hostname (gcr only)"
+          },
+          "serviceAccountKey": {
+            "type": "string",
+            "description": "GCP service account JSON key (gcr only)"
+          },
+          "acrLoginServer": {
+            "type": "string",
+            "description": "ACR login server (acr only)"
+          },
+          "servicePrincipalId": {
+            "type": "string",
+            "description": "ACR service principal app id / admin username (acr only)"
+          },
+          "servicePrincipalPassword": {
+            "type": "string",
+            "description": "ACR service principal password / admin password (acr only)"
+          },
+          "dockerhubUsername": {
+            "type": "string",
+            "description": "DockerHub username (dockerhub only)"
+          },
+          "gitlabProjectId": {
+            "type": "number",
+            "description": "GitLab numeric project id (gitlab only)"
+          },
+          "deployToken": {
+            "type": "string",
+            "description": "GitLab deploy token (gitlab only)"
+          },
+          "registryUrl": {
+            "type": "string",
+            "description": "GitLab registry URL (gitlab only)"
+          },
+          "projectPath": {
+            "type": "string",
+            "description": "GitLab project path (gitlab only)"
+          },
+          "scopes": {
+            "description": "GitLab deploy-token scopes (gitlab only)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "GitLab deploy-token expiry (gitlab only)"
+          },
+          "quayNamespace": {
+            "type": "string",
+            "description": "Quay namespace (quay only)"
+          },
+          "robotUsername": {
+            "type": "string",
+            "description": "Quay robot account username (quay only)"
+          },
+          "robotToken": {
+            "type": "string",
+            "description": "Quay robot account token (quay only)"
+          },
+          "quayHost": {
+            "type": "string",
+            "description": "Quay host (quay only, defaults quay.io)"
+          },
+          "harborUrl": {
+            "type": "string",
+            "description": "Harbor server URL (harbor only)"
+          },
+          "harborProject": {
+            "type": "string",
+            "description": "Harbor project name (harbor only)"
+          },
+          "jfrogUrl": {
+            "type": "string",
+            "description": "JFrog Artifactory URL (jfrog only)"
+          },
+          "repositoryKey": {
+            "type": "string",
+            "description": "JFrog docker repository key (jfrog only)"
+          },
+          "username": {
+            "type": "string",
+            "description": "Registry username — required for gitlab/harbor/jfrog (robot account or user)"
+          },
+          "password": {
+            "type": "string",
+            "description": "Registry password/token — required for harbor/jfrog (robot token or password)"
+          },
+          "accessToken": {
+            "type": "string",
+            "description": "Access token — required for dockerhub (PAT)"
+          },
+          "region": {
+            "type": "string",
+            "description": "Scaleway region (scaleway only)"
+          },
+          "namespaceName": {
+            "type": "string",
+            "description": "Scaleway namespace name (scaleway only)"
+          },
+          "secretKey": {
+            "type": "string",
+            "description": "Scaleway API secret key (scaleway only)"
+          },
+          "credentialType": {
+            "type": "string",
+            "description": "ECR authentication mode (ecr only)",
+            "enum": [
+              "static_keys",
+              "iam_role"
+            ],
+            "default": "static_keys"
+          },
+          "awsRegion": {
+            "type": "string",
+            "description": "AWS region (ecr only)"
+          },
+          "awsAccountId": {
+            "type": "string",
+            "description": "AWS account id — required for ecr static_keys"
+          },
+          "awsAccessKeyId": {
+            "type": "string",
+            "description": "AWS access key id — required for ecr static_keys"
+          },
+          "awsSecretAccessKey": {
+            "type": "string",
+            "description": "AWS secret access key — required for ecr static_keys"
+          },
+          "roleArn": {
+            "type": "string",
+            "description": "IAM role ARN to assume — required for ecr iam_role"
+          },
+          "externalId": {
+            "type": "string",
+            "description": "External ID for the role trust policy (ecr iam_role)"
+          }
+        },
+        "required": [
+          "registryType",
+          "projectIds",
+          "name"
+        ]
+      },
+      "SetCredentialProjectsBodyDto": {
+        "type": "object",
+        "properties": {
+          "projectIds": {
+            "description": "Full set of linked project ids (replaces existing links)",
+            "example": [
+              "097bbbf4-d1eb-4512-9950-684445279808"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "projectIds"
+        ]
+      },
+      "ScalewayCredentialDetailsDto": {
+        "type": "object",
+        "properties": {
+          "region": {
+            "type": "string",
+            "description": "Scaleway region (fr-par, nl-ams, pl-waw)",
+            "example": "fr-par"
+          },
+          "namespaceId": {
+            "type": "string",
+            "description": "Scaleway namespace ID",
+            "example": "12345678-1234-1234-1234-123456789012"
+          }
+        },
+        "required": [
+          "region",
+          "namespaceId"
+        ]
+      },
+      "EcrSetCredentialProjectsDto": {
+        "type": "object",
+        "properties": {
+          "projectIds": {
+            "description": "Full set of linked project ids (replaces existing links)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "projectIds"
+        ]
+      },
+      "EcrPrepareIamRoleResponseDto": {
+        "type": "object",
+        "properties": {
+          "externalId": {
+            "type": "string",
+            "description": "Unique external ID to enforce in the role trust policy"
+          },
+          "trustedPrincipalArn": {
+            "type": "string",
+            "description": "CybeDefend AWS principal the role must trust"
+          },
+          "trustPolicyJson": {
+            "type": "string",
+            "description": "Ready-to-paste role trust policy (JSON)"
+          },
+          "permissionPolicyJson": {
+            "type": "string",
+            "description": "Ready-to-paste ECR pull permission policy (JSON)"
+          }
+        },
+        "required": [
+          "externalId",
+          "trustedPrincipalArn",
+          "trustPolicyJson",
+          "permissionPolicyJson"
+        ]
+      },
+      "EcrPrepareIamRoleDto": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "string",
+            "description": "CybeDefend project ID this integration will belong to",
+            "example": "097bbbf4-d1eb-4512-9950-684445279808"
+          },
+          "awsRegion": {
+            "type": "string",
+            "description": "AWS Region of the target ECR registry",
+            "example": "us-east-1"
+          }
+        },
+        "required": [
+          "awsRegion"
+        ]
+      },
+      "EcrOrgCredentialDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "awsAccountId": {
+            "type": "string"
+          },
+          "awsRegion": {
+            "type": "string"
+          },
+          "registryUrl": {
+            "type": "string"
+          },
+          "credentialType": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "linkedProjectCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "awsAccountId",
+          "awsRegion",
+          "registryUrl",
+          "credentialType",
+          "description",
+          "createdAt",
+          "linkedProjectCount"
         ]
       }
     }
