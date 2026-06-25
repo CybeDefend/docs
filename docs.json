@@ -500,6 +500,9 @@
                 "group": "Container Registries",
                 "pages": [
                   "latest/api-reference/endpoint/container-registry-credentials/get-all-container-registry-credentials-for-an-organization",
+                  "latest/api-reference/endpoint/container-registry-credentials/bulk-apply-a-container-registry-credential-to-projects",
+                  "latest/api-reference/endpoint/container-registry-credentials/list-projects-linked-to-a-container-registry-credential",
+                  "latest/api-reference/endpoint/container-registry-credentials/set-projects-linked-to-a-container-registry-credential",
                   {
                     "group": "Docker Hub",
                     "pages": [
@@ -553,8 +556,12 @@
                     "group": "AWS (ECR)",
                     "pages": [
                       "latest/api-reference/endpoint/ecr-container-registry/store-ecr-container-registry-credentials",
+                      "latest/api-reference/endpoint/ecr-container-registry/list-organization-ecr-credentials",
+                      "latest/api-reference/endpoint/ecr-container-registry/prepare-an-iam-role-based-ecr-integration",
                       "latest/api-reference/endpoint/ecr-container-registry/list-ecr-credentials",
                       "latest/api-reference/endpoint/ecr-container-registry/get-ecr-credential-details",
+                      "latest/api-reference/endpoint/ecr-container-registry/list-projects-linked-to-an-ecr-credential",
+                      "latest/api-reference/endpoint/ecr-container-registry/set-projects-linked-to-an-ecr-credential",
                       "latest/api-reference/endpoint/ecr-container-registry/delete-ecr-credentials",
                       "latest/api-reference/endpoint/ecr-container-registry/list-ecr-images",
                       "latest/api-reference/endpoint/ecr-container-registry/list-ecr-image-tags",

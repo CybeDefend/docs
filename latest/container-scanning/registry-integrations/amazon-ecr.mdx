@@ -1,71 +1,215 @@
 ---
 title: "Amazon ECR"
-description: "Scan container images stored in Amazon Elastic Container Registry."
+description: "Scan container images stored in Amazon Elastic Container Registry, using a cross-account IAM role or static AWS keys."
 ---
 
-**Amazon Elastic Container Registry (ECR)** is AWS's managed Docker container registry. CybeDefend integrates with ECR to scan your container images using AWS IAM authentication.
+**Amazon Elastic Container Registry (ECR)** is AWS's managed Docker container registry. CybeDefend connects to ECR to list your repositories, browse image tags, and scan images for vulnerabilities.
 
-## CybeDefend Configuration
+CybeDefend supports two authentication modes:
+
+<CardGroup cols={2}>
+  <Card title="IAM role (recommended)" icon="user-shield">
+    CybeDefend assumes a **cross-account IAM role** in your AWS account. No AWS secret is ever shared — access is granted by a role you fully control and can revoke at any time.
+  </Card>
+  <Card title="Static AWS keys" icon="key">
+    Provide a long-lived IAM **access key ID** and **secret access key**. Simpler to set up, but the secret is stored by CybeDefend and must be rotated manually.
+  </Card>
+</CardGroup>
+
+<Note>
+  ECR credentials are managed at the **organization level** and linked to one or more projects. Only the projects a credential is linked to can browse its images and start scans. See [Organization credentials & project linking](#organization-credentials--project-linking).
+</Note>
+
+## Option 1 — IAM role (recommended)
+
+With this mode, CybeDefend never holds an AWS secret. You create an IAM **role** in your own AWS account whose trust policy allows **only** CybeDefend's AWS principal to assume it, gated by a unique **External ID**. At scan time, CybeDefend assumes that role, exchanges it for a **short-lived ECR token**, and hands only that token to the scanner — your AWS credentials never reach the scanning engine.
+
+### How it works
+
+<Steps>
+  <Step title="CybeDefend generates the setup">
+    CybeDefend issues a unique **External ID** and produces two ready-to-paste JSON policies: a **trust policy** (who may assume the role) and a **permission policy** (read-only ECR access).
+  </Step>
+  <Step title="You create the role in AWS">
+    You create an IAM role with that trust policy and attach the permission policy. The role lives entirely in your account.
+  </Step>
+  <Step title="CybeDefend assumes the role on demand">
+    To list images or run a scan, CybeDefend calls `sts:AssumeRole` (passing the External ID) to obtain **temporary** credentials, then calls `ecr:GetAuthorizationToken` to get a short-lived Docker login. Only that registry token is injected into the scanner pod.
+  </Step>
+</Steps>
+
+### Setup
+
+Start from your project's **Container Registries → AWS ECR** integration, pick **IAM role**, choose the **AWS region** of your registry, and click **Generate setup instructions**. CybeDefend returns the External ID, the trusted principal, and the two policies referenced below.
+
+<Warning>
+  Keep the setup window open until you save. Each click on **Generate setup instructions** mints a **new External ID** — a role you already created in AWS will be refused until you update its trust policy with the new value.
+</Warning>
+
+<Steps>
+  <Step title="Create the role with the trust policy">
+    AWS Console → **IAM** → **Roles** → **Create role** → select **Custom trust policy**, paste the trust policy JSON below, then click **Next**.
+
+    ```json Trust policy (example)
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "<CybeDefend principal ARN — shown in the setup window>"
+          },
+          "Action": "sts:AssumeRole",
+          "Condition": {
+            "StringEquals": {
+              "sts:ExternalId": "cybedefend-<your-id>-<random>"
+            }
+          }
+        }
+      ]
+    }
+    ```
+
+    The `Principal.AWS` value is **CybeDefend's AWS service account** (a single, shared principal). The `sts:ExternalId` condition is mandatory — it is what prevents another tenant from assuming your role (the *confused-deputy* protection). Use the exact values from the setup window.
+  </Step>
+
+  <Step title="Skip the permissions screen">
+    On **Add permissions**, select nothing and click **Next**. Give the role a name (e.g. `cybedefend-ecr-scan`) and click **Create role**.
+  </Step>
+
+  <Step title="Attach the permission policy">
+    Open the role you just created → **Permissions** tab → **Add permissions** → **Create inline policy** → **JSON** tab. Paste the permission policy below, name it (e.g. `cybedefend-ecr-pull`), then create it.
+
+    ```json Permission policy
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "EcrAuthToken",
+          "Effect": "Allow",
+          "Action": "ecr:GetAuthorizationToken",
+          "Resource": "*"
+        },
+        {
+          "Sid": "EcrPullAndDescribe",
+          "Effect": "Allow",
+          "Action": [
+            "ecr:BatchGetImage",
+            "ecr:GetDownloadUrlForLayer",
+            "ecr:BatchCheckLayerAvailability",
+            "ecr:DescribeRepositories",
+            "ecr:DescribeImages"
+          ],
+          "Resource": "*"
+        }
+      ]
+    }
+    ```
+
+    These are **read-only** ECR permissions — enough to list repositories, inspect images, and pull layers for scanning. CybeDefend never needs write access.
+  </Step>
+
+  <Step title="Paste the role ARN and save">
+    From the role's summary page, copy its **ARN** (e.g. `arn:aws:iam::123456789012:role/cybedefend-ecr-scan`) and paste it back into CybeDefend, then click **Save**. CybeDefend immediately verifies it can assume the role and reach ECR before storing the integration.
+  </Step>
+</Steps>
+
+<Tip>
+  The 12-digit AWS account ID and the registry URL (`<account>.dkr.ecr.<region>.amazonaws.com`) are derived automatically from the role ARN and region — you don't enter them yourself in IAM-role mode.
+</Tip>
+
+## Option 2 — Static AWS keys
+
+If you prefer (or can't use cross-account roles), provide a long-lived IAM access key. CybeDefend encrypts the secret at rest and verifies it against AWS STS before storing it.
 
 | Field | Description | Example |
 |-------|-------------|---------|
 | **AWS Account ID (12 digits)** | Your 12-digit AWS account ID | `123456789012` |
-| **AWS Region** | AWS region where your ECR is located | `US East (N. Virginia) (us-east-1)` |
+| **AWS Region** | Region where your ECR registry lives | `us-east-1` |
 | **Access Key ID** | AWS IAM access key ID | `AKIAIOSFODNN7EXAMPLE` |
 | **Secret Access Key** | AWS IAM secret access key | `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY` |
-| **Description** | Optional description for the registry | `Production ECR registry` |
-
-## How to Create IAM Credentials for ECR
+| **Description** | Optional description for the credential | `Production ECR registry` |
 
 <Steps>
-  <Step title="Access AWS Console">
-    Go to AWS Console → **IAM** → **Users** → **Create user**
+  <Step title="Create an IAM user">
+    AWS Console → **IAM** → **Users** → **Create user**.
   </Step>
-  
-  <Step title="Attach Policy">
-    Attach the policy `AmazonEC2ContainerRegistryReadOnly` (or `AmazonEC2ContainerRegistryFullAccess` for write access)
+  <Step title="Attach a read-only policy">
+    Attach `AmazonEC2ContainerRegistryReadOnly` — it grants exactly the ECR read/pull access CybeDefend needs.
   </Step>
-  
-  <Step title="Create Access Key">
-    Go to **Security credentials** → **Create access key** → Select **Application running outside AWS**
+  <Step title="Create an access key">
+    **Security credentials** → **Create access key** → select **Application running outside AWS**.
   </Step>
-  
-  <Step title="Copy Credentials">
-    Copy the **Access Key ID** and **Secret Access Key** and paste them in CybeDefend
+  <Step title="Copy the credentials into CybeDefend">
+    Copy the **Access Key ID** and **Secret Access Key** and paste them into CybeDefend along with the account ID and region.
   </Step>
 </Steps>
 
 <Warning>
-The Secret Access Key is only displayed once when created. Make sure to copy it immediately before closing the dialog.
+  The Secret Access Key is shown only once in AWS. Copy it immediately before closing the dialog. Static keys are long-lived — rotate them regularly (every 90 days is the AWS recommendation).
 </Warning>
 
-## Security Best Practices
+## Organization credentials & project linking
+
+ECR credentials are stored once per **organization** and then **linked** to the projects allowed to use them:
 
 <CardGroup cols={2}>
-  <Card title="Use IAM Policies" icon="aws">
-    Use `AmazonEC2ContainerRegistryReadOnly` for minimal permissions required.
+  <Card title="Define once" icon="building">
+    An organization admin adds the credential (IAM role or static keys) a single time, under the organization.
   </Card>
-  <Card title="Rotate Keys Regularly" icon="rotate">
-    Rotate access keys every 90 days as recommended by AWS security best practices.
+  <Card title="Link to projects" icon="diagram-project">
+    The same credential is linked to one or more projects. Only **linked** projects can list images and start scans with it.
   </Card>
-  <Card title="Never Commit Keys" icon="lock">
-    Store credentials in environment variables or AWS Secrets Manager.
+  <Card title="Rotate in place" icon="rotate">
+    Updating the credential (or switching from static keys to an IAM role) rotates it for every linked project at once.
   </Card>
-  <Card title="Use IAM Roles" icon="user-shield">
-    Prefer IAM roles over access keys when running in AWS environments.
+  <Card title="Revoke cleanly" icon="ban">
+    Deleting the credential removes it everywhere; deleting a project only drops that project's link — the org credential stays.
+  </Card>
+</CardGroup>
+
+## Security best practices
+
+<CardGroup cols={2}>
+  <Card title="Prefer IAM roles" icon="user-shield">
+    Cross-account roles avoid sharing any secret and can be revoked instantly by deleting the role or its trust.
+  </Card>
+  <Card title="Keep the External ID" icon="fingerprint">
+    Never remove the `sts:ExternalId` condition from the trust policy — it is what scopes the role to your tenant.
+  </Card>
+  <Card title="Least privilege" icon="lock">
+    Grant only the read-only ECR actions above (or `AmazonEC2ContainerRegistryReadOnly` for static keys). Write access is never required.
+  </Card>
+  <Card title="Rotate static keys" icon="rotate">
+    If you use static keys, rotate them on a schedule and store them only in AWS — CybeDefend already encrypts them at rest.
   </Card>
 </CardGroup>
 
 ## Troubleshooting
 
 <AccordionGroup>
-  <Accordion title="Authentication Failed" icon="circle-exclamation">
-    - Verify Access Key ID and Secret Access Key are correct
-    - Check if the credentials have expired or been deactivated
-    - Ensure the IAM user has the required permissions
+  <Accordion title="CybeDefend could not assume the role" icon="user-lock">
+    - Confirm the trust policy's `Principal.AWS` matches the **trusted principal** shown in the setup window.
+    - Confirm the `sts:ExternalId` in the trust policy is **exactly** the External ID CybeDefend generated. Regenerating the instructions creates a new External ID — update the role's trust policy if you did.
+    - Make sure the role still exists and the region matches your registry.
   </Accordion>
-  <Accordion title="Region Mismatch" icon="globe">
-    - Verify the selected region matches your ECR repository region
-    - ECR repositories are region-specific
+  <Accordion title="The role ARN looks malformed / the role does not exist" icon="circle-exclamation">
+    - The ARN must look like `arn:aws:iam::<12-digit-account>:role/<name>`.
+    - Verify you copied the role's ARN (not the user's or the policy's) from the role summary page.
+  </Accordion>
+  <Accordion title="Authentication failed (static keys)" icon="key">
+    - Verify the Access Key ID and Secret Access Key are correct and still active.
+    - Ensure the IAM user has the `AmazonEC2ContainerRegistryReadOnly` permissions.
+  </Accordion>
+  <Accordion title="Image not found when starting a scan" icon="image">
+    - Pass the image as `repository:tag` **without** the registry host — the host is derived from the credential and is prepended automatically.
+    - Ensure the credential can `ecr:DescribeRepositories` / `ecr:DescribeImages` for that repository.
+  </Accordion>
+  <Accordion title="Region mismatch" icon="globe">
+    - ECR repositories are region-specific. The region on the credential must match the registry that holds your images.
   </Accordion>
 </AccordionGroup>
+
+---
+
+**Related:** [Container Image Scanning](/latest/container-scanning/container-image-scanning) · [Registry Integrations](/latest/container-scanning/registry-integrations/docker-hub) · [ECR API reference](/latest/api-reference/endpoint/ecr-container-registry/prepare-an-iam-role-based-ecr-integration)

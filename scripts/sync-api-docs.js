@@ -302,7 +302,12 @@ const CONFIG = {
 
         // Groupe "Container Registries"
         "Container Registries": {
-            mainPages: ["latest/api-reference/endpoint/container-registry-credentials/get-all-container-registry-credentials-for-an-organization"],
+            mainPages: [
+                "latest/api-reference/endpoint/container-registry-credentials/get-all-container-registry-credentials-for-an-organization",
+                "latest/api-reference/endpoint/container-registry-credentials/bulk-apply-a-container-registry-credential-to-projects",
+                "latest/api-reference/endpoint/container-registry-credentials/list-projects-linked-to-a-container-registry-credential",
+                "latest/api-reference/endpoint/container-registry-credentials/set-projects-linked-to-a-container-registry-credential"
+            ],
             subgroups: {
                 "Docker Hub": {
                     folder: "dockerhub-container-registry",
@@ -358,8 +363,12 @@ const CONFIG = {
                     folder: "ecr-container-registry",
                     pages: [
                         "store-ecr-container-registry-credentials",
+                        "list-organization-ecr-credentials",
+                        "prepare-an-iam-role-based-ecr-integration",
                         "list-ecr-credentials",
                         "get-ecr-credential-details",
+                        "list-projects-linked-to-an-ecr-credential",
+                        "set-projects-linked-to-an-ecr-credential",
                         "delete-ecr-credentials",
                         "list-ecr-images",
                         "list-ecr-image-tags",
