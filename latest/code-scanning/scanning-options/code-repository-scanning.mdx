@@ -37,7 +37,11 @@ CybeDefend offers a **multi-layered security** solution across your codebase, in
 | **C#**         | CybeDefend Engine & Rules + Opengrep | 
 | **PHP**        | CybeDefend Engine & Rules + Opengrep | 
 | **Ruby**       | CybeDefend Engine & Rules + Opengrep | 
-| **Rust**       | CybeDefend Engine & Rules + Opengrep |
+| **Rust**       | CybeDefend Engine & Rules |
+
+<Note>
+**Rust** is not supported by Opengrep — CybeDefend covers it with its own dedicated security rules, run by the CybeDefend Engine.
+</Note>
 
 <Frame>
   <img src="/images/get-started/general-information/sast.png" alt="IAC Security Analysis" style={{ borderRadius: '0.5rem' }} />
@@ -70,13 +74,45 @@ IAC misconfigurations can lead to severe breaches. The CybeDefend Engine identif
 
 ## 3. Software Composition Analysis (SCA)
 
-SCA detects vulnerabilities in **third-party libraries** and **open-source dependencies**. CybeDefend uses the **CybeDefend Engine** combined with **GitHub Advisories** to identify known flaws in your dependencies.
+SCA detects vulnerabilities in **third-party libraries** and **open-source dependencies**. CybeDefend uses the **CybeDefend Engine** combined with **[Google OSV](https://osv.dev)** — the open-source vulnerability database maintained by Google — to identify known flaws in your dependencies. Rather than relying on a single feed, OSV **continuously aggregates and normalizes** advisories from **35+ language ecosystems and OS/distribution security trackers** into one source of truth. GitHub Advisories (GHSA) is one of the many databases OSV consolidates, so earlier coverage is fully retained — and considerably expanded.
 
 ### SCA Scanning Tools
 
 | Engine                       | External Advisory Source |
 |-----------------------------|--------------------------|
-| **CybeDefend Engine**       | GitHub Advisories        |
+| **CybeDefend Engine**       | **Google OSV** ([osv.dev](https://osv.dev)) |
+
+### Vulnerability Data Sources (Google OSV)
+
+CybeDefend draws its SCA intelligence from **[Google OSV](https://osv.dev)** (Open Source Vulnerabilities), an open, distributed database that **aggregates and normalizes** advisories from across the open-source world into a single schema. This spans **language package registries** (npm, PyPI, Maven, NuGet, Go, crates.io, RubyGems, Packagist, Hex, and more) and **OS / distribution and container-image feeds** (Debian, Ubuntu, Alpine, Red Hat, SUSE, Rocky Linux, Chainguard, Wolfi, and many others) — with GitHub Advisories (GHSA) folded in as just one of the contributing sources.
+
+<Note>
+**These sources are aggregated continuously and grow every day.** New advisories — and entirely new ecosystems — are added to OSV constantly, and CybeDefend ingests them on an ongoing basis, so your scans always reflect the latest known vulnerabilities with no action on your side. The counts below are a **snapshot from [osv.dev](https://osv.dev), July 2026** — over **767,000** advisories across **38 sources** — and only trend upward. Check [osv.dev](https://osv.dev) for live figures.
+</Note>
+
+| Ecosystem                    | Advisories | Ecosystem      | Advisories |
+|------------------------------|-----------:|----------------|-----------:|
+| AlmaLinux                    |      5,242 | Alpaquita      |     11,478 |
+| Alpine                       |      4,350 | Android        |      3,403 |
+| Azure Linux                  |     12,016 | BellSoft Hardened Containers | 572 |
+| Bitnami                      |      8,264 | Chainguard     |      9,229 |
+| CleanStart                   |      1,652 | crates.io      |      2,561 |
+| Debian                       |     59,722 | Echo           |      6,669 |
+| GIT                          |     93,379 | GitHub Actions |         54 |
+| Go                           |      8,148 | Hackage        |         32 |
+| Hex                          |        182 | Julia          |        989 |
+| Linux                        |     25,415 | Mageia         |      6,011 |
+| Maven                        |      6,690 | MinimOS        |     86,925 |
+| npm                          |    222,154 | NuGet          |      1,770 |
+| openEuler                    |      7,186 | openSUSE       |     13,449 |
+| OSS-Fuzz                     |      3,958 | Packagist      |      6,664 |
+| PyPI                         |     22,362 | Red Hat        |     21,177 |
+| Rocky Linux                  |      3,619 | Root           |     17,380 |
+| RubyGems                     |      4,550 | SUSE           |     21,326 |
+| SwiftURL                     |         58 | TuxCare        |      5,651 |
+| Ubuntu                       |     57,187 | Wolfi          |      6,451 |
+
+_The counts above reflect the **advisory data** OSV provides. Which ecosystems CybeDefend **parses from your project** — for dependency detection, license lookup, and exploitable paths — is listed under [Feature Support by Ecosystem](#feature-support-by-ecosystem) below._
 
 ### Files & Package Managers
 
@@ -125,6 +161,18 @@ Not all ecosystems support every SCA feature. The table below shows which featur
 <Note>
 If you use special file names or custom project layouts, you can configure <strong>file-patterns</strong> in the <strong>CybeDefend dashboard</strong> to ensure they are recognized and scanned.
 </Note>
+
+---
+
+## 4. Secret Scanning
+
+**Secret scanning** detects hardcoded secrets — API keys, tokens, passwords, private keys, and other credentials — exposed in your source code. CybeDefend runs **Gitleaks** under the **CybeDefend Engine** to surface these findings alongside your SAST, SCA, and IaC results in a single view.
+
+### Secret Scanning Tools
+
+| Engine                | Scanning Tool |
+|-----------------------|---------------|
+| **CybeDefend Engine** | Gitleaks      |
 
 ---
 
