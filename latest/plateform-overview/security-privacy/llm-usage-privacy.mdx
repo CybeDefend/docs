@@ -23,7 +23,7 @@ This policy ensures:
 
 - **Complete confidentiality**: Your proprietary code remains private
 - **No data leakage**: Your security findings never contribute to model training
-- **Compliance**: Meets the strictest regulatory requirements (GDPR, SOC 2, etc.)
+- **Compliance**: GDPR compliant today. SOC 2 Type II and ISO 27001 audits in progress, see the [Security page](https://cybedefend.com/en/legal/security)
 
 ---
 
@@ -40,14 +40,24 @@ When you use CybeDefend AI features (Cybe Analysis, Cybe AutoFix, Cybe Security 
 LLM inference happens in real-time and is not persisted beyond the immediate request/response cycle.
 </Info>
 
+### What the knowledge graph actually holds
+
+The graph is what lets the agent apply your own business rules on its next generation. It stores **file paths and a short description of what each file does**. **It does not contain your source code.** You can delete it at any time from the project settings, and disabling the AI features stops it being built. Source code itself is destroyed with its container at the end of the scan, see [Never Stores Your Code](/latest/plateform-overview/security-privacy/never-stores-your-code).
+
 ---
 
 ## Regional LLM Deployment
 
-| Region | LLM Location | Compliance |
-|--------|-------------|------------|
-| **Europe** | EU sovereign cloud | GDPR, ANSSI SecNumCloud, BSI C5 |
-| **United States** | US cloud infrastructure | SOC 2, HIPAA, PCI-DSS |
+Inference runs on open-weight models that CybeDefend hosts itself, inside the region you selected. Nothing crosses the regional boundary and no third-party AI API is involved.
+
+| Region | Where inference runs | Operated by |
+|--------|---------------------|-------------|
+| **Europe** | Scaleway, France | CybeDefend, self-hosted open-weight models |
+| **United States** | Google Cloud, United States | CybeDefend, self-hosted open-weight models |
+
+<Warning>
+Certifications you may see listed for Scaleway or Google Cloud belong to **those providers** and describe the infrastructure we run on. CybeDefend's own certification status is on our [Security page](https://cybedefend.com/en/legal/security): GDPR compliant today, SOC 2 Type II and ISO 27001 audits in progress.
+</Warning>
 
 ---
 

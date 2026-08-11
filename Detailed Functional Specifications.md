@@ -199,7 +199,7 @@ Proprietary knowledge graph technology parses codebases to create deep contextua
 
 **Data Sovereignty:**
 
-- **European Cloud**: SecNumCloud certified, GDPR compliant, data never leaves EU
+- **European Cloud**: hosted on SecNumCloud-qualified infrastructure (Scaleway), GDPR compliant, data never leaves EU
 - **US Cloud**: SOC 2, HIPAA, PCI-DSS compliant, optimized for North American latency
 - **No Training on User Data**: Strict zero-training policy ensures complete confidentiality
 
@@ -2004,7 +2004,7 @@ When AI features are disabled:
    - All code copies destroyed
 
 2. **Zero Persistent Storage**:
-   - Code is NEVER stored after scan completion
+   - Source code is destroyed with its container at scan completion and never retained. The business-logic knowledge graph, when AI features are enabled, keeps file paths and a short description of each file, never the code itself.
    - Only vulnerability metadata retained
    - Complete code deletion guaranteed
    - No remnants in any system

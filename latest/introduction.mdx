@@ -40,6 +40,26 @@ Our vision is built on a clear, phased roadmap that is available for public view
 
 ---
 
+## What happens to your code
+
+Security teams evaluating CybeDefend usually want this answer before anything else, so here it is in one place.
+
+**The scanning platform receives your repository, because it cannot scan what it does not have.** Your repo is cloned into an isolated container, analysed, and the container together with its copy of the code is destroyed when the scan finishes. **We do not retain source code after analysis.** What we keep is the result: findings, their file and line, and repository metadata.
+
+**VibeDefend is a different thing.** It is the layer that plugs into your AI coding agent (Claude Code, Cursor, Windsurf, GitHub Copilot, OpenAI Codex) and it runs on the developer's machine. Edits happen locally, and only governance metadata comes back to the platform.
+
+**If you enable the AI features that learn your repository's conventions**, we additionally keep a business-logic knowledge graph. It holds **file paths and a short description of what each file does. It does not contain your source code.** You can delete it at any time, and disabling the AI features stops it being built.
+
+**AI inference runs on open-weight models we host ourselves**, inside the region you selected: Scaleway for the EU region, Google Cloud for the US region. No code and no prompt is sent to any third-party AI API. Nothing crosses the regional boundary. Nothing you submit trains any model.
+
+**Certifications.** GDPR compliant today. **SOC 2 Type II and ISO 27001 audits are in progress**, controls are implemented and operating, and we expect the SOC 2 report shortly. Certifications listed in this documentation for Scaleway or Google Cloud belong to those providers and describe the infrastructure we run on, not CybeDefend itself.
+
+<Card title="Full detail" icon="shield" href="/latest/plateform-overview/security-privacy/never-stores-your-code">
+  What we destroy, what we keep, and how the knowledge graph works. See also [LLM Usage & Privacy](/latest/plateform-overview/security-privacy/llm-usage-privacy), our [Security page](https://cybedefend.com/en/legal/security), and the [sub-processor list](https://cybedefend.com/en/legal/subprocessors).
+</Card>
+
+---
+
 ## Evolution and Innovation: Introducing BLSA
 
 ### What is BLSA?

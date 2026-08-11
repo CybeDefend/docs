@@ -1,11 +1,15 @@
 ---
 title: "Never Stores Your Code"
-description: "How CybeDefend secures your code and ensures it is not stored post-analysis."
+description: "What CybeDefend receives, what it destroys at the end of the scan, and what it keeps."
 ---
 
 <Tip>
-In short: CybeDefend does not keep your code after the scanning process is complete. We use a container-based workflow for running security checks (SAST, secrets detection, etc.), and once the analysis finishes, all code and containers are securely wiped.
+In short: to scan your repository, CybeDefend has to receive it. We clone it into an isolated container, run the security checks, then destroy the container together with its copy of the code. **We do not keep your source code after the scan.** What we keep is the result: findings, their location, and repository metadata.
 </Tip>
+
+<Info>
+**Scanning platform and VibeDefend are two different things.** The platform receives your repository when you ask it to scan. **VibeDefend**, the layer that plugs into your AI coding agent, runs on the developer's machine: edits happen locally and only governance metadata comes back. This page describes the platform.
+</Info>
 
 ## Temporary Container Approach
 
@@ -21,3 +25,25 @@ CybeDefend securely clones your repository into an isolated container, performs 
 <Frame>
   <img src="/images/get-started/general-information/never-stock-code.png" alt="Secure Container Scanning" style={{ borderRadius: '0.5rem' }} />
 </Frame>
+
+## What we keep, precisely
+
+| What | Kept after the scan? |
+|---|---|
+| Your source code | **No.** Destroyed with the container at the end of the scan. |
+| Findings, severity, file and line of each finding | Yes. That is the product. |
+| Repository metadata (names, branches, identifiers) | Yes. |
+| Business-logic knowledge graph, **if you enable the AI features** | Yes. See below. |
+
+### The business-logic knowledge graph
+
+If you enable the AI features that learn your repository's own conventions, we build and keep a knowledge graph of your codebase. This is what lets the agent apply your business rules the next time it writes code.
+
+The graph holds **file paths and a short description of what each file does**. **It does not contain your source code.**
+
+- You can **delete it at any time** from the project settings.
+- **Disabling the AI features** stops it being built in the first place, and no code is sent to the models.
+
+### Where the analysis runs
+
+Everything above happens inside the region you selected at signup: Scaleway for the EU region, Google Cloud for the US region. AI inference runs on open-weight models we host ourselves, in that same region. No code and no prompt is sent to any third-party AI API, and nothing crosses the regional boundary. See [LLM Usage & Privacy](/latest/plateform-overview/security-privacy/llm-usage-privacy).
