@@ -114,7 +114,7 @@ The plugin adds a **"Generate Commit Message"** action in the VCS commit dialog,
 
 ## File Exclusion
 
-Create a **`.cybedefend`** file at your project root to exclude files and directories from scans. It uses `.gitignore` syntax:
+Create a **`.cybeignore`** file at your project root to exclude files and directories from scans. It uses `.gitignore` syntax:
 
 ```
 # Exclude test fixtures
@@ -125,6 +125,8 @@ tests/fixtures/
 dist/
 build/
 ```
+
+The older name `.cybedefend` is still read, but it is deprecated: it collides with the `.cybedefend/` directory VibeDefend uses for `config.json`. See [.cybeignore Exclusion File](/latest/code-scanning/scanning-options/cybedefend-ignore-file).
 
 <Info>
 Common directories like `node_modules`, `.git`, `dist`, `build`, `venv`, and `__pycache__` are excluded by default.
