@@ -1,11 +1,11 @@
 ---
-title: '.cybedefend Ignore File'
-description: 'Filter vulnerabilities using a .cybedefend file with gitignore syntax'
+title: '.cybeignore Exclusion File'
+description: 'Exclude files from SAST reports with a .cybeignore file using gitignore syntax'
 ---
 
 ## Overview
 
-The `.cybedefend` file allows you to exclude specific files or directories from SAST vulnerability reports. It uses the same syntax as `.gitignore`, making it familiar and easy to use.
+The `.cybeignore` file lets you exclude specific files or directories from SAST vulnerability reports. It uses the same syntax as `.gitignore`, so it is familiar and easy to use.
 
 <Tip>
 To suppress a single finding on one precise line instead of a whole file, use an [inline `cybedefend-ignore` comment](/latest/code-scanning/scanning-options/inline-ignore-comments).
@@ -13,13 +13,32 @@ To suppress a single finding on one precise line instead of a whole file, use an
 
 ## How It Works
 
-Create a `.cybedefend` file in your project's root directory to define exclusion patterns. Vulnerabilities found in matching files will be automatically filtered from scan results.
+Create a `.cybeignore` file in your project's root directory to define exclusion patterns. Vulnerabilities found in matching files are automatically filtered from scan results.
+
+## Where CybeDefend Looks
+
+The scanner reads the **first** file it finds, in this order:
+
+| Order | Path | Status |
+|-------|------|--------|
+| 1 | `.cybeignore` | **Recommended** |
+| 2 | `.cybedefend` | Deprecated — still read |
+| 3 | `.cybedefend/ignore` | Use when `.cybedefend` is a directory |
+
+<Warning>
+**`.cybedefend` is deprecated.** It still works and nothing breaks today, but it collides with the `.cybedefend/` directory that [VibeDefend](/latest/agent-ai-integration/vibedefend) creates for `config.json` — a single path cannot be both a file and a directory. Rename your file to `.cybeignore`; the contents do not change.
+</Warning>
+
+If your repository is linked with VibeDefend, you already have a `.cybedefend/` **directory**. You have two options, and they behave identically:
+
+- Put your patterns in `.cybeignore` at the project root (recommended), or
+- Put them in `.cybedefend/ignore`, alongside `config.json`.
 
 ## Usage
 
-### Creating a .cybedefend File
+### Creating a .cybeignore File
 
-Create a file named `.cybedefend` in your project root:
+Create a file named `.cybeignore` in your project root:
 
 ```bash
 # Ignore test files
@@ -42,6 +61,20 @@ vendor/
 *.log
 ```
 
+### Migrating from .cybedefend
+
+Renaming the file is the whole migration — the syntax is unchanged:
+
+```bash
+git mv .cybedefend .cybeignore
+```
+
+If you use VibeDefend and the root path is taken by the `.cybedefend/` directory, move your patterns inside it instead:
+
+```bash
+mv my-patterns.txt .cybedefend/ignore
+```
+
 ### Supported Patterns
 
 The syntax is identical to `.gitignore`:
@@ -55,12 +88,26 @@ The syntax is identical to `.gitignore`:
 | `!file.txt` | Negation (don't ignore) | `!important.log` |
 | `#comment` | Comment line | `# This is a comment` |
 
+Negation is the tool for excluding a whole class while keeping one member of it under review:
+
+```bash
+# Exclude every spec file…
+**/*.spec.ts
+
+# …except this one, which carries a credential whose origin is still unconfirmed
+!services/export/redact-secrets.spec.ts
+```
+
+## Scope
+
+`.cybeignore` filters **SAST** results only. Secret detection, SCA, IaC and CI/CD findings are produced by separate scanners and are **not** affected by this file — excluding a file here does not hide a hardcoded credential a later commit introduces into it.
+
 ## Common Use Cases
 
 ### Ignore Test Code
 
 ```
-# .cybedefend
+# .cybeignore
 **/test/**
 **/tests/**
 **/__tests__/**
@@ -72,7 +119,7 @@ The syntax is identical to `.gitignore`:
 ### Ignore Third-Party Code
 
 ```
-# .cybedefend
+# .cybeignore
 node_modules/
 vendor/
 third_party/
@@ -82,7 +129,7 @@ third_party/
 ### Ignore Demo/Example Code
 
 ```
-# .cybedefend
+# .cybeignore
 **/examples/**
 **/demo/**
 **/samples/**
@@ -92,7 +139,7 @@ docs/code-examples/**
 ### Ignore Configuration Templates
 
 ```
-# .cybedefend
+# .cybeignore
 *.example.yml
 *.template.json
 config/sample_*.py
@@ -101,22 +148,26 @@ config/sample_*.py
 ## Best Practices
 
 <Warning>
-Use `.cybedefend` responsibly. Don't ignore real vulnerabilities in production code.
+Use `.cybeignore` responsibly. Don't ignore real vulnerabilities in production code.
 </Warning>
+
+### Exclude Files, Not Findings You Dislike
+
+A file-level exclusion is right when the **whole file** is out of scope for SAST — a test fixture, a vendored dependency, a demo. When a finding is a false positive but the file also holds production code, use an [inline `cybedefend-ignore` comment](/latest/code-scanning/scanning-options/inline-ignore-comments) instead, so the rest of the file stays under review.
 
 ### Document Your Exclusions
 
 Always add comments explaining why files are excluded:
 
 ```
-# .cybedefend
+# .cybeignore
 
 # DEPENDENCIES
 # Third-party code managed by maintainers
 node_modules/
 vendor/
 
-# TEST CODE  
+# TEST CODE
 # Tests intentionally contain unsafe code for testing
 **/test/**
 
@@ -127,16 +178,27 @@ src/legacy/auth_handler.py
 
 ### Include in Code Reviews
 
-- Add `.cybedefend` to your repository
+- Add `.cybeignore` to your repository
 - Review changes in pull requests
 - Regularly audit exclusion patterns
 
+### Verify What You Wrote
+
+`.cybeignore` uses the gitignore engine, so git itself can check your patterns before you commit them:
+
+```bash
+git ls-files | git -c core.excludesFile=.cybeignore check-ignore --no-index --stdin
+```
+
+Every path it prints is a file that will drop out of your SAST results. If a production file appears in that list, your pattern is too broad.
+
 ### Monitor Impact
 
-Check scan logs to see how many vulnerabilities are filtered:
+Check scan logs to see which file was loaded and how many vulnerabilities were filtered:
 
 ```
-Filtered out 12 vulnerabilities based on .cybedefend patterns
+[IgnoreFilter] loaded exclusion patterns from .cybeignore
+Filtered out 12 vulnerabilities based on .cybeignore patterns
 After filtering: 45 vulnerabilities to report
 ```
 
@@ -146,21 +208,26 @@ After filtering: 45 vulnerabilities to report
 
 - Use `**/` for recursive matching: `**/bad/**`
 - Ensure correct path separators (always `/`)
-- Check that `.cybedefend` is in the project root
+- Check that `.cybeignore` is in the project root
 - Review scan logs for path details
 
 ### File Not Found
 
-- Verify `.cybedefend` is included in your repository
+- Verify `.cybeignore` is included in your repository — it must be committed, not gitignored
 - Check file permissions
 - Ensure the file is at the project root level
+- If you have a `.cybedefend/` **directory**, the legacy root file cannot exist; use `.cybeignore` or `.cybedefend/ignore`
+
+### Nothing Is Being Filtered
+
+Look for the loader line in your scan logs. `[IgnoreFilter] no .cybeignore file found` means no candidate was readable at all — most often the file was never committed, or it sits in a subdirectory rather than the project root.
 
 ## Example Configuration
 
 Here's a comprehensive example:
 
 ```
-# .cybedefend
+# .cybeignore
 
 # ============================================
 # THIRD-PARTY DEPENDENCIES
@@ -205,5 +272,5 @@ config/sample_*.py
 ```
 
 <Info>
-The `.cybedefend` file is processed during scanning. Excluded vulnerabilities won't appear in your reports or affect your project metrics.
+The `.cybeignore` file is processed during scanning. Excluded vulnerabilities won't appear in your reports or affect your project metrics.
 </Info>

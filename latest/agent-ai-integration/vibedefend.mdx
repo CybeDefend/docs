@@ -108,6 +108,10 @@ After install, drop one tiny file at the root of each repo you want monitored â€
 
 Grab the UUID from the project page on the [EU dashboard](https://eu.cybedefend.com) or the [US dashboard](https://us.cybedefend.com). You can also override it per shell or per project with the `CYBEDEFEND_PROJECT_ID` environment variable.
 
+<Note>
+Because `.cybedefend/` is a **directory** here, the deprecated `.cybedefend` exclusion *file* cannot exist beside it â€” a path is either a file or a directory. Declare your SAST exclusions in [`.cybeignore`](/latest/code-scanning/scanning-options/cybedefend-ignore-file) at the repo root, or in `.cybedefend/ignore` next to `config.json`.
+</Note>
+
 ---
 
 ## Commands
