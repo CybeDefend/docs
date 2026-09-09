@@ -100,7 +100,24 @@ Negation is the tool for excluding a whole class while keeping one member of it 
 
 ## Scope
 
-`.cybeignore` filters **SAST** results only. Secret detection, SCA, IaC and CI/CD findings are produced by separate scanners and are **not** affected by this file — excluding a file here does not hide a hardcoded credential a later commit introduces into it.
+`.cybeignore` filters every finding produced by the SAST/IaC scanner binary:
+
+| Scan type | Filtered by `.cybeignore`? |
+|-----------|----------------------------|
+| SAST (Opengrep, Bandit) | Yes |
+| IaC (Kics, Checkov) | Yes |
+| **Secret (Gitleaks)** | **Yes** |
+| CI/CD | Yes |
+| SCA | No — separate scanner |
+| Container | No — separate scanner |
+
+<Warning>
+**Excluding a file also hides its secret findings.** Gitleaks runs as a second pass inside the same scanner and shares the same exclusion list, so a path you exclude here stops being reported for hardcoded credentials too — including credentials a *later* commit adds to that file.
+
+This matters most for the patterns people reach for first. `**/*.spec.ts` or `tests/` will silence Gitleaks across your whole test suite, which is exactly where fixture credentials — and the occasional real one pasted in by mistake — tend to live.
+</Warning>
+
+If you want a file out of SAST but still watched for secrets, exclude the specific findings with [inline `cybedefend-ignore` comments](/latest/code-scanning/scanning-options/inline-ignore-comments) instead of listing the file here.
 
 ## Common Use Cases
 
