@@ -22,15 +22,9 @@ curl -H "Authorization: Bearer $CYBEDEFEND_TOKEN" \
   "https://api-eu.cybedefend.com/organization/$ORG_ID/findings?severity=critical,high&page_size=100"
 ```
 
-## Required permission
+## Scope
 
-The export is gated by a dedicated **`export_findings`** permission, granted at the organization level.
-
-<Note>
-`export_findings` is a read-only permission scoped to this feed. It does not require, and does not grant, any other permission on the platform. For a GRC or SIEM service account, grant `export_findings` alone.
-</Note>
-
-The export is limited to the projects the calling principal may read. The `project_id` filter can only **narrow** that set, never widen it.
+The export covers the projects your token has access to. The `project_id` filter can only **narrow** that set, never widen it.
 
 ## Query parameters
 
@@ -151,5 +145,5 @@ A GRC platform polls on a timer, so **429 is part of this contract, not an error
 |---|---|
 | `400` | Unknown parameter name, unknown filter value, or an emptied filter. |
 | `401` | Missing or invalid token. |
-| `403` | The principal lacks `export_findings` on this organization. |
+| `403` | The token is not allowed to export findings for this organization. |
 | `429` | Rate limited. Back off and retry. |
