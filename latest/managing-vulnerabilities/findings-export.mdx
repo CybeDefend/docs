@@ -6,7 +6,7 @@ description: "Pull every finding across your organization from a single cursor-p
 The **Findings Export** is a read-only, organization-wide feed of your security findings. It exists for machines: a GRC platform, a SIEM, a compliance warehouse, or any internal job that needs the whole picture on a timer rather than one project at a time in the dashboard.
 
 <Note>
-This is a **public contract**. Field names are `snake_case` and every optional field is always present and explicitly `null` when there is no evidence for it — so a consumer can tell "never triaged" apart from "field missing from this build of the API".
+This is a **public contract**. Field names are `snake_case`, and every optional field is always present. When there is no value for a field, it is explicitly `null`, so a consumer can tell "never triaged" apart from "field missing".
 </Note>
 
 ## Endpoint
@@ -15,33 +15,27 @@ This is a **public contract**. Field names are `snake_case` and every optional f
 GET /organization/{organizationId}/findings
 ```
 
-Authenticate with a bearer token, exactly as elsewhere in the API. Use the base URL of the region your organization is hosted in — `https://api-eu.cybedefend.com` (EU) or `https://api-us.cybedefend.com` (US).
+Authenticate with a bearer token, exactly as elsewhere in the API. Use the base URL of the region your organization is hosted in: `https://api-eu.cybedefend.com` (EU) or `https://api-us.cybedefend.com` (US).
 
 ```bash
 curl -H "Authorization: Bearer $CYBEDEFEND_TOKEN" \
   "https://api-eu.cybedefend.com/organization/$ORG_ID/findings?severity=critical,high&page_size=100"
 ```
 
-## Required permission
+## Scope
 
-The export is gated by a dedicated **`export_findings`** permission, granted at the organization level.
-
-<Warning>
-`export_findings` is deliberately **not** `read_scan_result`. That broader permission also unlocks Cybe AutoFix, LLM chat sends and conversation deletion — a read-only GRC service account has no business holding it. Grant `export_findings` alone.
-</Warning>
-
-The export also narrows to the project set the calling principal may read. The `project_id` filter can only ever **narrow** that set, never widen it.
+The export covers the projects your token has access to. The `project_id` filter can only **narrow** that set, never widen it.
 
 ## Query parameters
 
 | Parameter | Type | Description |
 |---|---|---|
 | `status` | enum list | `to_verify`, `confirmed`, `ignored`, `resolved`. Omit for every state. |
-| `severity` | enum list | `critical`, `high`, `medium`, `low`, `none`. Derived live from CVSS, not read from a stored column. |
+| `severity` | enum list | `critical`, `high`, `medium`, `low`, `none`. Computed from the current CVSS score. |
 | `project_id` | uuid list | Restrict to these projects. Max 200 per page. |
 | `updated_since` | ISO 8601 | Findings whose lifecycle changed at or after this instant. |
 | `cursor` | string | Opaque cursor from `next_cursor`. Do not construct or edit it. |
-| `page_size` | integer | 1–100. Defaults to 50. |
+| `page_size` | integer | 1 to 100. Defaults to 50. |
 
 List parameters accept **both** spellings and any mix of the two:
 
@@ -51,9 +45,9 @@ List parameters accept **both** spellings and any mix of the two:
 ```
 
 <Warning>
-**A mistyped filter fails loudly — it never widens the scope.**
+**A mistyped filter fails loudly. It never widens the scope.**
 
-An unknown value (`?status=confimed`), an unrecognised parameter name (`?statuss=`), or a filter that is present but empty (`?status=`) all return **400**. This is deliberate: on a compliance feed, silently dropping a filter would hand you your entire organization while you believed you asked for one status, and nothing in the response would say so.
+An unknown value (`?status=confimed`), an unrecognised parameter name (`?statuss=`), or a filter that is present but empty (`?status=`) all return **400**. On a compliance feed, silently dropping a filter would return your entire organization while you believed you asked for one status, so the API refuses the request instead.
 </Warning>
 
 ## Response
@@ -86,7 +80,7 @@ An unknown value (`?status=confimed`), an unrecognised parameter name (`?statuss
         "updated_at": "2026-08-30T02:11:00.000Z"
       }
     ],
-    "next_cursor": "…",
+    "next_cursor": "...",
     "has_more": true,
     "next_since": "2026-08-30T02:10:55.000Z"
   }
@@ -96,17 +90,17 @@ An unknown value (`?status=confimed`), an unrecognised parameter name (`?statuss
 ### Notable fields
 
 <AccordionGroup>
-  <Accordion title="id — the stable fingerprint">
+  <Accordion title="id: the stable fingerprint">
     Survives reindentation, line drift and scanner rule renames. It **does** change when the file is renamed, when the vulnerable code itself changes, or when one of several identical occurrences in a file disappears.
   </Accordion>
-  <Accordion title="severity — derived, not stored">
-    Computed live from the CVSS 4 environmental score, falling back to the base score. `none` is a real band (a CVSS score of exactly 0) and is exported.
+  <Accordion title="severity: computed from CVSS">
+    Computed from the CVSS 4 environmental score, falling back to the base score. `none` is a real band (a CVSS score of exactly 0) and is exported.
   </Accordion>
-  <Accordion title="remediation — null means no guidance">
+  <Accordion title="remediation: null means no guidance">
     `null` where the source carries none, such as OSV advisories (`sca`) and container findings. A null here means "we have no guidance", **not** "no action needed".
   </Accordion>
-  <Accordion title="details — family-specific, never invented">
-    File and line for `sast`, package for `sca`, image for `container`, and so on. `null` when the stored payload could not be parsed — never a fabricated empty object.
+  <Accordion title="details: family-specific">
+    File and line for `sast`, package for `sca`, image for `container`, and so on. `null` when no structured details are available for the finding.
   </Accordion>
 </AccordionGroup>
 
@@ -131,16 +125,16 @@ done
 
 ## Pulling incrementally
 
-Store the `next_since` of your last page and replay it verbatim as `updated_since` on the next run. That is the whole contract — you do not compute the watermark yourself.
+Store the `next_since` of your last page and replay it verbatim as `updated_since` on the next run. That is the whole contract: you do not compute the watermark yourself.
 
 ```
-run 1:  GET …/findings                          → next_since = T1
-run 2:  GET …/findings?updated_since=T1         → next_since = T2
-run 3:  GET …/findings?updated_since=T2         → …
+run 1:  GET .../findings                          -> next_since = T1
+run 2:  GET .../findings?updated_since=T1         -> next_since = T2
+run 3:  GET .../findings?updated_since=T2         -> ...
 ```
 
 <Tip>
-`next_since` lags a few seconds behind the last row served, on purpose: a row committed slightly out of clock order would otherwise be skipped forever. Overlap is cheap, a missed finding is not.
+`next_since` is set a few seconds before the last row served, so that consecutive runs overlap slightly. This guarantees that no finding is skipped. Overlap is cheap, a missed finding is not.
 </Tip>
 
 ## Rate limiting
@@ -151,5 +145,5 @@ A GRC platform polls on a timer, so **429 is part of this contract, not an error
 |---|---|
 | `400` | Unknown parameter name, unknown filter value, or an emptied filter. |
 | `401` | Missing or invalid token. |
-| `403` | The principal lacks `export_findings` on this organization. |
-| `429` | Rate limited — back off and retry. |
+| `403` | The token is not allowed to export findings for this organization. |
+| `429` | Rate limited. Back off and retry. |
