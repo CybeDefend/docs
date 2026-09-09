@@ -239,6 +239,10 @@ After filtering: 45 vulnerabilities to report
 
 Look for the loader line in your scan logs. `[IgnoreFilter] no .cybeignore file found` means no candidate was readable at all — most often the file was never committed, or it sits in a subdirectory rather than the project root.
 
+<Note>
+**Scans that ran before 9 September 2026 never saw your `.cybeignore`.** The archive assembled for a scan keeps only recognised filenames, and `.cybeignore` carries no extension, so it was dropped before it reached the scanner — a repository using the recommended name logged `[IgnoreFilter] no .cybeignore file found` however the file was written. The deprecated `.cybedefend` name was not affected. Nothing to change on your side: re-run the scan and your patterns apply.
+</Note>
+
 ## Example Configuration
 
 Here's a comprehensive example:
