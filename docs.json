@@ -189,7 +189,8 @@
                 "pages": [
                   "/latest/managing-vulnerabilities/project-vulnerability-list",
                   "/latest/managing-vulnerabilities/updating-vulnerabilities",
-                  "/latest/managing-vulnerabilities/top-vulnerabilities"
+                  "/latest/managing-vulnerabilities/top-vulnerabilities",
+                  "/latest/managing-vulnerabilities/findings-export"
                 ]
               },
               {

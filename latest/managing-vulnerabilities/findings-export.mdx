@@ -1,0 +1,155 @@
+---
+title: "Findings Export (GRC / SIEM)"
+description: "Pull every finding across your organization from a single cursor-paginated endpoint, designed for GRC platforms and SIEM ingestion."
+---
+
+The **Findings Export** is a read-only, organization-wide feed of your security findings. It exists for machines: a GRC platform, a SIEM, a compliance warehouse, or any internal job that needs the whole picture on a timer rather than one project at a time in the dashboard.
+
+<Note>
+This is a **public contract**. Field names are `snake_case` and every optional field is always present and explicitly `null` when there is no evidence for it — so a consumer can tell "never triaged" apart from "field missing from this build of the API".
+</Note>
+
+## Endpoint
+
+```http
+GET /organization/{organizationId}/findings
+```
+
+Authenticate with a bearer token, exactly as elsewhere in the API. Use the base URL of the region your organization is hosted in — `https://api-eu.cybedefend.com` (EU) or `https://api-us.cybedefend.com` (US).
+
+```bash
+curl -H "Authorization: Bearer $CYBEDEFEND_TOKEN" \
+  "https://api-eu.cybedefend.com/organization/$ORG_ID/findings?severity=critical,high&page_size=100"
+```
+
+## Required permission
+
+The export is gated by a dedicated **`export_findings`** permission, granted at the organization level.
+
+<Warning>
+`export_findings` is deliberately **not** `read_scan_result`. That broader permission also unlocks Cybe AutoFix, LLM chat sends and conversation deletion — a read-only GRC service account has no business holding it. Grant `export_findings` alone.
+</Warning>
+
+The export also narrows to the project set the calling principal may read. The `project_id` filter can only ever **narrow** that set, never widen it.
+
+## Query parameters
+
+| Parameter | Type | Description |
+|---|---|---|
+| `status` | enum list | `to_verify`, `confirmed`, `ignored`, `resolved`. Omit for every state. |
+| `severity` | enum list | `critical`, `high`, `medium`, `low`, `none`. Derived live from CVSS, not read from a stored column. |
+| `project_id` | uuid list | Restrict to these projects. Max 200 per page. |
+| `updated_since` | ISO 8601 | Findings whose lifecycle changed at or after this instant. |
+| `cursor` | string | Opaque cursor from `next_cursor`. Do not construct or edit it. |
+| `page_size` | integer | 1–100. Defaults to 50. |
+
+List parameters accept **both** spellings and any mix of the two:
+
+```
+?status=confirmed,ignored
+?status=confirmed&status=ignored
+```
+
+<Warning>
+**A mistyped filter fails loudly — it never widens the scope.**
+
+An unknown value (`?status=confimed`), an unrecognised parameter name (`?statuss=`), or a filter that is present but empty (`?status=`) all return **400**. This is deliberate: on a compliance feed, silently dropping a filter would hand you your entire organization while you believed you asked for one status, and nothing in the response would say so.
+</Warning>
+
+## Response
+
+```json
+{
+  "success": true,
+  "message": "Findings retrieved",
+  "data": {
+    "findings": [
+      {
+        "id": "a3f1a3f1a3f1a3f1a3f1a3f1a3f1a3f1a3f1a3f1a3f1a3f1a3f1a3f1a3f1a3f1",
+        "finding_type": "sast",
+        "project_id": "11111111-1111-4111-8111-111111111111",
+        "project_name": "payments-api",
+        "title": "SQL injection in the invoice lookup",
+        "description": "User input reaches the query builder unescaped.",
+        "remediation": "Bind the parameter instead of concatenating it.",
+        "severity": "critical",
+        "status": "confirmed",
+        "url": "https://app.cybedefend.com/...",
+        "first_detected_at": "2026-07-02T09:14:00.000Z",
+        "last_detected_at": "2026-08-30T02:11:00.000Z",
+        "triaged_at": "2026-07-03T16:20:00.000Z",
+        "triaged_by": "22222222-2222-4222-8222-222222222222",
+        "triaged_by_type": "user",
+        "resolved_at": null,
+        "dismissal_reason": null,
+        "details": { "file": "src/invoices/lookup.ts", "line": 88 },
+        "updated_at": "2026-08-30T02:11:00.000Z"
+      }
+    ],
+    "next_cursor": "…",
+    "has_more": true,
+    "next_since": "2026-08-30T02:10:55.000Z"
+  }
+}
+```
+
+### Notable fields
+
+<AccordionGroup>
+  <Accordion title="id — the stable fingerprint">
+    Survives reindentation, line drift and scanner rule renames. It **does** change when the file is renamed, when the vulnerable code itself changes, or when one of several identical occurrences in a file disappears.
+  </Accordion>
+  <Accordion title="severity — derived, not stored">
+    Computed live from the CVSS 4 environmental score, falling back to the base score. `none` is a real band (a CVSS score of exactly 0) and is exported.
+  </Accordion>
+  <Accordion title="remediation — null means no guidance">
+    `null` where the source carries none, such as OSV advisories (`sca`) and container findings. A null here means "we have no guidance", **not** "no action needed".
+  </Accordion>
+  <Accordion title="details — family-specific, never invented">
+    File and line for `sast`, package for `sca`, image for `container`, and so on. `null` when the stored payload could not be parsed — never a fabricated empty object.
+  </Accordion>
+</AccordionGroup>
+
+## Paginating one pull
+
+Follow `next_cursor` until `has_more` is `false`. Results are sorted ascending on `updated_at`.
+
+```bash
+CURSOR=""
+while : ; do
+  PAGE=$(curl -s -H "Authorization: Bearer $CYBEDEFEND_TOKEN" \
+    "https://api-eu.cybedefend.com/organization/$ORG_ID/findings?page_size=100&cursor=$CURSOR")
+  echo "$PAGE" | jq '.data.findings[]'
+  [ "$(echo "$PAGE" | jq -r '.data.has_more')" = "true" ] || break
+  CURSOR=$(echo "$PAGE" | jq -r '.data.next_cursor')
+done
+```
+
+<Note>
+`updated_at` is the sort key, so a finding modified mid-pagination moves forward in the stream and is delivered again. Consumers must be idempotent on `id`.
+</Note>
+
+## Pulling incrementally
+
+Store the `next_since` of your last page and replay it verbatim as `updated_since` on the next run. That is the whole contract — you do not compute the watermark yourself.
+
+```
+run 1:  GET …/findings                          → next_since = T1
+run 2:  GET …/findings?updated_since=T1         → next_since = T2
+run 3:  GET …/findings?updated_since=T2         → …
+```
+
+<Tip>
+`next_since` lags a few seconds behind the last row served, on purpose: a row committed slightly out of clock order would otherwise be skipped forever. Overlap is cheap, a missed finding is not.
+</Tip>
+
+## Rate limiting
+
+A GRC platform polls on a timer, so **429 is part of this contract, not an error path**. Back off and retry.
+
+| Status | Meaning |
+|---|---|
+| `400` | Unknown parameter name, unknown filter value, or an emptied filter. |
+| `401` | Missing or invalid token. |
+| `403` | The principal lacks `export_findings` on this organization. |
+| `429` | Rate limited — back off and retry. |

@@ -20,6 +20,34 @@ CybeDefend streamlines remediation by letting you **update each vulnerability** 
 3. **Confirm & Save**  
    Changes are immediately visible to all team members, helping them see updated statuses without additional overhead.
 
+## Dismissing a finding requires a justification
+
+Setting a finding to **Ignored** — in the dashboard, through the API, or through the Cybe MCP tool — now requires a written reason. A dismissal without one is refused.
+
+<Warning>
+**Breaking change.** Any integration that sets `status: "ignored"` must now send `dismissalReason` alongside it. Requests that omit it fail validation with `dismissalReason is required when status is "ignored"`.
+</Warning>
+
+| Rule | Value |
+|---|---|
+| Required when | `status` is `ignored` |
+| Blank values | Rejected — whitespace only is not a reason |
+| Maximum length | 512 characters |
+
+```json
+{
+  "vulnerabilityId": "11111111-1111-4111-8111-111111111111",
+  "status": "ignored",
+  "dismissalReason": "Accepted risk — signed off by the CISO on 2026-07-01"
+}
+```
+
+The same rule applies to **bulk dismissal**: each item in a batch update carries its own `dismissalReason`, so a bulk action stays audited rather than becoming a way around the requirement.
+
+<Note>
+The justification is recorded against the finding and surfaces as `dismissal_reason` in the [Findings Export](/latest/managing-vulnerabilities/findings-export). Automated triage is held to the same standard — when Cybe Agent dismisses a finding, it records its own reason and is attributed as `agent`.
+</Note>
+
 <Frame>
   <img src="/images/get-started/relevant-functionalities/update-vuln-result.png" alt="After Updating Vulnerability" style={{ borderRadius: '0.5rem' }} />
 </Frame>
