@@ -122,7 +122,8 @@
                     "pages": [
                       "/latest/code-scanning/scanning-options/code-repository-scanning",
                       "/latest/code-scanning/scanning-options/scan-parameters",
-                      "/latest/code-scanning/scanning-options/cybedefend-ignore-file"
+                      "/latest/code-scanning/scanning-options/cybedefend-ignore-file",
+                      "/latest/code-scanning/scanning-options/inline-ignore-comments"
                     ]
                   },
                   {

@@ -1,0 +1,155 @@
+---
+title: 'Inline Ignore Comments'
+description: 'Suppress a single finding directly in your source code with a cybedefend-ignore comment'
+---
+
+## Overview
+
+The `cybedefend-ignore` directive lets you silence a specific finding by adding a comment in your source code, on the vulnerable line or on the line directly above it. It is the right tool for confirmed false positives: the directive lives next to the code, is reviewed in pull requests, and keeps the finding silenced on every subsequent scan.
+
+Use the [`.cybedefend` ignore file](/latest/code-scanning/scanning-options/cybedefend-ignore-file) when you want to exclude whole files or directories. Use an inline comment when you want to exclude one precise line.
+
+## Supported Scanners
+
+The directive is applied to every finding produced by the code scanners:
+
+| Scanner type | Rule ID |
+|--------------|---------|
+| SAST | Rule identifier shown on the finding in the platform |
+| IaC | Rule identifier shown on the finding in the platform |
+| Secrets | Rule identifier shown on the finding in the platform |
+
+Use the rule identifier displayed on the finding when writing a scoped directive.
+
+<Note>
+SCA, container and AI-BOM findings are not attached to a source line and cannot be suppressed with an inline comment.
+</Note>
+
+## Syntax
+
+The directive is matched as a plain token, so it works with any comment style: `//`, `#`, `/* */`, `<!-- -->`, `--`, etc. Matching is case-insensitive.
+
+```
+cybedefend-ignore
+cybedefend-ignore: <reason>
+cybedefend-ignore[<rule-id>]: <reason>
+cybedefend-ignore[<rule-id>,<rule-id>]: <reason>
+```
+
+| Form | Effect |
+|------|--------|
+| `cybedefend-ignore` | Blanket ignore: suppresses every finding reported on that line, whatever the rule |
+| `cybedefend-ignore[RULE]` | Scoped ignore: suppresses only findings from the listed rule(s). Other rules on the same line are still reported |
+| `: reason` | Optional free text. Always add one so reviewers know why the finding is a false positive |
+
+## Placement
+
+The scanner checks two lines for each finding: the vulnerable line itself and the line directly above it.
+
+### On the same line
+
+```javascript
+const query = `SELECT * FROM users WHERE id = ${id}`; // cybedefend-ignore: id is validated as an integer upstream
+```
+
+### On the line above
+
+```python
+# cybedefend-ignore[<rule-id>]: table name comes from a static allowlist
+cursor.execute(f"SELECT * FROM {table} WHERE id = %s", (user_id,))
+```
+
+<Warning>
+Only the line directly above is checked. A directive two lines above the finding, or a directive followed by a blank line, has no effect.
+</Warning>
+
+## Examples by Language
+
+### JavaScript / TypeScript
+
+```javascript
+// cybedefend-ignore: content is escaped by the template engine
+res.send(renderedHtml);
+```
+
+### Python
+
+```python
+subprocess.run(cmd, shell=True)  # cybedefend-ignore[<rule-id>]: cmd is a hard-coded constant
+```
+
+### Go
+
+```go
+// cybedefend-ignore: file path is built from an internal enum, not user input
+data, err := os.ReadFile(path)
+```
+
+### Terraform (IaC)
+
+```hcl
+resource "aws_s3_bucket" "public_assets" {
+  bucket = "my-public-assets"
+  # cybedefend-ignore[<rule-id>]: this bucket intentionally serves public static assets
+  acl    = "public-read"
+}
+```
+
+### YAML / Kubernetes (IaC)
+
+```yaml
+containers:
+  - name: app
+    # cybedefend-ignore: dev-only manifest, never deployed to production
+    securityContext:
+      privileged: true
+```
+
+### Secrets
+
+```javascript
+// cybedefend-ignore[<rule-id>]: sample value used in unit tests
+const API_KEY = "test-0000000000000000000000000000";
+```
+
+## Behaviour
+
+- **Every scan type**: the directive is honoured on both full scans and diff scans.
+- **Persistent**: because the directive is committed with the code, the finding stays suppressed on all later scans until the comment is removed.
+- **Silent**: suppressed findings do not appear in the platform, in reports, or in project metrics.
+- **Safe by default**: if the scanner cannot read the source file, the finding is kept and reported.
+
+Scan logs record how many findings were dropped:
+
+```
+Ignoring vulnerability in src/db/query.js (inline cybedefend-ignore directive)
+Filtered out 3 vulnerabilities via inline cybedefend-ignore directives
+After filtering: 42 vulnerabilities to report
+```
+
+## Best Practices
+
+<Warning>
+Prefer a scoped directive (`cybedefend-ignore[RULE]`) over a blanket one. A blanket ignore also hides any new rule that later fires on the same line.
+</Warning>
+
+- **Always give a reason.** A bare `cybedefend-ignore` tells a reviewer nothing. Explain why the finding does not apply.
+- **Review in pull requests.** Treat a new ignore directive like a security decision. Reviewers should be able to verify the justification.
+- **Audit periodically.** Search your codebase for `cybedefend-ignore` and remove directives that no longer apply.
+- **Do not use it to hide real issues.** For findings that are true positives but accepted, mark them as such in the platform instead so they remain visible.
+
+## Other Ignore Comments
+
+Ignore comments from other security tools have no effect on CybeDefend scans. Only `cybedefend-ignore` is honoured, so suppressions are consistent across all scanner types.
+
+## Troubleshooting
+
+### The finding is still reported
+
+- Check that the comment is on the vulnerable line or the line directly above it.
+- If you used a scoped form, verify the rule ID matches exactly the one shown on the finding.
+- Confirm the change was committed and included in the scanned branch.
+
+### Another finding disappeared unexpectedly
+
+A blanket `cybedefend-ignore` suppresses every rule on that line. Switch to the scoped form to keep other findings visible.
