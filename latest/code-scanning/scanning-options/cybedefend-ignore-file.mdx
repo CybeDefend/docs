@@ -7,6 +7,10 @@ description: 'Filter vulnerabilities using a .cybedefend file with gitignore syn
 
 The `.cybedefend` file allows you to exclude specific files or directories from SAST vulnerability reports. It uses the same syntax as `.gitignore`, making it familiar and easy to use.
 
+<Tip>
+To suppress a single finding on one precise line instead of a whole file, use an [inline `cybedefend-ignore` comment](/latest/code-scanning/scanning-options/inline-ignore-comments).
+</Tip>
+
 ## How It Works
 
 Create a `.cybedefend` file in your project's root directory to define exclusion patterns. Vulnerabilities found in matching files will be automatically filtered from scan results.
