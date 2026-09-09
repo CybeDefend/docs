@@ -234,23 +234,98 @@ cybedefend scan --dir ./my-app --ci
 ```bash
 cybedefend results [flags]
 ```
-Retrieves scan results for a specific project. By default, fetches SAST results in JSON format and saves to `results.json` in the current directory.
+Retrieves scan results for a project and writes them to a file. By default it fetches **every** scan type (`--type all`) in JSON, across all pages, and saves to `results.json` in the current directory.
 
 **Flags:**
-- `--project-id` - Project ID to fetch results (required if not set in config/env)
-- `--type, -t` - Type of results: `sast` (default) or `iac`
-- `--page, -p` - Page number to fetch (default: `1`). Ignored if `--all` is set
-- `--all, -a` - Fetch all results across all pages
-- `--output, -o` - Output format: `json` (default), `html`, or `sarif`
-- `--filename, -f` - Output file name (default: `results.json`)
-- `--filepath` - Path to save file (default: `.`)
-- `--ci` - CI/CD-friendly output
+
+| Flag | Default | What it does |
+|------|---------|--------------|
+| `--project-id` | from config / env | Project to fetch results for. Required if not set in the config file or `CYBEDEFEND_PROJECT_ID` |
+| `--type, -t` | `all` | Scan type: `sast`, `sca`, `iac`, `secret`, `cicd`, `container`, or `all` |
+| `--status` | `to_verify,confirmed` | Comma-separated triage states to include: `to_verify`, `confirmed`, `resolved`, `ignored` |
+| `--branch, -b` | all branches | Only return findings on this branch |
+| `--all, -a` | `true` | Fetch every page. Pass `--all=false` to fetch a single page |
+| `--page, -p` | `1` | Page to fetch. Ignored unless you pass `--all=false` |
+| `--grouped, -g` | `false` | Group findings by rule / CVE instead of listing every occurrence. JSON output only |
+| `--scores` | `false` | Add the CVE identifier and the risk scores (priority, CVSS 4.0, EPSS, exploitability) to the output. Applies to the per-occurrence output; grouped output always carries the scores the platform computed |
+| `--output, -o` | `json` | Output format: `json`, `html`, `sarif`, or `markdown` |
+| `--filename, -f` | `results.json` | Output file name |
+| `--filepath` | `.` | Directory to write the file to |
+| `--ci` | `false` | CI/CD-friendly output (no colors or extra formatting) |
+
+With `--type all` the JSON output keeps one array per scan type (`sast`, `sca`, `iac`, `secret`, `cicd`, `container`); the `html`, `sarif` and `markdown` reports flatten them into a single list. `--grouped` needs a single scan type — it has no effect while `--type` is `all`.
+
+#### Choosing which triage states to export
+
+`--status` decides which triage states end up in the file. The default, `to_verify,confirmed`, is the set of findings that still need attention: what you have already resolved or ignored stays out.
+
+| Value | Meaning |
+|-------|---------|
+| `to_verify` | Not triaged yet |
+| `confirmed` | Triaged and accepted as a real finding |
+| `resolved` | Fixed |
+| `ignored` | Deliberately dismissed |
+
+Any other value is rejected before a request is sent. `not_exploitable` is a state you will see in the platform, but the API does not accept it as a filter value, so you cannot ask for it here.
+
+<Warning>
+**Your exports get smaller, and that is the fix.** Earlier CLI versions sent this filter in a spelling the API silently discarded, so every export contained every state — resolved and ignored findings included. The filter now reaches the API. If a pipeline of yours counts rows in `results.json` or feeds them into a ticketing system, expect fewer rows and adjust the threshold.
+
+```bash
+# Before: the default export returned every state, whatever you asked for
+cybedefend results --project-id $PROJECT_ID --type sca
+
+# After: ask for the extra states explicitly to get a comparable volume
+cybedefend results --project-id $PROJECT_ID --type sca \
+                   --status to_verify,confirmed,resolved,ignored
+```
+
+Findings in the `not_exploitable` state were part of the old over-delivered export and cannot be requested back, so even the four-state filter above returns slightly fewer rows than the old default.
+</Warning>
+
+Every finding in a JSON export carries its own state in `currentState`, so a file is self-describing and you can re-filter it afterwards without another call:
+
+```json
+{
+  "id": "6f1c…",
+  "path": "src/auth/session.ts",
+  "branch": "main",
+  "currentState": "to_verify",
+  "vulnerability": { "name": "…", "severity": "…" }
+}
+```
+
+<Note>
+`currentState` is present in the JSON output only — the `html`, `sarif` and `markdown` reports do not show the triage state. `--status` is also not applied to `--grouped --type container`, which returns grouped images through a separate endpoint.
+</Note>
+
+<Note>
+`--status` is a recent addition. If your CLI answers `unknown flag: --status`, upgrade the binary from the [releases page](https://github.com/CybeDefend/cybedefend-cli/releases).
+</Note>
 
 #### Examples
 ```bash
+# Every scan type, findings that still need attention (the default)
 cybedefend results --project-id your-project-id
-cybedefend results --all --output html --filename results.html
-cybedefend results --type iac --output sarif --filepath ./reports
+
+# Only what you have dismissed, to audit your own triage decisions
+cybedefend results --project-id your-project-id --type sca --status ignored,resolved
+
+# Everything the API will filter on, for a full snapshot
+cybedefend results --project-id your-project-id --status to_verify,confirmed,resolved,ignored
+
+# SAST findings on one branch, as SARIF, for code scanning upload
+cybedefend results --project-id your-project-id --type sast --branch main \
+                   --output sarif --filename results.sarif
+
+# SCA findings with the CVE identifiers and risk scores
+cybedefend results --project-id your-project-id --type sca --scores
+
+# SCA findings grouped by CVE instead of one row per occurrence
+cybedefend results --project-id your-project-id --type sca --grouped
+
+# A single page instead of the whole project
+cybedefend results --project-id your-project-id --type sast --all=false --page 2
 ```
 
 ### 3. `version`
