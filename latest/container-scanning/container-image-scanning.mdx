@@ -56,6 +56,62 @@ Securely scan your organization's private container images:
    - Remediation recommendations
    - Layer-by-layer breakdown
 
+## Multi-Architecture Images
+
+Most published images are a **manifest index**: one tag pointing at several
+per-architecture builds. CybeDefend reads that index before the scan and picks
+the platform to analyse, so an image that carries no `linux/amd64` build still
+scans.
+
+The platform is chosen in this order:
+
+| Order | Platform picked |
+|-------|-----------------|
+| 1 | `linux/amd64`, when the index publishes it |
+| 2 | The first other `linux` build in the index — variant included, e.g. `linux/arm/v7` |
+| 3 | The first remaining build in the index |
+
+Attestation entries (the `unknown/unknown` children that build tools attach for
+provenance and SBOM data) are skipped — they are metadata, not images.
+
+Single-platform images are scanned as-is; there is nothing to choose.
+
+<Note>
+  For a multi-architecture image that **does** publish `linux/amd64`, results
+  describe the `linux/amd64` build. Packages and versions can differ between
+  architectures, so a finding count taken from the scan will not always match
+  the exact artifact you deploy on `arm64`.
+</Note>
+
+<Tip>
+  To scan a specific architecture of a multi-architecture image, target the
+  per-architecture tag or digest your registry exposes for it — for example
+  `myimage@sha256:…` for the child manifest — rather than the shared tag.
+</Tip>
+
+The index is read with the same registry credentials as the scan itself, so
+private images need no extra permission. If the index cannot be read — a
+network hiccup, a registry that answers slowly — the scan still runs and falls
+back to `linux/amd64`, the behaviour of every earlier release.
+
+## When a Scan Fails
+
+The message on a failed scan carries the **registry's own response** — the
+reason the image could not be pulled, in the registry's wording. That is what
+tells a missing image apart from a rejected credential, a permission the token
+does not carry, or a network failure.
+
+<Note>
+  Before this, some registry failures — including an image published for an
+  architecture the scan asked for and did not find — surfaced as
+  `Container image not found in registry`, whatever the registry had actually
+  answered. If you shelved an image over that message, re-run the scan: the
+  reason it reports now is the real one.
+</Note>
+
+Credential and permission problems are covered per registry under
+[Registry Integrations](/latest/container-scanning/registry-integrations/docker-hub).
+
 ## Scanning Process
 
 <Steps>
