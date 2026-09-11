@@ -1,0 +1,161 @@
+---
+title: "Container Image Scanning"
+description: "Scan container images for vulnerabilities from public registries or private repositories to secure your containerized applications."
+---
+
+CybeDefend's **Container Image Scanning** provides comprehensive security analysis for your Docker containers and images. Whether you're using public images from Docker Hub or private images from your organization's registry, our scanning engine identifies vulnerabilities in your container layers and dependencies.
+
+<Frame>
+  <img src="/images/container-scanning/container-image-scanning.png" alt="Container Image Scanning" style={{ borderRadius: '0.5rem' }} />
+</Frame>
+
+## Scanning Options
+
+### Public Container Images
+
+Scan any publicly available container image from popular registries:
+
+- **Docker Hub**: Pull and scan any public image directly by name
+- **Public Registries**: Access images from GCR, ECR, and other public repositories
+- **Official Images**: Scan official language runtime images, database images, and more
+- **Community Images**: Analyze community-maintained containers for security issues
+
+### Private Container Images
+
+Securely scan your organization's private container images:
+
+- **Private Registries**: Connect to your private Docker registries with authentication
+- **Secure Access**: Use API keys, tokens, service accounts, or cross-account IAM roles (e.g. AWS ECR) — no secret leaves your control
+- **Organization Credentials**: Define registry credentials once at the organization level and link them to the projects allowed to use them
+- **Organization Images**: Scan custom-built images from your CI/CD pipelines
+- **Multi-Registry Support**: Connect multiple private registries simultaneously
+
+## How Container Scanning Works
+
+1. **Image Selection**  
+   Choose to scan either a public image by name or connect to your private registry to select specific images.
+
+2. **Layer Analysis**  
+   Our scanner analyzes each layer of your container image, examining:
+   - Base operating system vulnerabilities
+   - Installed packages and libraries
+   - Application dependencies
+   - Configuration files
+
+3. **Vulnerability Detection**  
+   Identify security issues across multiple categories:
+   - **CVE Vulnerabilities**: Known security vulnerabilities in packages
+   - **Malware Detection**: Scan for malicious code or suspicious files
+   - **Secrets Scanning**: Detect exposed API keys, passwords, or tokens
+   - **Configuration Issues**: Identify misconfigurations and security weaknesses
+
+4. **Results & Reporting**  
+   Get detailed reports with:
+   - Vulnerability severity levels (Critical, High, Medium, Low)
+   - Affected packages and versions
+   - Remediation recommendations
+   - Layer-by-layer breakdown
+
+## Multi-Architecture Images
+
+Most published images are a **manifest index**: one tag pointing at several
+per-architecture builds. CybeDefend reads that index before the scan and picks
+the platform to analyse, so an image that carries no `linux/amd64` build still
+scans.
+
+The platform is chosen in this order:
+
+| Order | Platform picked |
+|-------|-----------------|
+| 1 | `linux/amd64`, when the index publishes it |
+| 2 | The first other `linux` build in the index — variant included, e.g. `linux/arm/v7` |
+| 3 | The first remaining build in the index |
+
+Attestation entries (the `unknown/unknown` children that build tools attach for
+provenance and SBOM data) are skipped — they are metadata, not images.
+
+Single-platform images are scanned as-is; there is nothing to choose.
+
+<Note>
+  For a multi-architecture image that **does** publish `linux/amd64`, results
+  describe the `linux/amd64` build. Packages and versions can differ between
+  architectures, so a finding count taken from the scan will not always match
+  the exact artifact you deploy on `arm64`.
+</Note>
+
+<Tip>
+  To scan a specific architecture of a multi-architecture image, target the
+  per-architecture tag or digest your registry exposes for it — for example
+  `myimage@sha256:…` for the child manifest — rather than the shared tag.
+</Tip>
+
+The index is read with the same registry credentials as the scan itself, so
+private images need no extra permission. If the index cannot be read — a
+network hiccup, a registry that answers slowly — the scan still runs and falls
+back to `linux/amd64`, the behaviour of every earlier release.
+
+## When a Scan Fails
+
+The message on a failed scan carries the **registry's own response** — the
+reason the image could not be pulled, in the registry's wording. That is what
+tells a missing image apart from a rejected credential, a permission the token
+does not carry, or a network failure.
+
+<Note>
+  Before this, some registry failures — including an image published for an
+  architecture the scan asked for and did not find — surfaced as
+  `Container image not found in registry`, whatever the registry had actually
+  answered. If you shelved an image over that message, re-run the scan: the
+  reason it reports now is the real one.
+</Note>
+
+Credential and permission problems are covered per registry under
+[Registry Integrations](/latest/container-scanning/registry-integrations/docker-hub).
+
+## Scanning Process
+
+<Steps>
+  <Step title="Select Image Source">
+    Choose between public image scanning or connect to your private registry
+  </Step>
+  
+  <Step title="Specify Image">
+    Enter the image name and tag for public images, or browse your private registry
+  </Step>
+  
+  <Step title="Configure Scan">
+    Set scanning parameters and select vulnerability types to detect
+  </Step>
+  
+  <Step title="Run Analysis">
+    Our engine pulls and analyzes the container image layers
+  </Step>
+  
+  <Step title="Review Results">
+    Access comprehensive vulnerability reports and remediation guidance
+  </Step>
+</Steps>
+
+## Benefits
+
+<CardGroup cols={2}>
+  <Card title="Early Detection" icon="magnifying-glass">
+    Identify vulnerabilities before deploying containers to production environments.
+  </Card>
+  
+  <Card title="Layer Visibility" icon="layer-group">
+    Understand which layer introduced specific vulnerabilities for targeted fixes.
+  </Card>
+  
+  <Card title="Registry Integration" icon="link">
+    Seamlessly connect to multiple public and private container registries.
+  </Card>
+  
+  <Card title="Compliance" icon="shield-check">
+    Meet security compliance requirements for containerized applications.
+  </Card>
+</CardGroup>
+
+---
+
+**Related:** [Dockerfile Scanning](/latest/container-scanning/dockerfile-security-scanning) · [Registry Integrations](/latest/container-scanning/registry-integrations/docker-hub) · [Create a Project](/latest/get-started/project-management/create-project)
