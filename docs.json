@@ -166,7 +166,6 @@
                 "group": "Container Scanning",
                 "pages": [
                   "/latest/container-scanning/container-image-scanning",
-                  "/latest/container-scanning/container-os-vulnerabilities",
                   "/latest/container-scanning/dockerfile-security-scanning",
                   {
                     "group": "Registry Integrations",
@@ -203,8 +202,7 @@
               {
                 "group": "Notifications",
                 "pages": [
-                  "/latest/notifications/slack",
-                  "/latest/notifications/email-notifications"
+                  "/latest/notifications/slack"
                 ]
               }
             ]
