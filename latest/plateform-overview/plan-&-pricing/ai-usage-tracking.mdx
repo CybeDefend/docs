@@ -36,25 +36,6 @@ Credits are shared across your entire organization:
 
 ---
 
-## When the Quota Runs Out
-
-A scan that reaches CybeDefend's AI analysis with no credits left is **not a
-failed scan**. Every other scanner still runs and still reports findings; only
-the AI analysis step is skipped.
-
-- The scan reaches a terminal state normally — it does not sit at "running".
-- The agent step reads `agent: skipped - analysis quota exceeded`, never
-  "failed", so a quota refusal is distinguishable from an error.
-- Analysis concurrency is sized to the credits actually remaining, so a run
-  starting with two credits left does not commit more than two analyses.
-
-<Tip>
-  If a scan's AI analysis is skipped, top up with an add-on pack or wait for the
-  quota reset — then re-run the scan to get the analysis.
-</Tip>
-
----
-
 ## Need More Credits?
 
 Purchase add-on packs at [Manage Billing](/latest/plateform-overview/plan-&-pricing/manage-billing-subscription) when approaching quota limits.
