@@ -56,24 +56,6 @@ Securely scan your organization's private container images:
    - Remediation recommendations
    - Layer-by-layer breakdown
 
-## When a Scan Fails
-
-The message on a failed scan carries the **registry's own response** — the
-reason the image could not be pulled, in the registry's wording. That is what
-tells a missing image apart from a rejected credential, a permission the token
-does not carry, or a network failure.
-
-<Note>
-  Before this, some registry failures — including an image published for an
-  architecture the scan asked for and did not find — surfaced as
-  `Container image not found in registry`, whatever the registry had actually
-  answered. If you shelved an image over that message, re-run the scan: the
-  reason it reports now is the real one.
-</Note>
-
-Credential and permission problems are covered per registry under
-[Registry Integrations](/latest/container-scanning/registry-integrations/docker-hub).
-
 ## Scanning Process
 
 <Steps>
