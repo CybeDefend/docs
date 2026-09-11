@@ -55,25 +55,6 @@ After installation, you can associate any authorized repository with a **new pro
 If you just installed the app, it may take a few moments before your repositories become visible in the "Create Project" flow.
 </Note>
 
-### Keeping the List Accurate
-
-The repository list is reconciled with GitHub as you browse it, at most once
-every 15 minutes per installation. A rename, a transfer between owners, or a
-switch between public and private is picked up from GitHub's webhook and by that
-reconciliation, so the picker shows the repository's current name.
-
-<Note>
-Earlier releases read only the first page GitHub returns, so an installation
-with more than 30 accessible repositories showed just 30 of them in the picker,
-and a repository renamed on GitHub kept its old name indefinitely. Both are
-fixed — the full list is paginated, and names and visibility are refreshed.
-</Note>
-
-Reconciliation never removes anything: a repository missing from GitHub's answer
-is never deleted, and never unlinked from its project, by a read. Removals
-follow the GitHub webhook. If GitHub is slow to answer, the stored list is
-served as-is and the refresh finishes in the background.
-
 ---
 
 **Related:** [Connect GitLab](/latest/get-started/connect-your-source-code/connect-gitlab) · [Create a Project](/latest/get-started/project-management/create-project) · [Cybe AutoFix](/latest/agent-ai-integration/cybe-autofix-detail)
