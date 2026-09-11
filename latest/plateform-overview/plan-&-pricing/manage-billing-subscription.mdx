@@ -41,37 +41,6 @@ Usage limits are **per seat**, but credits are pooled at the organization level.
 
 ---
 
-## Before You Upgrade
-
-Signing up asks only for your organization name. The invoicing identity is
-collected at the moment it is first needed — your first upgrade to a paid plan —
-and only when it is missing. A trial creates no subscription, so there is
-nothing to invoice until then.
-
-Checkout is refused before any payment step until the profile carries:
-
-| Field | Required when |
-|-------|---------------|
-| Customer type | Always — `individual` or `company` |
-| First name and last name | Customer type is `individual` |
-| Company name | Customer type is `company` |
-| Country | Always |
-| Address line 1 **or** line 2 | Always — a `c/o`-style address filling only line 2 is accepted |
-| City | Always |
-| Postal code | Always |
-
-A refused checkout answers `BILLING_PROFILE_INCOMPLETE`, and the dashboard opens
-the billing form so you can continue straight into checkout. VAT number, region
-or state, and industry are **not** part of this check.
-
-<Note>
-  Plan prices are shown excluding tax. Tax is calculated at checkout from the
-  country and address on the profile, which is why a resolvable address is
-  required before a paid plan can start.
-</Note>
-
----
-
 ## Billing Information
 
 Maintain accurate billing details to ensure proper invoicing and VAT compliance.
