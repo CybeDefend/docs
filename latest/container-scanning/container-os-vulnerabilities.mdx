@@ -1,0 +1,93 @@
+---
+title: "OS Package Findings"
+description: "How CybeDefend finds vulnerabilities in a container's operating-system packages, where each finding came from, and what an end-of-life base OS means for your results."
+---
+
+A container image carries an operating system underneath your application.
+CybeDefend inventories its packages during the scan, then matches them against
+vulnerability data from two places. This page explains what each container
+finding tells you about its own provenance, and why an unsupported base image
+changes how you should read a clean result.
+
+---
+
+## Where a Finding Came From
+
+Every container vulnerability carries a `detectionSource` field:
+
+| Value | Meaning |
+|-------|---------|
+| `scanner` | The scanner pod reported the vulnerability from its own bundled database. |
+| `osv` | CybeDefend matched the package inventory against its OSV mirror after the scan. |
+
+A scanner report always wins the label: when both sources find the same CVE on
+the same package, one finding is kept and it reads `scanner`. Findings recorded
+before this field existed read `scanner` as well.
+
+In the dashboard, an OSV-matched finding is marked with an **OSV match** badge
+in the container vulnerability list and on the vulnerability page.
+
+### What OSV Matching Adds
+
+The scanner's own database and the OSV mirror do not always agree. Matching the
+inventory a second time picks up advisories the scanner missed — most often on
+distributions whose advisory feed the scanner ships late or not at all.
+
+The match is done on the **source package**, not the binary one. A container
+that installs `libssl3` is matched against advisories published for `openssl`,
+which is how the distribution publishes them.
+
+<Note>
+  OS package matching against the OSV mirror is active for Alpine-family images
+  (Alpine, Wolfi, Chainguard). Debian, Ubuntu and the RPM distributions need the
+  complete `[epoch:]version[-release]` string to compare against an advisory
+  range; until the scanner reports it, those packages are matched by the scanner
+  database alone rather than risk false positives from a truncated version.
+  Language packages (npm, pip, Maven and the rest) inside an image stay with the
+  scanner.
+</Note>
+
+### Zero-Day Retro-Matching
+
+New advisories do not only apply to future scans. When an advisory reaches the
+OSV mirror, CybeDefend re-matches it against the package inventories it already
+holds, and any container image affected gets a new finding without being
+re-scanned.
+
+Those findings join the existing zero-day alert for the project, alongside the
+dependency findings that trigger it today, and the open dashboard refreshes on
+its own. See [Email Notifications](/latest/notifications/email-notifications)
+for who receives that alert.
+
+---
+
+## End-of-Life Base OS
+
+An image whose base distribution has passed its end of support no longer
+receives security updates — and, just as importantly, its distribution stops
+publishing advisories for it. A scan of such an image can come back with very
+few findings, not because it is safe, but because nobody is looking any more.
+
+CybeDefend flags this with `osEosl`, returned on each container image and on
+each repository group in the container image list. The dashboard raises a
+visible alert on a flagged image.
+
+<Warning>
+  A low finding count on an end-of-life base image is not a clean bill of
+  health. The right remediation is to rebase the image onto a supported release,
+  not to work through the findings that are reported.
+</Warning>
+
+The flag is resolved per scan against [endoflife.date](https://endoflife.date),
+cached for a day, with a built-in end-of-support table answering when that
+lookup is unavailable. Nothing about it can block or fail a scan. A release
+neither source recognises leaves the scanner's own verdict untouched.
+
+Supported families: Alpine, Debian, Ubuntu, RHEL, CentOS, AlmaLinux, Rocky
+Linux, Oracle Linux, Amazon Linux, Fedora, Photon, openSUSE and SLES. Alpine,
+Ubuntu, openSUSE, SLES and Photon are resolved on the `major.minor` release;
+the others on the major, and Amazon Linux on its `2` / `2023` label.
+
+---
+
+**Related:** [Container Image Scanning](/latest/container-scanning/container-image-scanning) · [Project Vulnerability List](/latest/managing-vulnerabilities/project-vulnerability-list) · [Email Notifications](/latest/notifications/email-notifications)
