@@ -377,7 +377,7 @@ stages:
 
 cybedefend-scan:
   stage: security
-  image: ghcr.io/cybedefend/cybedefend-cli:v1.0.9
+  image: ghcr.io/cybedefend/cybedefend-cli:v2.1.1
   variables:
     CYBEDEFEND_PAT: $CYBEDEFEND_PAT
     CYBEDEFEND_PROJECT_ID: $CYBEDEFEND_PROJECT_ID
@@ -428,6 +428,14 @@ cybedefend-scan:
 <Note>
 If any policy has a **BLOCK** action with violations, the CLI exits with code `1`, failing the pipeline. **WARN** actions are informational only and don't affect the exit code.
 </Note>
+
+<Tip>
+To read the same policy data outside a scan — for a separate gate, a report or a
+dashboard — use the [`cybedefend compliance` commands](/latest/code-scanning/local-code-scanning/cli-options#3-compliance):
+`history`, `violations` and `stats`. Note that `compliance stats` returned zero
+counters for every project before CLI **v2.1.1**; a gate built on it needs that
+version or later to mean anything.
+</Tip>
 
 ---
 
