@@ -167,7 +167,6 @@
                 "pages": [
                   "/latest/container-scanning/container-image-scanning",
                   "/latest/container-scanning/dockerfile-security-scanning",
-                  "/latest/container-scanning/container-os-vulnerabilities",
                   {
                     "group": "Registry Integrations",
                     "pages": [
