@@ -54,6 +54,23 @@ When Cybe AutoFix is enabled:
 3. Cybe AutoFix analyzes the vulnerability using the knowledge graph
 4. A **pull request is automatically created** in your repository
 
+### Finding types it covers
+
+Cybe AutoFix rewrites code, so it works on **SAST**, **IaC** and **CI/CD**
+findings. **Secret** findings are out of scope — a leaked credential is fixed by
+rotating it and purging it from history, not by editing the file — and the
+**Secret** type is not offered on the AutoFix page. Dependency findings go
+through SCA AutoFix, below.
+
+<Warning>
+`POST /project/{projectId}/autofix` and `POST /project/{projectId}/autofix/batch`
+answer `400 Bad Request` with `AUTOFIX_TYPE_NOT_SUPPORTED: AutoFix is not
+available for secret detections` when a `vulnerabilityId` points at a secret
+finding. A batch is refused whole if any id in `vulnerabilityIds` is one, so
+keep secret findings out of the list you send. A refused call consumes no
+AutoFix credit.
+</Warning>
+
 ---
 
 ## SCA AutoFix: Dependency Upgrades
