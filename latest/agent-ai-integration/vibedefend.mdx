@@ -36,7 +36,7 @@ VibeDefend adds the **active** layer on top. The hooks fire on the agent's own l
 
 | Moment | What VibeDefend does | Why it matters |
 |---|---|---|
-| **Before an edit** (`Edit` / `Write` / `MultiEdit`) | Injects the business + security rules relevant to *this* change into the agent's context. | The agent writes secure, on-policy code from the first line instead of being corrected afterwards. |
+| **Before a write** (`Edit` / `Write` / `MultiEdit`, plus shell commands that write files on Claude Code and Codex⁴) | Injects the business + security rules relevant to *this* change into the agent's context. | The agent writes secure, on-policy code from the first line instead of being corrected afterwards. |
 | **On any tool call** | **Action Guards** evaluate the call against your guard policy and hard-block on deny. | A `rm -rf`, a write to a protected path, or a fetch to a blocked host is stopped before it runs — not flagged after. |
 | **At session start** | Loads the CybeDefend doctrine and opens the **proposals inbox** (Accept / Reject picker). | The agent starts every session knowing your rules, and you clear pending rule proposals up front. |
 | **At session end** (`Stop`) | Runs a **gap analysis** once the session crosses the edit threshold. | Surfaces the business rules you relied on but never wrote down, and proposes them for review. |
@@ -54,7 +54,7 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 | Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot |
 |---|:---:|:---:|:---:|:---:|:---:|
 | **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Business + Security Rules** *(injected pre-edit)* | ✅ | ✅ | ✅ | ⚠️ writes only | ✅ |
+| **Business + Security Rules** *(injected pre-write)* | ✅ edit + shell⁴ | ✅ | ✅ edit + shell⁴ | ⚠️ writes only | ✅ |
 | **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired |
 | **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ |
 | **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -69,6 +69,8 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 ² Windsurf has no native SessionStart event. VibeDefend wires `pre_user_prompt`, which fires on every turn. The hook is idempotent and cheap (one GET to the proposals endpoint, returns "0 pending" once the inbox is empty), so the per-turn cost is negligible.
 
 ³ Codex follows the doctrine via the MCP server's `Server.instructions` field on each session, which removes the need for a per-prompt reminder hook.
+
+⁴ On Claude Code and Codex the rules also load when the agent writes files through the shell — `>` / `>>` redirections, heredocs, `tee`, `sed -i`, `perl -pi`, `cp` / `mv`, `dd of=`, `bash -c '…'` — so an agent that edits from the terminal gets the same rules as one using the edit tool. Read-only commands load nothing. Inline interpreters (`python -c`, `node -e`), `git apply` / `patch`, and commands run through `xargs` or `find -exec` are not covered. On Cursor, Windsurf and VS Code Copilot, rules load on the edit tools only.
 
 ---
 
