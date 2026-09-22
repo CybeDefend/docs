@@ -8,7 +8,7 @@ description: 'Exclude files from SAST reports with a .cybeignore file using giti
 The `.cybeignore` file lets you exclude specific files or directories from SAST vulnerability reports. It uses the same syntax as `.gitignore`, so it is familiar and easy to use.
 
 <Tip>
-To suppress a single finding on one precise line instead of a whole file, use an [inline `cybedefend-ignore` comment](/latest/code-scanning/scanning-options/inline-ignore-comments).
+To suppress a single SAST, IaC or CI/CD finding on one precise line instead of a whole file, use an [inline `cybedefend-ignore` comment](/latest/code-scanning/scanning-options/inline-ignore-comments).
 </Tip>
 
 ## How It Works
@@ -112,12 +112,12 @@ Negation is the tool for excluding a whole class while keeping one member of it 
 | Container | No — separate scanner |
 
 <Warning>
-**Excluding a file also hides its secret findings.** Gitleaks runs as a second pass inside the same scanner and shares the same exclusion list, so a path you exclude here stops being reported for hardcoded credentials too — including credentials a *later* commit adds to that file.
+**Excluding a file also hides its secret findings.** Secret detection applies the same exclusion list, so a path you exclude here stops being reported for hardcoded credentials too — including credentials a *later* commit adds to that file.
 
-This matters most for the patterns people reach for first. `**/*.spec.ts` or `tests/` will silence Gitleaks across your whole test suite, which is exactly where fixture credentials — and the occasional real one pasted in by mistake — tend to live.
+This matters most for the patterns people reach for first. `**/*.spec.ts` or `tests/` will silence secret detection across your whole test suite, which is exactly where fixture credentials — and the occasional real one pasted in by mistake — tend to live.
 </Warning>
 
-When only a few findings in a file are false positives, prefer [inline `cybedefend-ignore` comments](/latest/code-scanning/scanning-options/inline-ignore-comments) over listing the whole file here: the exclusion stays scoped to the lines you reviewed, and the rest of the file keeps being scanned.
+When only a few SAST, IaC or CI/CD findings in a file are false positives, prefer [inline `cybedefend-ignore` comments](/latest/code-scanning/scanning-options/inline-ignore-comments) over listing the whole file here: the exclusion stays scoped to the lines and rules you reviewed, and the rest of the file keeps being scanned. Inline comments never silence a secret: for a secret false positive, such as a test fixture credential, [set the finding to **Ignored**](/latest/managing-vulnerabilities/updating-vulnerabilities) in the dashboard instead of excluding the file.
 
 ## Common Use Cases
 
@@ -170,7 +170,7 @@ Use `.cybeignore` responsibly. Don't ignore real vulnerabilities in production c
 
 ### Exclude Files, Not Findings You Dislike
 
-A file-level exclusion is right when the **whole file** is out of scope for SAST — a test fixture, a vendored dependency, a demo. When a finding is a false positive but the file also holds production code, use an [inline `cybedefend-ignore` comment](/latest/code-scanning/scanning-options/inline-ignore-comments) instead, so the rest of the file stays under review.
+A file-level exclusion is right when the **whole file** is out of scope for SAST — a test fixture, a vendored dependency, a demo. When a SAST, IaC or CI/CD finding is a false positive but the file also holds production code, use an [inline `cybedefend-ignore` comment](/latest/code-scanning/scanning-options/inline-ignore-comments) instead, so the rest of the file stays under review.
 
 ### Document Your Exclusions
 
