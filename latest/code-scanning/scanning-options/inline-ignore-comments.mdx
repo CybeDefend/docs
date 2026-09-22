@@ -11,35 +11,52 @@ Use the [`.cybeignore` exclusion file](/latest/code-scanning/scanning-options/cy
 
 ## Supported Scanners
 
-The directive is applied to every finding produced by the code scanners:
+The directive applies to SAST, IaC and CI/CD findings.
 
-| Scanner type | Rule ID |
-|--------------|---------|
-| SAST | Rule identifier shown on the finding in the platform |
-| IaC | Rule identifier shown on the finding in the platform |
-| Secrets | Rule identifier shown on the finding in the platform |
-
-Use the rule identifier displayed on the finding when writing a scoped directive.
+<Warning>
+**A directive never suppresses a secret finding**, bare or scoped. A comment written for a SAST false positive cannot hide a credential reported on the same line. To dismiss a secret false positive, set the finding to **Ignored** (see [Updating Vulnerabilities](/latest/managing-vulnerabilities/updating-vulnerabilities)) or exclude the file with [`.cybeignore`](/latest/code-scanning/scanning-options/cybedefend-ignore-file).
+</Warning>
 
 <Note>
 SCA, container and AI-BOM findings are not attached to a source line and cannot be suppressed with an inline comment.
 </Note>
 
+## Rule Codes
+
+A scoped directive names the finding's **rule code**, in the form `CD-<TYPE>-<NNNN>` (for example `CD-IAC-0123`).
+
+- **Dashboard**: the finding detail shows the rule code next to the language and CWE, with a **Copy directive** button. It copies `cybedefend-ignore[<code>]: <reason>` in the comment syntax of the finding's file; paste it on the flagged line or the line above and replace `<reason>`.
+- **Cybe MCP**: the finding tools return the code as `ruleCode`.
+
+A finding that shows no rule code can only be suppressed with the bare form.
+
+<Warning>
+**Only rule codes are accepted between the brackets.** Any other identifier, such as a scanner rule id like `CKV_AWS_20`, matches nothing and the finding stays reported. Replace it with the code shown on the finding:
+
+```hcl
+# Not matched
+# cybedefend-ignore[CKV_AWS_20]: bucket intentionally serves public assets
+
+# Matched
+# cybedefend-ignore[<rule code shown on the finding>]: bucket intentionally serves public assets
+```
+</Warning>
+
 ## Syntax
 
-The directive is matched as a plain token, so it works with any comment style: `//`, `#`, `/* */`, `<!-- -->`, `--`, etc. Matching is case-insensitive.
+The directive is matched as a plain token, so it works with any comment style: `//`, `#`, `/* */`, `<!-- -->`, `--`, `{{- /* */ -}}`, etc. Matching is case-insensitive, for the token and for the rule codes.
 
 ```
 cybedefend-ignore
 cybedefend-ignore: <reason>
-cybedefend-ignore[<rule-id>]: <reason>
-cybedefend-ignore[<rule-id>,<rule-id>]: <reason>
+cybedefend-ignore[<rule-code>]: <reason>
+cybedefend-ignore[<rule-code>, <rule-code>]: <reason>
 ```
 
 | Form | Effect |
 |------|--------|
-| `cybedefend-ignore` | Blanket ignore: suppresses every finding reported on that line, whatever the rule |
-| `cybedefend-ignore[RULE]` | Scoped ignore: suppresses only findings from the listed rule(s). Other rules on the same line are still reported |
+| `cybedefend-ignore` | Blanket ignore: suppresses every SAST, IaC and CI/CD finding reported on that line, whatever the rule |
+| `cybedefend-ignore[CODE]` | Scoped ignore: suppresses only findings whose rule code is listed. Separate several codes with commas. Other rules on the same line are still reported |
 | `: reason` | Optional free text. Always add one so reviewers know why the finding is a false positive |
 
 ## Placement
@@ -55,7 +72,7 @@ const query = `SELECT * FROM users WHERE id = ${id}`; // cybedefend-ignore: id i
 ### On the line above
 
 ```python
-# cybedefend-ignore[<rule-id>]: table name comes from a static allowlist
+# cybedefend-ignore[<rule-code>]: table name comes from a static allowlist
 cursor.execute(f"SELECT * FROM {table} WHERE id = %s", (user_id,))
 ```
 
@@ -75,7 +92,7 @@ res.send(renderedHtml);
 ### Python
 
 ```python
-subprocess.run(cmd, shell=True)  # cybedefend-ignore[<rule-id>]: cmd is a hard-coded constant
+subprocess.run(cmd, shell=True)  # cybedefend-ignore[<rule-code>]: cmd is a hard-coded constant
 ```
 
 ### Go
@@ -90,7 +107,7 @@ data, err := os.ReadFile(path)
 ```hcl
 resource "aws_s3_bucket" "public_assets" {
   bucket = "my-public-assets"
-  # cybedefend-ignore[<rule-id>]: this bucket intentionally serves public static assets
+  # cybedefend-ignore[<rule-code>]: this bucket intentionally serves public static assets
   acl    = "public-read"
 }
 ```
@@ -105,32 +122,17 @@ containers:
       privileged: true
 ```
 
-### Secrets
-
-```javascript
-// cybedefend-ignore[<rule-id>]: sample value used in unit tests
-const API_KEY = "test-0000000000000000000000000000";
-```
-
 ## Behaviour
 
 - **Every scan type**: the directive is honoured on both full scans and diff scans.
 - **Persistent**: because the directive is committed with the code, the finding stays suppressed on all later scans until the comment is removed.
 - **Silent**: suppressed findings do not appear in the platform, in reports, or in project metrics.
-- **Safe by default**: if the scanner cannot read the source file, the finding is kept and reported.
-
-Scan logs record how many findings were dropped:
-
-```
-Ignoring vulnerability in src/db/query.js (inline cybedefend-ignore directive)
-Filtered out 3 vulnerabilities via inline cybedefend-ignore directives
-After filtering: 42 vulnerabilities to report
-```
+- **Safe by default**: if the scanner cannot read the source file, the finding is kept and reported. A bracket list that is never closed, or that is empty, is not a directive: nothing is suppressed.
 
 ## Best Practices
 
 <Warning>
-Prefer a scoped directive (`cybedefend-ignore[RULE]`) over a blanket one. A blanket ignore also hides any new rule that later fires on the same line.
+Prefer a scoped directive (`cybedefend-ignore[CODE]`) over a blanket one. A blanket ignore also hides any new rule that later fires on the same line.
 </Warning>
 
 - **Always give a reason.** A bare `cybedefend-ignore` tells a reviewer nothing. Explain why the finding does not apply.
@@ -147,7 +149,8 @@ Ignore comments from other security tools have no effect on CybeDefend scans. On
 ### The finding is still reported
 
 - Check that the comment is on the vulnerable line or the line directly above it.
-- If you used a scoped form, verify the rule ID matches exactly the one shown on the finding.
+- If you used a scoped form, check that the brackets contain the rule code shown on the finding (`CD-…`), not a scanner rule identifier, and that the list is closed with `]`.
+- Secret findings are never suppressed by a directive. Set them to **Ignored** instead.
 - Confirm the change was committed and included in the scanned branch.
 
 ### Another finding disappeared unexpectedly
