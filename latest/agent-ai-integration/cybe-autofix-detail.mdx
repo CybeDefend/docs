@@ -54,6 +54,114 @@ When Cybe AutoFix is enabled:
 3. Cybe AutoFix analyzes the vulnerability using the knowledge graph
 4. A **pull request is automatically created** in your repository
 
+### Finding types it covers
+
+Cybe AutoFix rewrites code, so it works on **SAST**, **IaC** and **CI/CD**
+findings. **Secret** findings are out of scope — a leaked credential is fixed by
+rotating it and purging it from history, not by editing the file — and the
+**Secret** type is not offered on the AutoFix page. Dependency findings go
+through SCA AutoFix, below.
+
+<Warning>
+`POST /project/{projectId}/autofix` and `POST /project/{projectId}/autofix/batch`
+answer `400 Bad Request` with `AUTOFIX_TYPE_NOT_SUPPORTED: AutoFix is not
+available for secret detections` when a `vulnerabilityId` points at a secret
+finding. A batch is refused whole if any id in `vulnerabilityIds` is one, so
+keep secret findings out of the list you send. A refused call consumes no
+AutoFix credit.
+</Warning>
+
+---
+
+## SCA AutoFix: Dependency Upgrades
+
+Dependency findings are handled by a dedicated flow. Instead of rewriting code,
+SCA AutoFix resolves your dependency tree: for a vulnerable **transitive**
+package, it looks for the version of the **direct** dependency that pulls in a
+fixed version, and tells you which upgrade actually closes the finding.
+
+### From the dashboard
+
+1. Open the **AutoFix** page and select the project and branch
+2. Switch the finding type to **SCA** and select the vulnerabilities to fix
+3. Pick an **update level**, and enable **Create a pull request** if you want the
+   upgrade opened as a PR
+4. Click **Generate**
+
+The request is queued and runs in the background. The progress modal closes as
+soon as the job is accepted — follow it in the **background tasks** widget; the
+results open by themselves once the job completes.
+
+<Note>
+An SCA AutoFix job is **asynchronous**. Nothing is analyzed while your request is
+open: the call returns a `jobId` and the analysis, the clone and any PR creation
+happen in a worker.
+</Note>
+
+### From the API
+
+Base URLs are regional: `https://api-eu.cybedefend.com` or
+`https://api-us.cybedefend.com`. All three calls require the
+`read_scan_result` permission on the project.
+
+| Step | Call |
+| --- | --- |
+| Start a job | `POST /project/{projectId}/results/sca/autofix` |
+| Poll progress | `GET /project/{projectId}/results/sca/autofix/{jobId}/status` |
+| Read results | `GET /project/{projectId}/results/sca/autofix/{jobId}` |
+
+Request body:
+
+| Field | Type | Default | Description |
+| --- | --- | --- | --- |
+| `vulnerabilityIds` | `string[]` (UUID) | — | Required, at least one SCA detection ID |
+| `updateLevel` | `patch` \| `minor` \| `major` \| `auto` | `auto` | Highest upgrade allowed. `auto` escalates from `patch` up to `major` until a fix works |
+| `singleFix` | `boolean` | `false` | Stop at the first valid fix instead of listing every one |
+| `createPr` | `boolean` | `false` | Open a pull request with the upgrade. Requires the project to be linked to GitHub or GitLab |
+| `targetBranch` | `string` | default branch | Branch the pull request targets |
+
+```bash
+curl -X POST https://api-eu.cybedefend.com/project/$PROJECT_ID/results/sca/autofix \
+  -H "Authorization: Bearer $CYBEDEFEND_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "vulnerabilityIds": ["550e8400-e29b-41d4-a716-446655440000"],
+    "updateLevel": "auto",
+    "createPr": true
+  }'
+```
+
+The response carries `status: "queued"` and the `jobId` to poll. The status
+endpoint reports `queued`, `processing`, `completed` or `failed`, along with
+`processedVulnerabilities` / `totalVulnerabilities`, `progressPercent`,
+`fixableCount`, `unfixableCount` and `errorCount`.
+
+Once the job is `completed`, the results endpoint returns one entry per
+vulnerability, each with its own `status`:
+
+| Status | Meaning |
+| --- | --- |
+| `ok` | A fix was found — see `recommendedFix` (the most conservative candidate) and `fixCandidates` |
+| `direct_update` | The vulnerable package is a direct dependency; upgrade it directly |
+| `no_fix` | No version of the parent package resolves the finding |
+| `error` | Analysis failed for this vulnerability; `errorMessage` says why |
+
+Each entry also carries the `dependencyPath` that led to the vulnerable package
+and an `installCommand` you can run as-is. When `createPr` was set, the job
+result includes the PR URL, number and branch name.
+
+<Note>
+If a job is still running for that project, a new request is refused with
+`409 Conflict`. Poll the running job rather than starting another one.
+</Note>
+
+### Repository support
+
+SCA AutoFix clones the repository linked to the project to resolve the
+dependency tree, so a linked **GitHub or GitLab** repository is required — even
+when you leave `createPr` at `false`. Projects linked to GitLab only are
+supported: the clone falls back to GitLab when no GitHub repository is linked.
+
 ---
 
 ## Review & Merge

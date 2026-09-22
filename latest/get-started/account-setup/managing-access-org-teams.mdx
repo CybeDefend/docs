@@ -42,6 +42,20 @@ Each organization has at least **one** Team Manager, who can manage team members
   <img src="/images/get-started/setting-up-account/invite-dialog.png" alt="Invite Organization Member Popup" style={{ borderRadius: '0.5rem' }} />
 </Frame>
 
+The roles you can assign depend on your own:
+
+| Your role | Roles you can invite |
+|---|---|
+| Creator | Administrator, Manager, Billing Manager, Member |
+| Administrator | Manager, Billing Manager, Member |
+| Manager | Manager, Member |
+
+If you add the invitee to teams in the same dialog, you can only pick teams where you are allowed to add members yourself; otherwise the invitation is refused.
+
+<Note>
+The role is checked again when the invitee accepts. If your own role no longer allows it at that point — for example because you were removed from the organization — the invitation can no longer be accepted, and you need to send a new one.
+</Note>
+
 2. **Pending Invitations**  
    - Once invited, the user appears in the member list with a **Pending** status.
    - You can cancel the invite at any time if needed.

@@ -19,20 +19,28 @@ Usage:
 
 Available Commands:
   completion  Generate the autocompletion script for the specified shell
+  compliance  View compliance and policy violation data
+  container   Container image scanning
   help        Help about any command
-  login       Authenticate with CybeDefend (OAuth browser flow or PAT)
-  logout      Clear stored credentials
+  login       Authenticate with CybeDefend
+  logout      Remove stored CybeDefend credentials
+  overview    Get security overviews
+  project     Manage projects
+  report      Generate security reports
   results     Get scan results
   scan        Start a new scan
+  team        Manage teams
   version     Show the version of cybedefend
 
 Flags:
-      --api-url string    API URL (default "https://api-us.cybedefend.com")
-      --region string     Platform region: us or eu (default "us")
-      --ci                CI mode
-      --config string     Config file (default is $HOME/.cybedefend/config.yaml) (optional)
-      --debug             Debug mode
-  -h, --help              help for cybedefend
+      --api-url string         API URL (default "https://api-us.cybedefend.com")
+      --auth-endpoint string   Auth endpoint URL (optional, derived from --region by default)
+      --ci                     CI mode
+      --config string          Config file (default is $HOME/.cybedefend/config.yaml) (optional)
+      --debug                  Debug mode
+  -h, --help                   help for cybedefend
+      --pat string             Personal Access Token (PAT) — create one in Account Settings → Personal Access Tokens
+      --region string          Platform region to use: us or eu (ignored if --api-url is provided) (default "us")
 
 Use "cybedefend [command] --help" for more information about a command.
 ```
@@ -303,6 +311,29 @@ Every finding in a JSON export carries its own state in `currentState`, so a fil
 `--status` is a recent addition. If your CLI answers `unknown flag: --status`, upgrade the binary from the [releases page](https://github.com/CybeDefend/cybedefend-cli/releases).
 </Note>
 
+#### SARIF tool metadata
+
+The `sarif` output describes the tool that produced the report in the `tool.driver`
+block. GitHub code scanning surfaces these two fields as the provenance of every
+alert it ingests:
+
+```json
+{
+  "name": "Cybedefend CLI",
+  "informationUri": "https://github.com/CybeDefend/cybedefend-cli",
+  "version": "2.1.1"
+}
+```
+
+<Note>
+Up to and including **v2.1.0** this block shipped a placeholder `informationUri`
+of `https://example.com/docs` and a `version` frozen at `1.0.0`, so uploaded
+alerts credited the wrong tool at a version that had nothing to do with the
+binary. From **v2.1.1** the version tracks the binary that wrote the report.
+The findings themselves were never affected, so there is nothing to re-upload —
+new reports simply carry correct provenance.
+</Note>
+
 #### Examples
 ```bash
 # Every scan type, findings that still need attention (the default)
@@ -328,13 +359,150 @@ cybedefend results --project-id your-project-id --type sca --grouped
 cybedefend results --project-id your-project-id --type sast --all=false --page 2
 ```
 
-### 3. `version`
-Displays the CLI version:
+### 3. `compliance`
+
 ```bash
-cybedefend version
+cybedefend compliance history [flags]
+cybedefend compliance violations [flags]
+cybedefend compliance stats [flags]
 ```
 
-### 4. `completion`
+Reads the policy evaluation data the platform holds for a project. All three
+subcommands print indented JSON on stdout; none of them write a file. Each takes
+`--project-id`, which falls back to `project_id` in the config file or to
+`CYBEDEFEND_PROJECT_ID`.
+
+| Subcommand | Additional flags | Returns |
+|------------|------------------|---------|
+| `history` | `--page` (`1`), `--page-size` (`20`), `--start-date`, `--end-date` | Paginated evaluation history: `entries`, `total`, `page`, `pageSize` |
+| `violations` | `--page` (`1`), `--limit` (`20`) | Open policy violations: `violations`, `total`, `page`, `limit` |
+| `stats` | `--start-date`, `--end-date` | Violation counters and the compliance status |
+
+`--start-date` and `--end-date` are ISO dates and both are optional — omitting one
+means no bound on that side.
+
+`compliance stats` returns the counters a pipeline gate reads:
+
+```json
+{
+  "totalViolations": 1,
+  "blockedCount": 1,
+  "warnedCount": 0,
+  "applicablePoliciesCount": 1,
+  "complianceStatus": "Non-Compliant"
+}
+```
+
+`complianceStatus` is one of `Compliant`, `Non-Compliant` or `Pending`.
+
+<Warning>
+**Before v2.1.1, `compliance stats` reported nothing at all.** The command read
+the counters from the wrong level of the API response, so every field fell back
+to its zero value: a project that a policy had genuinely blocked printed
+`totalViolations: 0` with an empty `complianceStatus`.
+
+**A CI gate keyed on this output has been letting everything through since the
+command shipped.** Upgrade to v2.1.1 or later, then re-check any threshold built
+on these counters — a project that used to print zero now reports its real
+violations, and a gate that never fired may start failing the build. That is the
+correct behaviour, not a regression.
+
+`compliance history` and `compliance violations` read their payloads correctly
+and are unchanged.
+</Warning>
+
+<Note>
+`compliance`, `overview`, `project`, `report` and `team` print their JSON to
+stdout — and so does the CLI banner, unless you pass `--ci`. Add `--ci` whenever
+you pipe the output into `jq` or redirect it to a file.
+</Note>
+
+### 4. `overview`
+
+```bash
+cybedefend overview project [flags]
+cybedefend overview org --organization-id YOUR_ORG_ID [flags]
+```
+
+Prints a project's or an organization's aggregated security posture as indented
+JSON.
+
+**`overview project` flags:**
+
+| Flag | Default | What it does |
+|------|---------|--------------|
+| `--project-id` | from config / env | Project to summarize |
+| `--branches` | all branches | Comma-separated branch names to restrict the aggregation to |
+
+**`overview org` flags:**
+
+| Flag | Default | What it does |
+|------|---------|--------------|
+| `--organization-id` | — | Organization to summarize. Required |
+| `--severity-filter` | no filter | Comma-separated severities |
+| `--status-filter` | no filter | Comma-separated triage states |
+| `--analysis-types` | no filter | Comma-separated scan types |
+| `--date-from`, `--date-to` | no bound | ISO dates bounding the aggregation |
+| `--branches` | all branches | Comma-separated branch names |
+| `--team-ids` | all teams | Comma-separated team IDs |
+| `--trend-period-days` | unset | Length of the trend window, in days |
+
+The three filter lists are forwarded to the API exactly as typed: the platform
+owns that vocabulary, so the CLI does not check the values against a list of its
+own and an unknown value is rejected by the API, not locally.
+
+`overview project` carries the project's [CybeRisk Score](/latest/plateform-overview/key-features/cyber-risk-score)
+alongside the vulnerability breakdowns:
+
+```json
+{
+  "totalBySeverity": [{ "severity": "critical", "count": 12 }],
+  "totalByState": [{ "state": "to_verify", "count": 37 }],
+  "totalByAnalysisType": [{ "analysisType": "sast", "count": 37 }],
+  "vulnerabilitiesOverTime": [{ "date": "2026-09-01", "severity": "high", "count": 4 }],
+  "riskScore": 3684,
+  "riskLevel": "critical"
+}
+```
+
+<Warning>
+**Breaking for anything that parses `overview` output, as of v2.1.1.**
+`riskScore` and `riskLevel` are now **omitted** when the platform has not
+computed them, rather than present as `0` and `""`.
+
+Before v2.1.1 the CLI looked for a flat `riskScore` / `riskLevel` pair that the
+API has never sent, so **every** project reported a score of `0` at an empty
+level, whatever its real posture:
+
+```json
+{ "riskScore": 0, "riskLevel": "" }
+```
+
+The same project now reports what the platform actually computed:
+
+```json
+{ "riskScore": 3684, "riskLevel": "critical" }
+```
+
+The organization endpoint returns no risk figure at all, so `overview org` simply
+does not carry the two keys — where it previously emitted `riskScore: 0`,
+indistinguishable from a genuine zero. A reader that assumed the keys are always
+present must treat an absent key as *not computed*, and never as a clean score.
+</Warning>
+
+### 5. `version`
+Displays the CLI version:
+```bash
+cybedefend version --ci
+```
+```
+2026-09-12 10:24:17 [INFO] CybeDefend CLI version 2.1.1
+```
+
+The same version is reported in the SARIF `tool.driver.version` field, so a
+report can always be traced back to the binary that produced it.
+
+### 6. `completion`
 Generates shell autocompletion for bash, zsh, etc.:
 ```bash
 cybedefend completion [shell]
