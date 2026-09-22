@@ -5,28 +5,38 @@ description: 'Silence a confirmed false positive on one line of your code with a
 
 ## Overview
 
-The `cybedefend-ignore` directive lets you silence a specific finding by adding a comment in your source code, on the flagged line or on the line directly above it. It is the right tool for confirmed false positives: the directive lives next to the code, is reviewed in pull requests, and keeps the finding silenced on every subsequent scan.
+The `cybedefend-ignore` directive lets you silence a specific SAST, IaC or CI/CD finding by adding a comment in your source code, on the flagged line or on the line directly above it. It is the right tool for confirmed false positives: the directive lives next to the code, is reviewed in pull requests, and keeps the finding silenced on every subsequent scan. It never silences a secret: see [Secret Findings](#secret-findings).
 
-A scoped directive names the rule it silences by its CybeDefend rule code, for example `cybedefend-ignore[CD-IAC-0123]: <reason>`. The finding detail shows the code, and the dashboard copies a ready-to-paste directive for you.
+A scoped directive names the rule it silences by its CybeDefend rule code, for example `cybedefend-ignore[CD-IAC-0123]: <reason>`. The detail of a SAST, IaC or CI/CD finding shows the code, and the dashboard copies a ready-to-paste directive for you.
 
 Use the [`.cybeignore` exclusion file](/latest/code-scanning/scanning-options/cybedefend-ignore-file) when you want to exclude whole files or directories. Use an inline comment when you want to exclude one precise line.
 
 ## Supported Findings
 
-The directive applies to every finding attached to a line of your code. Each rule has a code of the form `CD-<TYPE>-<NNNN>`, where the type matches the finding type:
+The directive applies to SAST, IaC and CI/CD findings. Each rule has a code of the form `CD-<TYPE>-<NNNN>`, where the type matches the finding type:
 
 | Finding type | Rule code | Example |
 |--------------|-----------|---------|
 | SAST | `CD-SAST-<NNNN>` | `CD-SAST-0042` |
 | IaC | `CD-IAC-<NNNN>` | `CD-IAC-0123` |
 | CI/CD | `CD-CICD-<NNNN>` | `CD-CICD-0007` |
-| Secrets | `CD-SECRET-<NNNN>` | `CD-SECRET-0012` |
 
 The number has four digits or more. The codes on this page are examples: always use the code shown on your finding.
 
 <Note>
 SCA, container and AI-BOM findings are not attached to a source line and cannot be suppressed with an inline comment.
 </Note>
+
+## Secret Findings
+
+A `cybedefend-ignore` directive never silences a secret finding, whether it is bare or scoped. On a line that also holds a secret, the directive still applies to the other findings of that line, never to the secret.
+
+Handle a secret finding this way instead:
+
+| The secret is | What to do |
+|---------------|------------|
+| A false positive, such as a test fixture | [Set the finding to **Ignored**](/latest/managing-vulnerabilities/updating-vulnerabilities) in the dashboard, with a reason. To stop scanning a whole path, exclude it with [`.cybeignore`](/latest/code-scanning/scanning-options/cybedefend-ignore-file): every finding in that path is hidden, including secrets committed there later. |
+| Real | Rotate it, then use **Mark as rotated** on the finding. |
 
 ## Syntax
 
@@ -40,7 +50,7 @@ cybedefend-ignore: <reason>
 |------|--------|
 | `cybedefend-ignore[CD-IAC-0123]` | Scoped ignore, **recommended**: silences only the findings of the listed rule. Findings of other rules on the same line stay visible |
 | `cybedefend-ignore[CD-IAC-0123,CD-IAC-0456]` | Scoped to several rules: separate the codes with commas. Spaces around a code are allowed |
-| `cybedefend-ignore` | Bare ignore: silences every finding reported on that line, whatever the rule |
+| `cybedefend-ignore` | Bare ignore: silences every SAST, IaC and CI/CD finding reported on that line, whatever the rule |
 | `: <reason>` | Optional free text. Always add one so reviewers know why the finding is a false positive |
 
 - **Case does not matter**, neither for the directive nor for the codes: `CYBEDEFEND-IGNORE[cd-iac-0123]` is valid.
@@ -52,8 +62,8 @@ cybedefend-ignore: <reason>
 
 | Where | How |
 |-------|-----|
-| Dashboard | Open the finding: its detail shows the rule code. **Copy directive** copies a ready-to-paste directive in the comment syntax of the finding's file, with a `<reason>` placeholder. Paste it on the flagged line or on the line above, then replace `<reason>` with your justification. |
-| [Cybe MCP](/latest/agent-ai-integration/cybe-mcp) | `get_vulnerability_*` and `list_vulnerabilities_*` return the code in the `ruleCode` field for SAST, IaC, CI/CD and secret findings. `cybe_scan_findings` returns it for the findings of a diff scan. |
+| Dashboard | Open a SAST, IaC or CI/CD finding: its detail shows the rule code. **Copy directive** copies a ready-to-paste directive in the comment syntax of the finding's file, with a `<reason>` placeholder. Paste it on the flagged line or on the line above, then replace `<reason>` with your justification. |
+| [Cybe MCP](/latest/agent-ai-integration/cybe-mcp) | `get_vulnerability_*` and `list_vulnerabilities_*` return the code in the `ruleCode` field for SAST, IaC and CI/CD findings. `cybe_scan_findings` returns it for the SAST, IaC and CI/CD findings of a diff scan. |
 
 A code identifies a CybeDefend rule, not a single finding: every finding of that rule carries the same code.
 
@@ -86,7 +96,7 @@ Write the directive in a comment of the file's own syntax:
 |---------|------------|-----------|
 | `#` | Terraform, YAML (Kubernetes manifests, CI/CD workflows), Dockerfile, Python, Ruby, shell | `# cybedefend-ignore[CD-IAC-0123]: <reason>` |
 | `//` | JavaScript, TypeScript, Go, Java, C, C++, C#, PHP | `// cybedefend-ignore[CD-SAST-0108]: <reason>` |
-| `--` | SQL | `-- cybedefend-ignore[CD-SECRET-0012]: <reason>` |
+| `--` | SQL | `-- cybedefend-ignore[CD-SAST-0633]: <reason>` |
 | `<!-- -->` | HTML, XML | `<!-- cybedefend-ignore[CD-SAST-0512]: <reason> -->` |
 | Template comment | Helm templates | `{{- /* cybedefend-ignore[CD-IAC-0456]: <reason> */}}` |
 
@@ -151,8 +161,8 @@ MessageDigest md = MessageDigest.getInstance("MD5");
 ### SQL (`--`)
 
 ```sql
--- cybedefend-ignore[CD-SECRET-0012]: seed for the local development database, the account exists nowhere else
-CREATE USER app_dev WITH PASSWORD 'local-dev-only';
+-- cybedefend-ignore[CD-SAST-0633]: @table_name is checked against sys.tables before this statement
+EXEC('SELECT * FROM ' + @table_name);
 ```
 
 ### HTML and XML (`<!-- -->`)
@@ -178,7 +188,7 @@ securityContext:
 - **One code per rule**: a code covers its rule whichever analyzer reports the finding.
 - **Silent**: a silenced finding is not created. It does not appear in the platform, in reports, in project metrics, or in diff scan results.
 - **Already open**: when you add a directive for a finding that is already open, the next full scan of that branch marks it **Resolved**. A diff scan leaves the project's findings as they are.
-- **Secrets already reported stay open**: a directive does not resolve a secret finding that is already open. Set that finding to **Ignored** with a reason or, if the secret was real and you have rotated it, use **Mark as rotated**.
+- **Never on secrets**: no directive, bare or scoped, silences a secret finding. See [Secret Findings](#secret-findings).
 - **Persistent**: because the directive is committed with the code, the finding stays silenced on all later scans until the comment is removed.
 - **Safe by default**: a malformed directive has no effect, and the finding is reported. A broken scoped directive is never read as a bare one.
 
@@ -186,6 +196,8 @@ securityContext:
 
 <Warning>
 **Breaking change.** Between the brackets, CybeDefend recognises only rule codes (`CD-<TYPE>-<NNNN>`). A directive that lists another identifier, such as a UUID, a `CKV_…` or `BC_…` identifier, or a dotted rule name, silences nothing: the finding it targets is reported. Replace each identifier with the rule code.
+
+A directive on a secret silences nothing either, bare or scoped: the secret is reported. Handle it as described in [Secret Findings](#secret-findings).
 </Warning>
 
 <Steps>
@@ -197,7 +209,7 @@ securityContext:
     ```
   </Step>
   <Step title="Get the rule codes">
-    Run a scan of the branch. The findings those directives target are reported with their rule code: open each one in the dashboard and use **Copy directive**, or read `ruleCode` through the Cybe MCP.
+    Run a scan of the branch. The findings those directives target are reported: open each SAST, IaC or CI/CD one in the dashboard and use **Copy directive**, or read its `ruleCode` through the Cybe MCP. Secrets are covered in the last step.
   </Step>
   <Step title="Replace the identifiers">
     Put the code between the brackets and keep your reason:
@@ -209,6 +221,9 @@ securityContext:
     # After
     # cybedefend-ignore[CD-IAC-0123]: this bucket intentionally serves public static assets
     ```
+  </Step>
+  <Step title="Handle the secrets">
+    If the scan reports secrets on lines that carry a directive, handle each one as described in [Secret Findings](#secret-findings). The directive has no effect on the secret: keep it only if it silences another finding of that line.
   </Step>
 </Steps>
 
@@ -225,12 +240,13 @@ Prefer a scoped directive (`cybedefend-ignore[CD-IAC-0123]`) over the bare form.
 
 ## Other Ignore Comments
 
-CybeDefend supports one suppression directive: `cybedefend-ignore`. Do not rely on the suppression comments of other security tools to silence CybeDefend findings. `cybedefend-ignore` is the one directive that applies the same way to every finding type and in every scan.
+CybeDefend supports one suppression directive: `cybedefend-ignore`. Do not rely on the suppression comments of other security tools to silence CybeDefend findings. `cybedefend-ignore` is the one directive that applies the same way to SAST, IaC and CI/CD findings, in every scan.
 
 ## Troubleshooting
 
 ### The finding is still reported
 
+- **Check the finding type.** A directive never applies to a secret finding. See [Secret Findings](#secret-findings).
 - **Check the code.** It must be the rule code shown on the finding. Another tool's rule identifier, a typo, or the code of a different rule matches nothing.
 - **Check the line.** The directive must be on the flagged line or on the line directly above it, with no blank line in between. For a finding that spans several lines, use its first line.
 - **Check the brackets.** An unclosed bracket (`cybedefend-ignore[CD-IAC-0123: …`), empty brackets (`cybedefend-ignore[]: …`), or a directive glued to another word (`cybedefend-ignored`, `cybedefend-ignore-next-line`) is not a directive.
@@ -238,8 +254,8 @@ CybeDefend supports one suppression directive: `cybedefend-ignore`. Do not rely 
 
 ### The finding is still listed as open
 
-A directive keeps a finding from being created. A finding that was already open is marked **Resolved** by the next full scan of its branch, not by a diff scan. A secret finding that was already open stays open: set its status yourself, as described in [Behaviour](#behaviour).
+A directive keeps a finding from being created. A finding that was already open is marked **Resolved** by the next full scan of its branch, not by a diff scan.
 
 ### Another finding disappeared unexpectedly
 
-The bare form suppresses every rule on that line. Switch to the scoped form to keep other findings visible.
+The bare form suppresses every SAST, IaC and CI/CD rule on that line. Switch to the scoped form to keep other findings visible.
