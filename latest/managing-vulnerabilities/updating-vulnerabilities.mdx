@@ -48,6 +48,16 @@ The same rule applies to **bulk dismissal**: each item in a batch update carries
 The justification is recorded against the finding and surfaces as `dismissal_reason` in the [Findings Export](/latest/managing-vulnerabilities/findings-export). Automated triage is held to the same standard — when Cybe Agent dismisses a finding, it records its own reason and is attributed as `agent`.
 </Note>
 
+## How a later scan treats your decision
+
+A status you set by hand is kept when a later scan detects the same finding again: **Confirmed** stays confirmed, **Ignored** stays ignored.
+
+**Resolved** is the exception — a finding you marked as resolved returns to **To Verify** as soon as a scan detects it again.
+
+<Note>
+Keep **Resolved** for something you have actually fixed: a later scan that still detects it is telling you the fix did not land. For a false positive or an accepted risk that must not reappear, use **Ignored** with its dismissal reason.
+</Note>
+
 <Frame>
   <img src="/images/get-started/relevant-functionalities/update-vuln-result.png" alt="After Updating Vulnerability" style={{ borderRadius: '0.5rem' }} />
 </Frame>
