@@ -112,12 +112,12 @@ Negation is the tool for excluding a whole class while keeping one member of it 
 | Container | No — separate scanner |
 
 <Warning>
-**Excluding a file also hides its secret findings.** Gitleaks runs as a second pass inside the same scanner and shares the same exclusion list, so a path you exclude here stops being reported for hardcoded credentials too — including credentials a *later* commit adds to that file.
+**Excluding a file also hides its secret findings.** Secret detection applies the same exclusion list, so a path you exclude here stops being reported for hardcoded credentials too — including credentials a *later* commit adds to that file.
 
-This matters most for the patterns people reach for first. `**/*.spec.ts` or `tests/` will silence Gitleaks across your whole test suite, which is exactly where fixture credentials — and the occasional real one pasted in by mistake — tend to live.
+This matters most for the patterns people reach for first. `**/*.spec.ts` or `tests/` will silence secret detection across your whole test suite, which is exactly where fixture credentials — and the occasional real one pasted in by mistake — tend to live.
 </Warning>
 
-When only a few findings in a file are false positives, prefer [inline `cybedefend-ignore` comments](/latest/code-scanning/scanning-options/inline-ignore-comments) over listing the whole file here: the exclusion stays scoped to the lines you reviewed, and the rest of the file keeps being scanned.
+When only a few findings in a file are false positives, a fixture credential for example, prefer [inline `cybedefend-ignore` comments](/latest/code-scanning/scanning-options/inline-ignore-comments) over listing the whole file here: the exclusion stays scoped to the lines and rules you reviewed, and the rest of the file keeps being scanned.
 
 ## Common Use Cases
 

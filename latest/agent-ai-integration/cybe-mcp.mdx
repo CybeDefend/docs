@@ -185,6 +185,8 @@ All tools share the same shape: a typed JSON schema the agent's planner can reas
 | `get_vulnerability_container` | Single container finding with image layer and base image info. |
 | `get_similar_vulnerabilities` | Returns a vulnerability alongside its similar occurrences across the project. Required: `projectId`, `vulnerabilityId`. Optional: `pathFilter`. Useful to apply a single status change to a class of look-alike findings. |
 
+SAST, IaC, CI/CD and secret findings carry their rule code (`CD-<TYPE>-<NNNN>`) in `ruleCode`: it is the code an [inline `cybedefend-ignore` comment](/latest/code-scanning/scanning-options/inline-ignore-comments) takes to silence that rule.
+
 ### Write
 
 | Tool | Effect |
