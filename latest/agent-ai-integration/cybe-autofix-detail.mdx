@@ -114,7 +114,7 @@ Request body:
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
-| `vulnerabilityIds` | `string[]` (UUID) | — | Required, at least one SCA detection ID |
+| `vulnerabilityIds` | `string[]` (UUID) | — | Required, 1 to 100 SCA detection IDs. More than 100 is a `400` |
 | `updateLevel` | `patch` \| `minor` \| `major` \| `auto` | `auto` | Highest upgrade allowed. `auto` escalates from `patch` up to `major` until a fix works |
 | `singleFix` | `boolean` | `false` | Stop at the first valid fix instead of listing every one |
 | `createPr` | `boolean` | `false` | Open a pull request with the upgrade. Requires the project to be linked to GitHub or GitLab |
@@ -151,8 +151,12 @@ and an `installCommand` you can run as-is. When `createPr` was set, the job
 result includes the PR URL, number and branch name.
 
 <Note>
-If a job is still running for that project, a new request is refused with
-`409 Conflict`. Poll the running job rather than starting another one.
+**Retries and concurrent jobs.** An identical request — same caller, project,
+vulnerability set and options — sent while its job is still running returns that
+job's `jobId` and queues nothing, so a retry never opens a second pull request.
+An organization runs up to three AutoFix jobs at a time across all of its
+projects; a further request answers `429 Too Many Requests` until one of them
+finishes.
 </Note>
 
 ### Repository support
