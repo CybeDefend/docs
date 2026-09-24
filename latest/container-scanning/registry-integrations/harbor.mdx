@@ -15,6 +15,17 @@ description: "Scan container images stored in Harbor registry."
 | **Robot Token** | Robot account token | `*****` |
 | **Description** | Optional description | `Production Harbor Registry` |
 
+<Warning>
+A stored credential whose **Harbor URL** is not `https://`, or carries a `?` or `#`, cannot start a scan. Open the credential in CybeDefend and correct the URL.
+
+```diff
+- "harborUrl": "http://harbor.example.com"
++ "harborUrl": "https://harbor.example.com"
+```
+
+A bare host such as `harbor.example.com` is accepted and completed with `https://`.
+</Warning>
+
 ## Required Robot Account Permissions
 
 | Resource | Permission |

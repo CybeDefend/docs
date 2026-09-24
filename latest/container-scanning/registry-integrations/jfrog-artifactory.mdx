@@ -15,6 +15,17 @@ description: "Scan container images stored in JFrog Artifactory."
 | **Access Token** | Access token for authentication | `*****` |
 | **Description** | Optional description | `Production JFrog Artifactory Registry` |
 
+<Warning>
+A stored credential whose **JFrog Artifactory URL** is not `https://`, or carries a `?` or `#`, cannot start a scan. Open the credential in CybeDefend and correct the URL.
+
+```diff
+- "jfrogUrl": "http://company.jfrog.io"
++ "jfrogUrl": "https://company.jfrog.io"
+```
+
+A bare host such as `company.jfrog.io` is accepted and completed with `https://`.
+</Warning>
+
 ## How to Configure JFrog Artifactory Container Registry
 
 <Steps>

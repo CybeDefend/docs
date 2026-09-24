@@ -31,6 +31,12 @@ description: "Get a high-level view of all your organization’s projects, vulne
   <img src="/images/get-started/relevant-functionalities/global-management-table.png" alt="Project List with Vulnerability Details" style={{ borderRadius: '0.5rem' }} />
 </Frame>
 
+## Branch Filter
+
+The stats and the project table are aggregated over the branches selected in the **branch filter**, not over everything ever scanned. By default, each project contributes its **reference branch** only — marked with a ★ in the dropdown — so feature branches do not inflate the organization's totals.
+
+A project's reference branch is the default branch configured on the project (`develop` on a GitFlow repository, for example), as long as that branch has been scanned; otherwise `main` or `master` is used. When none of the selected projects exposes a reference branch, every branch is selected instead, so the overview is never empty. Open the dropdown to select branches yourself, per project.
+
 <Note>
 The table supports searching by project name. You can also click a project row to jump into its <strong>detailed vulnerability list</strong>.
 (PS: of course our API is not vulnerable, it's just an example :) )

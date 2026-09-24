@@ -105,6 +105,21 @@ Each analyzed vulnerability receives a comment from Cybe
   <img src="/images/agent-ai/false-positive-detection.png" alt="Cybe Analysis False Positive Detection" style={{ borderRadius: '0.5rem' }} />
 </Frame>
 
+### When an Analysis Is Out of Date
+
+A verdict describes the finding as it stood when the analysis ran. On SAST, IaC and CI/CD findings, CybeDefend flags a verdict that has been overtaken:
+
+| Flag | When it appears |
+|------|-----------------|
+| **This agent analysis predates the latest security context** | You changed the project's security context after the verdict was produced |
+| **This agent analysis dates from a previous scan** | A later scan of that scanner type ran after the verdict was produced |
+
+Where you see it:
+
+- An amber warning badge next to the analysis badges on the finding's row in the results list, with the reason as tooltip.
+- A banner on the finding detail, with a **Re-run agent analysis** button that queues a fresh analysis for that finding.
+- On the SAST, IaC and CI/CD results pages, a banner grouping the analyses that predate the latest security context, with a **Re-run all** button.
+
 ---
 
 ## Requirements
