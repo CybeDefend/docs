@@ -9,6 +9,10 @@ CybeDefend's **Container Image Scanning** provides comprehensive security analys
   <img src="/images/container-scanning/container-image-scanning.png" alt="Container Image Scanning" style={{ borderRadius: '0.5rem' }} />
 </Frame>
 
+<Warning>
+Container scanning requires the **Team** plan or above. On a plan without it, the dashboard hides the Container tab, and every `/project/{projectId}/results/container…` endpoint, along with the MCP server's `results/container` reads, answers `403` — the reason names the `container_scanning` feature. Starting a container scan and connecting a registry are gated the same way. An integration that reads container findings therefore needs a plan that includes container scanning; the other scanners are unaffected.
+</Warning>
+
 ## Scanning Options
 
 ### Public Container Images

@@ -9,7 +9,7 @@ description: "Scan container images stored in JFrog Artifactory."
 
 | Field | Description | Example |
 |-------|-------------|---------|
-| **JFrog Artifactory URL** | Full URL of your JFrog instance | `https://company.jfrog.io` |
+| **JFrog Artifactory URL** | Base URL of your JFrog instance — `https://` only, with no query string (`?`) or fragment (`#`) | `https://company.jfrog.io` |
 | **Docker Repository Key** | Docker repository key name | `docker-local` |
 | **Username** | Artifactory username | `admin` |
 | **Access Token** | Access token for authentication | `*****` |
@@ -62,7 +62,7 @@ Access tokens are only displayed once. Make sure to copy and store the token sec
   <Accordion title="Authentication Failed" icon="circle-exclamation">
     - Verify username and access token are correct
     - Check if the token has expired
-    - Ensure the Artifactory URL is correct
+    - Ensure the Artifactory URL is correct, starts with `https://` and carries no `?` or `#`
   </Accordion>
   <Accordion title="Repository Not Found" icon="folder-xmark">
     - Verify the Docker repository key is correct
