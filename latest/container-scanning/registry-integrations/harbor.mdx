@@ -84,6 +84,12 @@ The robot token is only displayed once when created. Make sure to copy it immedi
 ## Troubleshooting
 
 <AccordionGroup>
+  <Accordion title="Host Does Not Answer as a Registry" icon="plug-circle-xmark">
+    Saving a credential, browsing images and starting a scan all fail with **400** — *The host did not answer like a container registry … No credential was sent.* — when the **Harbor URL** does not reach a container registry. Nothing is sent to a host that fails this check, so your robot token stays unused.
+
+    - Check the host for a typo, and enter the address of the Harbor instance itself.
+    - The instance must answer over `https://` from the public internet. A registry reachable only on a private network or through a VPN is refused.
+  </Accordion>
   <Accordion title="Authentication Failed" icon="circle-exclamation">
     - Verify robot username format: `robot$project+name`
     - Check if the robot account has expired

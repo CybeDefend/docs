@@ -68,6 +68,12 @@ The Project Access Token is only displayed once when created. Make sure to copy 
 ## Troubleshooting
 
 <AccordionGroup>
+  <Accordion title="Host Does Not Answer as a Registry" icon="plug-circle-xmark">
+    Saving a credential, browsing images and starting a scan all fail with **400** — *The host did not answer like a container registry … No credential was sent.* — when the **Registry URL** does not reach a container registry. Nothing is sent to a host that fails this check, so your project access token stays unused.
+
+    - Check the host for a typo, and enter the registry host alone — `registry.gitlab.com`, or the registry host of your self-managed instance.
+    - The registry **and** the GitLab instance derived from that URL must both answer over `https://` from the public internet. When the instance is the one that does not answer, the error names it.
+  </Accordion>
   <Accordion title="Authentication Failed" icon="circle-exclamation">
     - Verify token has both `read_api` and `read_registry` scopes
     - Check if the token has expired
