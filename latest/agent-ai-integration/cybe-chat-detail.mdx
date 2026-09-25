@@ -161,6 +161,15 @@ Other common banners:
 | `SERVICE_UNAVAILABLE` | The MCP or LLM backend is degraded. | Retry in a few seconds. |
 | `BAD_REQUEST` | Your prompt was malformed or under 5 characters. | Rephrase and resend. |
 
+### Tool-call limits
+
+Cybe answers by calling MCP tools. A single message can spend at most **20 tool calls**, and your account is limited to **60 tool calls per 60-second window** across messages. A refused call is not executed: the tool-call card in the answer carries the reason, and Cybe replies with the results it already has.
+
+| Tool-call card | What it means | What to do |
+|---|---|---|
+| `TOOL_CALL_LIMIT` | This message has spent its 20 tool calls. | Ask a narrower question, or split it across several messages. |
+| `TOOL_RATE_LIMITED` | More than 60 tool calls in the last minute on your account. | Wait a few seconds, then resend. |
+
 ---
 
 ## Cybe Chat vs Cybe MCP vs Security Champion
