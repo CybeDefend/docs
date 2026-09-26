@@ -82,6 +82,19 @@ Once configured, Cybe Analysis automatically:
 3. **Adds detailed comments** to vulnerabilities like a security expert would
 4. **Updates vulnerability status** (confirmed, false positive, etc.)
 
+### Following an Analysis in Progress
+
+Cybe Analysis runs alongside and after the scanners. While they work, CybeDefend indexes your code; once the SAST and IaC scanners have finished, the agent works through their findings. Scanner results reach the results pages as soon as the scanners finish, so you can start triaging before the analysis ends.
+
+The **Scan progress** panel on the results pages shows where the analysis is:
+
+| Stage | What is happening |
+|-------|-------------------|
+| **Indexing code** | Your code is being parsed into the knowledge graph the agent reasons over. |
+| **Waiting for scanner results** | At least one SAST or IaC scanner is still running. |
+| **Waiting for an AI slot** | The analysis is queued. The panel shows its approximate position. |
+| **AI analysis** | The agent is reviewing the findings, with the number it has covered so far. |
+
 ### Priority Assignment
 
 If **vulnerability triage** is enabled in settings:
@@ -104,6 +117,21 @@ Each analyzed vulnerability receives a comment from Cybe
 <Frame>
   <img src="/images/agent-ai/false-positive-detection.png" alt="Cybe Analysis False Positive Detection" style={{ borderRadius: '0.5rem' }} />
 </Frame>
+
+### When an Analysis Stops Early
+
+An analysis can stop before it has reviewed every finding, or end without reviewing any. The **Scan progress** panel states why, and the findings it did review keep their verdicts.
+
+| What the panel says | What it means |
+|---------------------|---------------|
+| There were no SAST or IaC results to analyze | The scan produced no SAST or IaC findings, so there was nothing to review. |
+| AI result improvement is turned off for this project | **Enable Cybe Analysis** is off in the project's settings. |
+| Your organization's analysis quota is used up | The organization has no Cybe Analysis credits left — see [AI Usage Tracking](/latest/plateform-overview/plan-&-pricing/ai-usage-tracking). |
+| The code could not be indexed · Indexing the code took longer than allowed | The analysis needs your code indexed first. Your scanner findings are unaffected. |
+| No AI slot came free within the allowed wait · The analysis ran past its time limit | The analysis stopped before it finished. |
+| The analysis ran into an error · The AI analysis service could not be reached | The analysis failed. Your scanner findings are unaffected. |
+
+Triggering a new scan runs the analysis again.
 
 ### When an Analysis Is Out of Date
 
