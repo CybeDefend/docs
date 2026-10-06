@@ -1,6 +1,6 @@
 ---
 title: "VibeDefend, one command to wire every agent"
-description: "VibeDefend is the one-shot installer that connects Claude Code, Cursor, OpenAI Codex, Windsurf and VS Code Copilot to CybeDefend. It registers the MCP server and the hook layer in a single command — business and security rules land in the agent's context before each edit, dangerous actions are hard-blocked, and a gap analysis catches undocumented rules at the end of substantive sessions. npx one-liner, macOS / Linux / Windows, Node ≥ 18.17."
+description: "VibeDefend is the one-shot installer that connects Claude Code, Cursor, OpenAI Codex, Windsurf and VS Code Copilot to CybeDefend. It registers the MCP server and the hook layer in a single command — business and security rules land in the agent's context before each edit, dangerous actions are hard-blocked, and a gap analysis catches undocumented rules at the end of substantive sessions. npx one-liner, macOS / Linux / Windows, Node ≥ 18.17. The VibeDefend space in the dashboard shows what your agents did."
 ---
 
 <Note>
@@ -113,6 +113,41 @@ Grab the UUID from the project page on the [EU dashboard](https://eu.cybedefend.
 <Note>
 Because `.cybedefend/` is a **directory** here, the deprecated `.cybedefend` exclusion *file* cannot exist beside it — a path is either a file or a directory. Declare your SAST exclusions in [`.cybeignore`](/latest/code-scanning/scanning-options/cybedefend-ignore-file) at the repo root, or in `.cybedefend/ignore` next to `config.json`.
 </Note>
+
+---
+
+## In the dashboard
+
+Once a project is linked, what your agents do on it shows up in the **VibeDefend** space of the dashboard. The sidebar carries a **VibeDefend | AppSec** switch: the VibeDefend pages live under `/vibedefend`, the application-security pages under `/appsec`, and the root `/` is no page of its own — it opens the home of the space you work in. Links CybeDefend sends you — in e-mails, Slack messages, Jira issues, pull-request comments and the CLI's output — open the right page whether or not they carry the prefix.
+
+| Page | What you see |
+|---|---|
+| **Home** — `/vibedefend` | Every project you can read, searchable by name, each with the coding agent that worked on it, its rules, its guard triggers of the last 7 days and when its last diff scan ran. |
+| **Overview** — `/vibedefend/organization/overview` | Key figures over the last **7, 30 or 90 days**, each against the period before: rule proposals waiting for validation, guard triggers, diff scans and the findings they caught — then, day by day, the guard outcomes, the rules served to your agents, the agents at work and the most active projects. |
+| **Activity** — `/vibedefend/activity` | One timeline of the diff scans and guard triggers of every project you can read, newest first, with the agent sessions running right now and the proposals waiting for your validation. Open an event for its detail. |
+| **A project** — `/vibedefend/project/<id>` | **Business rules**, **Security rules**, **Action Guards**, **Scan diff** and the **Code map**. |
+
+A coding-agent session counts as running while it has called a Cybe MCP tool in the last **15 minutes**; the list holds at most 200.
+
+### Filtering the timeline
+
+The activity timeline, a project's guard triggers and a project's diff-scan history take the same filters:
+
+| Filter | What you can ask for |
+|---|---|
+| **Period** | Events at or after a start instant, strictly before an end one. |
+| **Projects** | Up to 100 at a time. A project you cannot read is left out. |
+| **Who** | Up to 50 people. |
+| **Agent** | Claude Code, Claude Desktop, Cursor, Codex, Windsurf, Gemini CLI, VS Code — and `unknown` for a session that declared none. |
+| **Event** | A diff scan, a denied action, a warned action. |
+
+A diff scan carries its branch, the scanners it ran (`sast`, `iac`, `secret`), its findings by severity and who launched it. A guard trigger carries the tool the agent called, the rule that fired, and whether the call was denied or warned.
+
+### The languages a security rule targets
+
+A security rule is written for one or more of these, so the rules that reach your agent match the file it is editing — infrastructure, CI/CD and configuration files included:
+
+`python` · `javascript` · `typescript` · `java` · `go` · `rust` · `csharp` · `cpp` · `c` · `php` · `ruby` · `kotlin` · `swift` · `scala` · `shell` · `bash` · `dockerfile` · `yaml` · `html` · `css` · `sql` · `terraform` · `kubernetes` · `github-actions` · `gitlab-ci` · `docker-compose` · `dart` · `manifest` · `firebase-rules` · `generic`
 
 ---
 
