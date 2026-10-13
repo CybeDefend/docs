@@ -149,6 +149,55 @@ A security rule is written for one or more of these, so the rules that reach you
 
 `python` · `javascript` · `typescript` · `java` · `go` · `rust` · `csharp` · `cpp` · `c` · `php` · `ruby` · `kotlin` · `swift` · `scala` · `shell` · `bash` · `dockerfile` · `yaml` · `html` · `css` · `sql` · `terraform` · `kubernetes` · `github-actions` · `gitlab-ci` · `docker-compose` · `dart` · `manifest` · `firebase-rules` · `generic`
 
+### Reviewing a project's business rules
+
+Proposals land in the **Proposals** tab of a project's **Business rules** page two ways: the end-of-session gap analysis above, and CybeDefend's own analysis of your code after each scan. Each proposal says where it came from, and you accept it, reject it, or edit it before activating it.
+
+Filter the list down before you work through it. Every option carries the number of proposals behind it:
+
+| Filter | Values |
+|---|---|
+| **Theme** | Access control · Billing & plans · Limits & quotas · Data integrity · Privacy & secrets · Lifecycle · Integrations · Notifications · AI · Platform · Code conventions · Other · Uncategorised |
+| **Kind** | Business · Security · Engineering · Operations |
+| **Severity** | Info · Low · Medium · High · Critical |
+| **Origin** | Code · History · Documentation |
+| **Verification** | Verified · Not verified |
+
+**Order** holds *Most reliable first*, *Most severe first* and *Newest first*. Select rows and use **Accept selected** or **Reject selected** to clear a batch in one go — at most 25 proposals per accept, 100 per reject — then read the result line for what was accepted, rejected, skipped or failed.
+
+A proposal can carry a badge that changes what you do with it:
+
+| Badge | What it tells you |
+|---|---|
+| **Corrected** | The rule was corrected against your code. The card shows the wording it replaced. |
+| **Violated in N places** | The rule holds, and N places in your code break it. Open them from the card. |
+| **Unverifiable** | It could not be settled from this project's code — it lives elsewhere (another service, runtime configuration) or comes from a document. Check it yourself before accepting. |
+| **Obsolete** | The code the rule described is gone. Accepting it deprecates the rule. |
+
+Proposals that contradict each other, contradict an active rule, or disagree with your documentation arrive grouped in one **Conflicting rules** card. Accept the right one and the others are rejected together.
+
+**Re-mine rules** asks for a full pass over the project, once per project per 24 hours. While a pass is queued or running the page shows the stage it is on and how long it has been going, and new proposals appear when it finishes. A pass that could not do everything says so, and why.
+
+### The code map
+
+A project's **Code map** draws its code for one branch — files, classes, functions, interfaces and the HTTP endpoints that reach them. It is the same page on both sides of the **VibeDefend | AppSec** switch, so changing product keeps you on it.
+
+| Panel | What you do with it |
+|---|---|
+| **Routes** | Every route of the current view, each with the authentication fact found on it — **Protection declared**, **Declared public** or **No protection found** — and the middlewares on its path. Filter by text, authentication fact, method, framework or module; sort by path, authentication fact or file. |
+| **Chain** | From the selected node, the call chain **downstream** (what it calls) or **upstream** (what reaches it), from 1 to 6 hops deep, 3 by default. Each hop lists the calls, the remote services, the data read and written, and the routes leading there. The panel says when the walk stopped at its limit. |
+| **Search** | Jump to a node by name, file path or route — up to 20 matches per search. |
+
+Breadcrumbs and the URL follow your selection, so a view can be bookmarked or sent to a colleague and the browser's back button retraces your steps. A branch the map has not analysed says so; it is drawn at that branch's next scan.
+
+#### From a finding to the map
+
+A SAST finding with a file and a line carries a **Code map** tab: the routes that reach the vulnerable line, the call path of the route you select, the protections and middlewares found along it, and what the code touches — what it reads, what it writes, and which values arrive from the request rather than from the server. **Open in the code map** carries the whole picture to the project's map, on the branch the finding was read on.
+
+<Note>
+When no route reaches the line, the tab says so. That is what the analysis found, not a guarantee: the code can still be called another way — a job, a script, another service.
+</Note>
+
 ---
 
 ## Commands
