@@ -11,10 +11,10 @@ Use the [`.cybeignore` exclusion file](/latest/code-scanning/scanning-options/cy
 
 ## Supported Scanners
 
-The directive applies to SAST, IaC and CI/CD findings.
+The directive applies to SAST, IaC, CI/CD and secret findings.
 
 <Warning>
-**A directive never suppresses a secret finding**, bare or scoped. A comment written for a SAST false positive cannot hide a credential reported on the same line. To dismiss a secret false positive, set the finding to **Ignored** (see [Updating Vulnerabilities](/latest/managing-vulnerabilities/updating-vulnerabilities)) or exclude the file with [`.cybeignore`](/latest/code-scanning/scanning-options/cybedefend-ignore-file).
+**A bare directive silences a credential reported on that line**, exactly as it silences any other rule. On a line that holds a secret, use the scoped form (`cybedefend-ignore[CD-SECRET-0007]`) so a comment you wrote for a SAST false positive cannot hide a real credential. Silence a secret only when it is a test fixture or a placeholder — rotate anything real, and set it to **Ignored** (see [Updating Vulnerabilities](/latest/managing-vulnerabilities/updating-vulnerabilities)) if you need it off the list while you do.
 </Warning>
 
 <Note>
@@ -55,7 +55,7 @@ cybedefend-ignore[<rule-code>, <rule-code>]: <reason>
 
 | Form | Effect |
 |------|--------|
-| `cybedefend-ignore` | Blanket ignore: suppresses every SAST, IaC and CI/CD finding reported on that line, whatever the rule |
+| `cybedefend-ignore` | Blanket ignore: suppresses every finding reported on that line, whatever the rule — secrets included |
 | `cybedefend-ignore[CODE]` | Scoped ignore: suppresses only findings whose rule code is listed. Separate several codes with commas. Other rules on the same line are still reported |
 | `: reason` | Optional free text. Always add one so reviewers know why the finding is a false positive |
 
@@ -79,6 +79,10 @@ cursor.execute(f"SELECT * FROM {table} WHERE id = %s", (user_id,))
 <Warning>
 Only the line directly above is checked. A directive two lines above the finding, or a directive followed by a blank line, has no effect.
 </Warning>
+
+<Note>
+**For a secret**, the two lines are read where the credential sits in the file you scan: the line holding it, or the line directly above. A secret that only exists in your git history, and not in the current file, carries no directive — set it to **Ignored**, or exclude its path with [`.cybeignore`](/latest/code-scanning/scanning-options/cybedefend-ignore-file).
+</Note>
 
 ## Examples by Language
 
@@ -150,7 +154,7 @@ Ignore comments from other security tools have no effect on CybeDefend scans. On
 
 - Check that the comment is on the vulnerable line or the line directly above it.
 - If you used a scoped form, check that the brackets contain the rule code shown on the finding (`CD-…`), not a scanner rule identifier, and that the list is closed with `]`.
-- Secret findings are never suppressed by a directive. Set them to **Ignored** instead.
+- For a secret, check the comment sits on the line where the credential is in the current file, or directly above it. A secret that only exists in your git history cannot be suppressed with a directive — set it to **Ignored** instead.
 - Confirm the change was committed and included in the scanned branch.
 
 ### Another finding disappeared unexpectedly

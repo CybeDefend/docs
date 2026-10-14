@@ -210,10 +210,13 @@ vibedefend update --self      Upgrade only the CLI binary (don't touch hooks)
 vibedefend status             Read-only install report (region, agents, API check)
 vibedefend doctor             Diagnose the install and repair what's fixable
 vibedefend login              (Re-)authenticate against the CybeDefend API
+vibedefend uninstall          Remove the hooks, the MCP server and your credentials
 vibedefend --help             Full help
 ```
 
 `vibedefend doctor` takes `--check` for a dry-run (report only, change nothing) and `--yes` to apply every fix without the confirmation prompt. `vibedefend login` takes `--force` to re-authenticate even when credentials are already stored.
+
+`vibedefend uninstall` unwires the VibeDefend hooks and the CybeDefend MCP server from every agent it set up (hooks you added yourself are left alone), signs you out and deletes `~/.cybedefend/`, keeping your custom `regions.json`. It takes `--yes` to skip the confirmation prompt. The npm package itself stays installed; the command prints the line that removes it.
 
 ---
 
