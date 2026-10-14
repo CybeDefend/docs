@@ -86,12 +86,13 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
     VibeDefend prints a detection table (one row per agent, with a version badge) and a multi-select. Detected, supported agents are pre-checked; a version that's too old is shown disabled with an "update this client" hint; an agent you don't have yet is still selectable, so you can pre-wire hooks before you install it.
   </Step>
   <Step title="Tune the hook config">
-    Four questions, each with a tuned default:
+    A handful of questions, each with a tuned default:
 
     - **Enable the session-end gap analysis?** — default **on**. Without it, the gap analysis never runs.
-    - **Edits threshold to trigger it?** — default **3**. Typos and one-line fixes won't fire it; a real feature will. Lower to `1` to fire on any session that had an edit, raise it if your team does frequent tiny commits in long sessions.
+    - **Edits threshold to trigger it?** — default **1**, so the gap analysis runs after every session that touched code. An integer from 0 to 100; raise it if the nudge feels noisy.
     - **Enable automatic background updates?** — default **on**. Hooks self-refresh so you never re-run install (see [Keeping VibeDefend current](#keeping-vibedefend-current)).
-    - **Enable auto-propose mode?** — default **off** *(not recommended)*. Off means rule proposals need an explicit chat-side "yes". On means the agent drafts and pushes proposals without asking first — you still review them at the next session start.
+    - **Enable non-blocking mode?** — default **off**. For an autonomous agent — a CI runner, an unattended agent — with nobody in the chat to answer a prompt. See [Non-blocking mode](#non-blocking-mode).
+    - **Enable auto-propose mode?** — default **off** *(not recommended)*. Off means rule proposals need an explicit chat-side "yes". On means the agent drafts and pushes proposals without asking first — you still review them at the next session start. Non-blocking mode supersedes it, so the installer skips this question when you turn that on.
   </Step>
   <Step title="Sign in">
     If VibeDefend has no stored credentials, it runs the login flow automatically: OAuth 2.0 Authorization Code + PKCE opens your browser to the CybeDefend sign-in page, receives the callback locally, and stores the token bundle in your OS keychain. If your browser already has a dashboard session, this completes instantly. The refresh token persists for 14 days.
@@ -243,18 +244,32 @@ After that, updates are hands-off (or one `vibedefend update`) as above.
 
 ## Tunables
 
-The gap-analysis threshold and auto-propose mode are chosen at install and stored in your VibeDefend config. To change them, re-run `vibedefend install` and answer the hook-config prompts again:
+The hook settings are chosen at install and stored in your VibeDefend config. To change them, re-run `vibedefend install` and answer the hook-config prompts again:
 
 | Setting | What it controls |
 |---|---|
-| Review threshold | Edits before the session-end gap analysis fires (default `3`; `1` fires on any session that had an edit). |
-| Auto-propose | Whether the agent proposes rules without asking first (default off). |
+| Review threshold | Edits before the session-end gap analysis fires (default `1`, so it fires after every session that touched code; 0 to 100). |
+| Auto-propose | Whether the agent proposes rules without asking you first (default off). |
+| Non-blocking | Whether any hook pauses for a chat-side Accept / Reject (default off). |
 
-One override is read live from the environment, so you can set it per shell or per project — handy when a repo's UUID differs from the default:
+### Non-blocking mode
+
+By default the agent pauses for you on business-rule proposals: an Accept / Reject picker for the pending ones at session start, and a "Propose this rule? Yes / No" at the end of a session. An autonomous agent — a CI runner, an unattended agent — has nobody in the chat to answer, and the session stalls on the question.
+
+Turn non-blocking mode on and no hook asks anything. Pending proposals are left for a human to accept or reject in the dashboard, the agent never triages them itself, and the end-of-session gap analysis pushes its single proposal straight to the inbox. Non-blocking mode supersedes auto-propose.
+
+### Environment overrides
+
+These are read live from the environment, so you can set them per shell, per project, or on one agent's process only — the same machine can serve a human interactively and an autonomous agent in non-blocking mode:
 
 | Variable | Effect |
 |---|---|
+| `CYBEDEFEND_REVIEW_THRESHOLD` | Edits before the session-end gap analysis fires. An integer from 0 to 100; anything else leaves the installed value in place. |
+| `CYBEDEFEND_AUTO_PROPOSE` | `1` proposes without asking, `0` asks first. |
+| `CYBEDEFEND_NON_BLOCKING` | `1` stops every hook from asking, `0` brings the prompts back. |
 | `CYBEDEFEND_PROJECT_ID` | Override the project UUID from `.cybedefend/config.json`. |
+
+For the three flags, `1`, `true`, `yes` and `on` read as on, `0`, `false`, `no` and `off` as off, and each wins over the installed setting in both directions. An unset or unrecognised value leaves the installed setting in place.
 
 ---
 
