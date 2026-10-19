@@ -49,7 +49,7 @@ The MCP server is what the hooks call under the hood. VibeDefend installs both, 
 
 ## Supported agents
 
-VibeDefend auto-detects and wires whichever of these you have installed. Unchecked agents stay untouched — re-run `vibedefend install` any time to toggle one on or off.
+VibeDefend auto-detects and wires whichever of these you have installed. Unchecked agents stay untouched — re-run `vibedefend install` any time to toggle one on or off. A region switch is the exception: it re-points the MCP server of unchecked agents too, so none is left on the region you left.
 
 | Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot |
 |---|:---:|:---:|:---:|:---:|:---:|
@@ -80,7 +80,7 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 
 <Steps>
   <Step title="Pick a region">
-    Choose **Production — EU** or **Production — US**. VibeDefend registers an MCP server named `cybedefend` pointing at that region's endpoint and wires the hooks to call the matching Gateway — you never type a URL. The two regions are independent CybeDefend tenants; sign in to the one that hosts your account (`eu.cybedefend.com` vs `us.cybedefend.com`).
+    Choose **Production — EU** or **Production — US**. VibeDefend registers an MCP server named `cybedefend` pointing at that region's endpoint and wires the hooks to call the matching Gateway — you never type a URL. The two regions are independent CybeDefend tenants; sign in to the one that hosts your account (`eu.cybedefend.com` vs `us.cybedefend.com`). Re-running `install` on the other region switches you over: you sign in again, because a stored session only counts for the region that issued it, and the MCP server of the agents you don't select this time is re-pointed as well — any VibeDefend cannot re-point is named, and `vibedefend doctor` re-points it.
   </Step>
   <Step title="Pick which agents to wire">
     VibeDefend prints a detection table (one row per agent, with a version badge) and a multi-select. Detected, supported agents are pre-checked; a version that's too old is shown disabled with an "update this client" hint; an agent you don't have yet is still selectable, so you can pre-wire hooks before you install it.
