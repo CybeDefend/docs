@@ -1,6 +1,6 @@
 ---
 title: "VibeDefend, one command to wire every agent"
-description: "VibeDefend is the one-shot installer that connects Claude Code, Cursor, OpenAI Codex, Windsurf and VS Code Copilot to CybeDefend. It registers the MCP server and the hook layer in a single command — business and security rules land in the agent's context before each edit, dangerous actions are hard-blocked, and a gap analysis catches undocumented rules at the end of substantive sessions. npx one-liner, macOS / Linux / Windows, Node ≥ 18.17."
+description: "VibeDefend is the one-shot installer that connects Claude Code, Cursor, OpenAI Codex, Windsurf, VS Code Copilot and Google Antigravity to CybeDefend. It registers the MCP server and the hook layer in a single command: business and security rules land in the agent's context before each edit, dangerous actions are hard-blocked, and a gap analysis catches undocumented rules at the end of substantive sessions. npx one-liner, macOS / Linux / Windows, Node ≥ 18.17."
 ---
 
 <Note>
@@ -51,16 +51,16 @@ The MCP server is what the hooks call under the hood. VibeDefend installs both, 
 
 VibeDefend auto-detects and wires whichever of these you have installed. Unchecked agents stay untouched — re-run `vibedefend install` any time to toggle one on or off.
 
-| Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot |
-|---|:---:|:---:|:---:|:---:|:---:|
-| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Business + Security Rules** *(injected pre-edit)* | ✅ | ✅ | ✅ | ⚠️ writes only | ✅ |
-| **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired |
-| **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ |
-| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **PreCompact** *(long-session gap analysis)* | ✅ | ✅ | ❌ no event | ❌ no event | ✅ |
-| **Doctrine backstop** *(per-prompt reminder)* | ✅ | ❌ | ✱ via MCP³ | ❌ | ❌ |
-| **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 |
+| Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot | Antigravity |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁵ |
+| **Business + Security Rules** *(injected pre-edit)* | ✅ | ✅ | ✅ | ⚠️ writes only | ✅ | ⚠️ next model call⁴ |
+| **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired | ✅ all tools |
+| **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ | ✅ |
+| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **PreCompact** *(long-session gap analysis)* | ✅ | ✅ | ❌ no event | ❌ no event | ✅ | ❌ no event |
+| **Doctrine backstop** *(per-prompt reminder)* | ✅ | ❌ | ✱ via MCP³ | ❌ | ❌ | ❌ |
+| **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 | ≥ 2.0 (app / IDE) |
 
 **Legend** — ✅ supported · ⚠️ supported with caveats · ❌ not exposed by the agent · ✱ alternate mechanism
 
@@ -69,6 +69,10 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 ² Windsurf has no native SessionStart event. VibeDefend wires `pre_user_prompt`, which fires on every turn. The hook is idempotent and cheap (one GET to the proposals endpoint, returns "0 pending" once the inbox is empty), so the per-turn cost is negligible.
 
 ³ Codex follows the doctrine via the MCP server's `Server.instructions` field on each session, which removes the need for a per-prompt reminder hook.
+
+⁴ Antigravity has no hook that fires before an edit, so rules reach the agent at its next model call, right after the edit is made. `agy`'s auto-approve flag skips hooks entirely, so no rule and no guard applies while it's on.
+
+⁵ On Windows, hooks aren't wired when the home folder path contains a space. Any MCP server you add directly in Antigravity's own config isn't routed through the VibeDefend MCP proxy.
 
 ---
 

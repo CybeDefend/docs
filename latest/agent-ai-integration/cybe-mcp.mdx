@@ -1,6 +1,6 @@
 ---
 title: "Cybe MCP, connect every AI agent"
-description: "Step-by-step setup for Claude Code, Claude Desktop, Cursor, VS Code Copilot Chat, Windsurf, Continue, Cline, Zed and any MCP-compatible client. Browser-only OAuth, two regional URLs, 18 typed tools."
+description: "Step-by-step setup for Claude Code, Claude Desktop, Cursor, VS Code Copilot Chat, Windsurf, Antigravity, Continue, Cline, Zed and any MCP-compatible client. Browser-only OAuth, two regional URLs, 18 typed tools."
 ---
 
 <Note>
@@ -118,6 +118,22 @@ Windsurf's MCP config lives at `~/.codeium/windsurf/mcp_config.json`:
 ```
 
 Reload Windsurf. Same OAuth-on-first-call flow.
+
+### Antigravity
+
+Antigravity's MCP config lives at `~/.gemini/config/mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "cybedefend": {
+      "serverUrl": "https://mcp-eu.cybedefend.com/mcp"
+    }
+  }
+}
+```
+
+Antigravity opens a browser to sign in the first time it connects. Restart Antigravity, or reopen its MCP panel, to pick up the change.
 
 ### Continue · Cline · Zed · any other MCP client
 
