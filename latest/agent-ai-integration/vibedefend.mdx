@@ -53,11 +53,11 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 
 | Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot | Google Antigravity |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁵ |
-| **Business + Security Rules** *(injected pre-edit)* | ✅ | ✅ | ✅ | ⚠️ writes only | ✅ | ⚠️ next model call⁴,⁶ |
-| **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired | ✅ all tools⁴,⁶ |
-| **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ | ✅⁶ |
-| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁶ |
+| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Business + Security Rules** *(injected pre-edit)* | ✅ | ✅ | ✅ | ⚠️ writes only | ✅ | ⚠️ next model call⁴,⁵ |
+| **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired | ✅ all tools⁴,⁵ |
+| **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ | ✅⁵ |
+| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁵ |
 | **PreCompact** *(long-session gap analysis)* | ✅ | ✅ | ❌ no event | ❌ no event | ✅ | ❌ no event |
 | **Doctrine backstop** *(per-prompt reminder)* | ✅ | ❌ | ✱ via MCP³ | ❌ | ❌ | ❌ |
 | **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 | ≥ 2.0 (app / IDE) |
@@ -70,11 +70,9 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 
 ³ Codex follows the doctrine via the MCP server's `Server.instructions` field on each session, which removes the need for a per-prompt reminder hook.
 
-⁴ Antigravity has no hook that fires before an edit, so business and security rules reach the agent at its next model call, right after the edit is made. `agy`'s auto-approve flag skips every hook, so in that mode no rule lands and no guard runs.
+⁴ Antigravity's pre-edit hook can't pass text to the agent, so business and security rules reach it at its next model call, right after the edit. `agy`'s auto-approve flag skips every hook, so in that mode no rule lands and no guard runs.
 
-⁵ Any MCP server you add directly in Antigravity's own config isn't routed through the VibeDefend MCP proxy.
-
-⁶ On Windows, hooks aren't wired when the home folder path contains a space.
+⁵ On Windows, hooks aren't wired when the home folder path contains a space.
 
 ---
 
