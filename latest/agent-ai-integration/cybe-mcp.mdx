@@ -1,6 +1,6 @@
 ---
 title: "Cybe MCP, connect every AI agent"
-description: "Step-by-step setup for Claude Code, Claude Desktop, Cursor, VS Code Copilot Chat, Windsurf, Continue, Cline, Zed and any MCP-compatible client. Browser-only OAuth, two regional URLs, 18 typed tools."
+description: "Step-by-step setup for Claude Code, Claude Desktop, Cursor, VS Code Copilot Chat, Windsurf, Continue, Cline, Zed and any MCP-compatible client. Browser-only OAuth with a consent step, two regional URLs, typed tools for findings, projects and teams."
 ---
 
 <Note>
@@ -48,7 +48,7 @@ Verify it landed:
 
 ```bash
 claude mcp list
-# cybedefend  · connected · 18 tools
+# cybedefend  · connected
 ```
 
 ### Claude Desktop
@@ -143,10 +143,13 @@ Any client that follows the [MCP Streamable HTTP transport](https://modelcontext
 
 4. Agent opens the browser:
    https://mcp-eu.cybedefend.com/oauth/authorize?client_id=…&redirect_uri=…&code_challenge=…
-   You sign in to CybeDefend (or the page auto-completes if the session is alive).
+   CybeDefend shows a consent page naming where the access will be sent.
+   You click "Allow and sign in", then sign in to CybeDefend (or the sign-in
+   auto-completes if your dashboard session is already alive).
 
-5. Browser redirects back to the agent's local callback (a loopback URI on
-   localhost / 127.0.0.1 with a high port) carrying an authorization code.
+5. Browser redirects back to the callback the client registered — a loopback
+   URI on localhost / 127.0.0.1, a private-use scheme such as cursor://, or
+   the client's own HTTPS callback — carrying an authorization code.
 
 6. Agent → POST https://mcp-eu.cybedefend.com/oauth/token
    ← { access_token: <Logto JWT>, refresh_token, expires_in }
@@ -156,13 +159,42 @@ Any client that follows the [MCP Streamable HTTP transport](https://modelcontext
    ← MCP session opens, tool calls flow through.
 ```
 
-The DCR step only accepts loopback redirect URIs (RFC 8252), which is what every native MCP client uses. The Bearer token in step 6 is a Logto-issued JWT. Every tool call after that lands on the CybeDefend Gateway, where Permify checks your per-project permissions exactly as it does for the dashboard. Your project-level access is authoritative; the MCP server enforces nothing of its own.
+Three kinds of callback can receive the authorization code: a loopback URI (`http://localhost` or `http://127.0.0.1`, on any port), a private-use scheme such as `cursor://`, and an HTTPS callback — so cloud-hosted MCP clients connect as well as the ones running on your machine. Refused, at registration and again at authorization: a raw IP address, a public tunnel host (ngrok, localtunnel, trycloudflare and the like), and schemes the browser or the operating system would act on itself (`javascript:`, `data:`, `file:`, `blob:`, `intent:`, `smb:`, `ftp:`, `ws:`). The Bearer token in step 6 is a Logto-issued JWT. Every tool call after that lands on the CybeDefend Gateway, where Permify checks your per-project permissions exactly as it does for the dashboard. Your project-level access is authoritative; the MCP server enforces nothing of its own.
 
 ---
 
-## The 18 tools
+## Approving the connection
 
-All tools share the same shape: a typed JSON schema the agent's planner can reason about, and every one requires `projectId`. The two exceptions need a second argument: `get_business_logic_context` requires `user_intent` (a free-text description of what the agent is about to do), and `get_similar_vulnerabilities` requires `vulnerabilityId`. Every response carries the same finding identifier the dashboard uses, so an agent action and a human action on the same finding land in the same audit trail.
+The consent page is where you — not the client — decide where your access goes.
+**Allow access to your CybeDefend account?** names the destination on a line of its own:
+
+| Callback | What the page shows |
+|---|---|
+| Loopback, e.g. `http://127.0.0.1:51734` | *An application on this computer*, with the host and port |
+| Private-use scheme, e.g. `cursor://` | *An application on this computer*, with the scheme |
+| HTTPS | The host name that will receive the access |
+
+The page shows no application name: a client supplies its own name, so it proves nothing.
+The callbacks of the mainstream cloud clients (Claude, ChatGPT, VS Code,
+Cursor, Devin) are recognised; any other HTTPS address is shown with a warning that
+CybeDefend does not recognise it. A look-alike domain written in Unicode appears in its
+punycode form (`xn--…`), so it cannot pass for the real one.
+
+<Warning>
+Continue only if you just asked an assistant or a tool to connect to CybeDefend. An
+authorize link you did not start yourself ends on this page for a reason — **Cancel**
+sends nothing to the application.
+</Warning>
+
+Approve in the browser that opened the page: the approval is bound to it, and finishing
+the flow in another browser fails. The page waits 10 minutes for your decision; after
+that, start the connection again from your assistant.
+
+---
+
+## The tools
+
+All tools share the same shape: a typed JSON schema the agent's planner can reason about. Every finding tool requires `projectId`, and the project and team tools take ids of their own. Two finding tools need a second argument: `get_business_logic_context` requires `user_intent` (a free-text description of what the agent is about to do), and `get_similar_vulnerabilities` requires `vulnerabilityId`. Every response carries the same finding identifier the dashboard uses, so an agent action and a human action on the same finding land in the same audit trail.
 
 ### Read
 
@@ -190,6 +222,35 @@ All tools share the same shape: a typed JSON schema the agent's planner can reas
 | Tool | Effect |
 |---|---|
 | `update_vulnerability` | Set status (`to_verify`, `confirmed`, `resolved`, `ignored`), set priority (`critical_urgent`, `urgent`, `normal`, `low`, `very_low`), or attach a comment. Audit-logged. |
+
+### Projects and teams
+
+| Tool | Effect |
+|---|---|
+| `list_teams` | The teams of one organization that you can see. Required: `organizationId`. Organization creators and administrators see every team, other members only their own. |
+| `create_project` | Creates a project in a team, and links it to a GitHub / GitLab repository when you pass one. Required: `organizationId`, `name` (1 to 255 characters, unique within the team), `confirmed_by_user`. Optional: `teamId`, `repository`. |
+
+`create_project` spends part of your plan, so it is gated: the agent has to ask you to
+confirm the project name, the organization and the team, and pass `confirmed_by_user: true`
+after an explicit yes. Creating a project requires the team manager role, or organization
+creator / administrator. `teamId` may be omitted when you can see exactly one team in the
+organization; with several, the agent asks which one.
+
+`repository` is `{ "provider": "github" | "gitlab", "slug": "owner/repo" }`, taken from the
+repository's `origin` remote. A GitHub slug is exactly `owner/repo`; a GitLab slug may be
+nested, as in `group/subgroup/project`. Add `host` for a self-managed GitLab — it defaults
+to `github.com` / `gitlab.com`. Linking through your organization's integration starts the
+first scan of the default branch; without a `repository`, the project stays empty until you
+start a scan or link the repository from the dashboard.
+
+A project created this way starts with the AI features on — Cybe Analysis, vulnerability
+sorting, AI merge requests and Cybe Security Champion — exactly like one created from the
+dashboard. Turn any of them off in the project settings.
+
+The call is refused, and no project is created, when the name is already taken in the team,
+when your plan's project limit is reached, or when the repository you passed is already
+linked to a project: the answer then names that project, which is the one to use. Put its
+UUID in `.cybedefend/config.json` at the repository root so your agents find it later.
 
 ### Context
 
