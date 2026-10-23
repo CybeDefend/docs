@@ -1,6 +1,6 @@
 ---
 title: "VibeDefend, one command to wire every agent"
-description: "VibeDefend is the one-shot installer that connects Claude Code, Cursor, OpenAI Codex, Windsurf and VS Code Copilot to CybeDefend. It registers the MCP server and the hook layer in a single command — business and security rules land in the agent's context before each edit, dangerous actions are hard-blocked, and a gap analysis catches undocumented rules at the end of substantive sessions. npx one-liner, macOS / Linux / Windows, Node ≥ 18.17."
+description: "VibeDefend is the one-shot installer that connects Claude Code, Cursor, OpenAI Codex, Windsurf, VS Code Copilot and Google Antigravity to CybeDefend. It registers the MCP server and the hook layer in a single command: business and security rules land in the agent's context before each edit, dangerous actions are hard-blocked, and a gap analysis catches undocumented rules at the end of substantive sessions. npx one-liner, macOS / Linux / Windows, Node ≥ 18.17."
 ---
 
 <Note>
@@ -51,16 +51,16 @@ The MCP server is what the hooks call under the hood. VibeDefend installs both, 
 
 VibeDefend auto-detects and wires whichever of these you have installed. Unchecked agents stay untouched — re-run `vibedefend install` any time to toggle one on or off.
 
-| Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot |
-|---|:---:|:---:|:---:|:---:|:---:|
-| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Business + Security Rules** *(injected pre-edit)* | ✅ | ✅ | ✅ | ⚠️ writes only | ✅ |
-| **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired |
-| **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ |
-| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **PreCompact** *(long-session gap analysis)* | ✅ | ✅ | ❌ no event | ❌ no event | ✅ |
-| **Doctrine backstop** *(per-prompt reminder)* | ✅ | ❌ | ✱ via MCP³ | ❌ | ❌ |
-| **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 |
+| Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot | Google Antigravity |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Business + Security Rules** *(injected pre-edit)* | ✅ | ✅ | ✅ | ⚠️ writes only | ✅ | ⚠️ next model call⁴,⁵ |
+| **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired | ✅ all tools⁴,⁵ |
+| **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ | ✅⁵ |
+| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁵ |
+| **PreCompact** *(long-session gap analysis)* | ✅ | ✅ | ❌ no event | ❌ no event | ✅ | ❌ no event |
+| **Doctrine backstop** *(per-prompt reminder)* | ✅ | ❌ | ✱ via MCP³ | ❌ | ❌ | ❌ |
+| **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 | ≥ 2.0 (app / IDE) |
 
 **Legend** — ✅ supported · ⚠️ supported with caveats · ❌ not exposed by the agent · ✱ alternate mechanism
 
@@ -69,6 +69,10 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 ² Windsurf has no native SessionStart event. VibeDefend wires `pre_user_prompt`, which fires on every turn. The hook is idempotent and cheap (one GET to the proposals endpoint, returns "0 pending" once the inbox is empty), so the per-turn cost is negligible.
 
 ³ Codex follows the doctrine via the MCP server's `Server.instructions` field on each session, which removes the need for a per-prompt reminder hook.
+
+⁴ Antigravity's pre-edit hook can't pass text to the agent, so business and security rules reach it at its next model call, right after the edit. `agy`'s auto-approve flag skips every hook, so in that mode no rule lands and no guard runs.
+
+⁵ On Windows, hooks aren't wired when the home folder path contains a space.
 
 ---
 
@@ -224,6 +228,8 @@ Decline the "automatic background updates" prompt at install (or it's disabled a
 <Accordion title="I'm on Windows">
 
 Fully supported — no Git Bash or WSL required. The hook runner is a single bundled Node script that runs the same way on Linux, macOS and Windows.
+
+One exception: Antigravity's hooks aren't wired when your Windows home folder path contains a space.
 
 </Accordion>
 
