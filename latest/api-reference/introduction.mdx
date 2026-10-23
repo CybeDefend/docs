@@ -134,6 +134,21 @@ Access tokens expire after 10 minutes. Repeat the exchange in Step 2 to obtain a
 
 ---
 
+## Request Format
+
+Send request bodies uncompressed: `Content-Type: application/json` and no `Content-Encoding` header.
+
+<Warning>
+**A compressed request body is rejected with `400`.** `Content-Encoding: br`, `gzip` and `deflate` are not decoded, so the body fails JSON parsing. If your HTTP client or an outbound proxy compresses what it sends, turn that off for the CybeDefend API.
+</Warning>
+
+| Direction | Compression |
+|---|---|
+| Request body | Not accepted — send it uncompressed. |
+| Response body | Advertise `Accept-Encoding: br` or `gzip`; large responses come back encoded. |
+
+---
+
 ## API Key — Deprecated
 
 <Warning>
