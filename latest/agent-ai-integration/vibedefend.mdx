@@ -1,6 +1,6 @@
 ---
 title: "VibeDefend, one command to wire every agent"
-description: "VibeDefend is the one-shot installer that connects Claude Code, Cursor, OpenAI Codex, Windsurf, VS Code Copilot and Google Antigravity to CybeDefend. It registers the MCP server and the hook layer in a single command: business and security rules land in the agent's context before each edit, dangerous actions are hard-blocked, and a gap analysis catches undocumented rules at the end of substantive sessions. npx one-liner, macOS / Linux / Windows, Node ≥ 18.17."
+description: "VibeDefend is the one-shot installer that connects Claude Code, Cursor, OpenAI Codex, Windsurf, VS Code Copilot, Google Antigravity and OpenCode to CybeDefend. It registers the MCP server and the hook layer in a single command: business and security rules land in the agent's context before each edit, dangerous actions are hard-blocked, and a gap analysis catches undocumented rules at the end of substantive sessions. npx one-liner, macOS / Linux / Windows, Node ≥ 18.17."
 ---
 
 <Note>
@@ -51,16 +51,16 @@ The MCP server is what the hooks call under the hood. VibeDefend installs both, 
 
 VibeDefend auto-detects and wires whichever of these you have installed. Unchecked agents stay untouched — re-run `vibedefend install` any time to toggle one on or off.
 
-| Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot | Google Antigravity |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Business + Security Rules** *(injected pre-edit)* | ✅ | ✅ | ✅ | ⚠️ writes only | ✅ | ⚠️ next model call⁴,⁵ |
-| **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired | ✅ all tools⁴,⁵ |
-| **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ | ✅⁵ |
-| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁵ |
-| **PreCompact** *(long-session gap analysis)* | ✅ | ✅ | ❌ no event | ❌ no event | ✅ | ❌ no event |
-| **Doctrine backstop** *(per-prompt reminder)* | ✅ | ❌ | ✱ via MCP³ | ❌ | ❌ | ❌ |
-| **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 | ≥ 2.0 (app / IDE) |
+| Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot | Google Antigravity | OpenCode |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Business + Security Rules** *(injected pre-edit)* | ✅ | ✅ | ✅ | ⚠️ writes only | ✅ | ⚠️ next model call⁴,⁵ | ⚠️ with the edit's result⁶ |
+| **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired | ✅ all tools⁴,⁵ | ✅ all tools⁷ |
+| **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ | ✅⁵ | ✅ |
+| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁵ | ✅ (⚠️ not with `opencode run`⁸) |
+| **PreCompact** *(long-session gap analysis)* | ✅ | ✅ | ❌ no event | ❌ no event | ✅ | ❌ no event | ❌ no usable event |
+| **Doctrine backstop** *(per-prompt reminder)* | ✅ | ❌ | ✱ via MCP³ | ❌ | ❌ | ❌ | ✱ via MCP³ |
+| **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 | ≥ 2.0 (app / IDE) | 1.19 (tested)⁹ |
 
 **Legend** — ✅ supported · ⚠️ supported with caveats · ❌ not exposed by the agent · ✱ alternate mechanism
 
@@ -68,11 +68,19 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 
 ² Windsurf has no native SessionStart event. VibeDefend wires `pre_user_prompt`, which fires on every turn. The hook is idempotent and cheap (one GET to the proposals endpoint, returns "0 pending" once the inbox is empty), so the per-turn cost is negligible.
 
-³ Codex follows the doctrine via the MCP server's `Server.instructions` field on each session, which removes the need for a per-prompt reminder hook.
+³ Codex and OpenCode follow the doctrine via the MCP server's `Server.instructions` field on each session, which removes the need for a per-prompt reminder hook.
 
 ⁴ Antigravity's pre-edit hook can't pass text to the agent, so business and security rules reach it at its next model call, right after the edit. `agy`'s auto-approve flag skips every hook, so in that mode no rule lands and no guard runs.
 
 ⁵ On Windows, hooks aren't wired when the home folder path contains a space.
+
+⁶ OpenCode can't hand the agent text before a tool runs, so the rules fetched for an edit arrive with the edit's result: the agent reads them right after the write, before its next step. A call whose tool failed gets none, and the retry fetches them again. When the agent edits through a shell command (its `bash` tool), the rules are fetched the same way.
+
+⁷ OpenCode has no confirmation prompt for a tool call. A guard either blocks the call, in which case the agent reads the reason as the tool's error and the call doesn't run, or lets it through. Guards run on every tool call, MCP tools and sub-agents included.
+
+⁸ `opencode run` ends as soon as its answer is complete, before the end-of-session review can run. The review happens in a session that stays open after the answer.
+
+⁹ There is no minimum version: VibeDefend wires the OpenCode it finds (the `opencode` command or the desktop app) and was tested with 1.19. OpenCode loads its plugins when it starts, so restart it after `vibedefend install` and `vibedefend update`.
 
 ---
 
@@ -216,6 +224,18 @@ Run `vibedefend status` for a read-only report of region, wired agents and a liv
 <Accordion title="It asked me to sign in even though Codex was already connected">
 
 Expected, once. Codex's MCP-scoped token (`aud: cybedefend-mcp`) has limited Permify rights and can't call the Gateway endpoints the runtime hooks use, which need a user token (`aud: cybedefend-api`). They aren't interchangeable. One Logto sign-in (instant if your browser already has a dashboard session) issues the right token; the refresh token then persists for 14 days.
+
+</Accordion>
+
+<Accordion title="OpenCode shows no rules and no guards after install">
+
+OpenCode loads its plugins when it starts. Quit OpenCode and start it again, then run `vibedefend status` to confirm it is wired.
+
+</Accordion>
+
+<Accordion title="OpenCode says the CybeDefend server needs authentication">
+
+OpenCode doesn't open your browser on its own to sign in to an MCP server. Run `opencode mcp auth cybedefend` once: your browser opens on the CybeDefend sign-in page. If OpenCode reports again that the server needs authentication, run the command again. `vibedefend install` runs it for you when the `opencode` command is available and OpenCode isn't signed in to CybeDefend yet.
 
 </Accordion>
 

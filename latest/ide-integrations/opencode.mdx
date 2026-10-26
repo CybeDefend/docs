@@ -1,0 +1,91 @@
+---
+title: "OpenCode"
+description: "Connect OpenCode to CybeDefend with VibeDefend: the MCP server, security rules with each edit, and Action Guards on every tool call."
+---
+
+Scan. Detect. Fix. Security meets AI, right in your agent.
+
+---
+
+## Overview
+
+OpenCode is an AI coding agent that runs in your terminal or as a desktop app. It connects to CybeDefend through [VibeDefend](/latest/agent-ai-integration/vibedefend), the one-command installer: it registers the CybeDefend MCP server in OpenCode and adds a small OpenCode plugin that brings the business and security rules of your project into the agent's work, and blocks dangerous actions before they run.
+
+<Card title="VibeDefend" icon="download" href="/latest/agent-ai-integration/vibedefend">
+  The installer that wires OpenCode, and every other agent it detects
+</Card>
+
+<Tip>
+Looking for the CybeDefend editor extension (scans, DeepFix, gutter icons)? See the [VS Code Extension](/latest/ide-integrations/vscode) guide.
+</Tip>
+
+---
+
+## Getting Started
+
+<Steps>
+  <Step title="Install">
+    Run the installer, pick your region, and keep **OpenCode** ticked in the list of detected agents:
+
+    ```bash
+    npx -y @cybedefend/vibedefend@latest install
+    ```
+
+    VibeDefend adds a `cybedefend` entry to OpenCode's config (`~/.config/opencode/opencode.json`, or `opencode.jsonc` if you already have one) and drops its plugin in OpenCode's `plugins` folder.
+  </Step>
+  <Step title="Sign in to the MCP server">
+    OpenCode does not open your browser on its own to sign in to an MCP server. When the `opencode` command is available and OpenCode is not signed in to CybeDefend yet, `vibedefend install` runs the sign-in for you and your browser opens. Otherwise, run it once yourself:
+
+    ```bash
+    opencode mcp auth cybedefend
+    ```
+
+    If OpenCode later reports that the server needs authentication, run the command again.
+  </Step>
+  <Step title="Restart OpenCode">
+    OpenCode loads its plugins when it starts. Quit it and start it again after `vibedefend install`, and after every `vibedefend update`.
+  </Step>
+  <Step title="Link your project">
+    Add a `.cybedefend/config.json` with your project UUID at the root of the repository.
+
+    <Tip>
+    See [Link a project](/latest/agent-ai-integration/vibedefend#link-a-project) for the file and where to find the UUID.
+    </Tip>
+  </Step>
+</Steps>
+
+Only want the MCP tools, without the rules and the guards? Follow the [OpenCode section of Cybe MCP](/latest/agent-ai-integration/cybe-mcp#opencode) instead.
+
+---
+
+## What you get
+
+VibeDefend was tested with OpenCode 1.19. There is no minimum version: it wires the OpenCode it finds, whether the `opencode` command or the desktop app.
+
+- **CybeDefend MCP tools**: list findings, open a vulnerability and update its status from the chat.
+- **Business and security rules with each edit**: OpenCode can't hand the agent text before a tool runs, so the rules for an edit arrive with the edit's result. The agent reads them right after the write, before its next step. A call whose tool failed gets none, and the retry fetches them again. Rules are fetched the same way when the agent edits through a shell command.
+- **Action Guards on every tool call**: MCP tools and sub-agents included. OpenCode has no confirmation prompt for a tool call, so a guard either blocks the call (the agent reads the reason as the tool's error, and the call doesn't run) or lets it through.
+- **Session start**: the CybeDefend doctrine is loaded and the proposals inbox is opened. The doctrine also reaches the agent through the MCP server's instructions.
+- **Session review**: a gap analysis at the end of a substantive session. It runs in a session that stays open after the answer, not with `opencode run`, which ends as soon as its answer is complete.
+
+OpenCode has no usable event to run the long-session gap analysis before its context is compacted, so that moment isn't covered. The full comparison with the other agents is in the [VibeDefend](/latest/agent-ai-integration/vibedefend#supported-agents) page.
+
+---
+
+## Uninstall
+
+```bash
+vibedefend uninstall
+```
+
+For OpenCode, this deletes the plugin file (`plugins/cybedefend-vibedefend.js` in OpenCode's config directory, `~/.config/opencode` unless `XDG_CONFIG_HOME` is set) and the `cybedefend` entry of its `opencode.json` or `opencode.jsonc`. A file at that path that VibeDefend did not write is left alone.
+
+The sign-in OpenCode holds for the server is OpenCode's own and stays. To forget it:
+
+```bash
+opencode mcp logout cybedefend
+```
+
+---
+
+**Related:** [VibeDefend](/latest/agent-ai-integration/vibedefend) · [Cybe MCP](/latest/agent-ai-integration/cybe-mcp) · [VS Code Extension](/latest/ide-integrations/vscode) · [Cursor](/latest/ide-integrations/cursor) · [MCP Server Integration](/latest/plateform-overview/key-features/mcp-server-integration)

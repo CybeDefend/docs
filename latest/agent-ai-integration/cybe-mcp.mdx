@@ -1,6 +1,6 @@
 ---
 title: "Cybe MCP, connect every AI agent"
-description: "Step-by-step setup for Claude Code, Claude Desktop, Cursor, VS Code Copilot Chat, Windsurf, Antigravity, Continue, Cline, Zed and any MCP-compatible client. Browser-only OAuth, two regional URLs, 18 typed tools."
+description: "Step-by-step setup for Claude Code, Claude Desktop, Cursor, VS Code Copilot Chat, Windsurf, Antigravity, OpenCode, Continue, Cline, Zed and any MCP-compatible client. Browser-only OAuth, two regional URLs, 18 typed tools."
 ---
 
 <Note>
@@ -8,7 +8,7 @@ description: "Step-by-step setup for Claude Code, Claude Desktop, Cursor, VS Cod
 </Note>
 
 <Tip>
-**Want this done in one command?** [VibeDefend](/latest/agent-ai-integration/vibedefend) registers this MCP server for Claude Code, Cursor, Codex, Windsurf, VS Code Copilot and Antigravity, and wires the hook layer (rules before each edit, action guards, session-end gap analysis), in a single `npx` install. This page is the manual setup, and the reference for the tools VibeDefend connects on your behalf.
+**Want this done in one command?** [VibeDefend](/latest/agent-ai-integration/vibedefend) registers this MCP server for Claude Code, Cursor, Codex, Windsurf, VS Code Copilot, Antigravity and OpenCode, and wires the hook layer (rules before each edit, action guards, session-end gap analysis), in a single `npx` install. This page is the manual setup, and the reference for the tools VibeDefend connects on your behalf.
 </Tip>
 
 ---
@@ -134,6 +134,31 @@ Antigravity's MCP config lives at `~/.gemini/config/mcp_config.json`:
 ```
 
 Restart Antigravity, or reopen its MCP panel, to pick up the change. Antigravity opens a browser to sign in the first time it connects.
+
+### OpenCode
+
+OpenCode's MCP config lives at `~/.config/opencode/opencode.json` (or `opencode.jsonc` if you already have one). Add the `cybedefend` entry, merging it into the file if it exists:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "cybedefend": {
+      "type": "remote",
+      "url": "https://mcp-eu.cybedefend.com/mcp",
+      "enabled": true
+    }
+  }
+}
+```
+
+OpenCode does not open your browser on its own. Sign in once with:
+
+```bash
+opencode mcp auth cybedefend
+```
+
+If OpenCode later reports that the server needs authentication, run the command again. Restart OpenCode to pick up the change. `vibedefend install` writes this entry and runs the sign-in for you when the `opencode` command is available.
 
 ### Continue · Cline · Zed · any other MCP client
 
