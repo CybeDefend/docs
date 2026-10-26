@@ -111,9 +111,29 @@ After install, drop one tiny file at the root of each repo you want monitored �
 
 Grab the UUID from the project page on the [EU dashboard](https://eu.cybedefend.com) or the [US dashboard](https://us.cybedefend.com). You can also override it per shell or per project with the `CYBEDEFEND_PROJECT_ID` environment variable.
 
+`vibedefend link`, run at the root of the repository, does the same for you: it
+resolves the project from `--project`, from your git `origin`, or from an
+interactive picker, and writes the `.cybedefend/config.json` itself. `--path`
+points it at another directory.
+
 <Note>
 Because `.cybedefend/` is a **directory** here, the deprecated `.cybedefend` exclusion *file* cannot exist beside it — a path is either a file or a directory. Declare your SAST exclusions in [`.cybeignore`](/latest/code-scanning/scanning-options/cybedefend-ignore-file) at the repo root, or in `.cybedefend/ignore` next to `config.json`.
 </Note>
+
+### A folder with no project
+
+The hooks are installed machine-wide, so they fire in every folder you open an
+agent in — notes, a scratch directory, an unrelated repository. VibeDefend
+resolves the project once, when the session starts. When the folder has no
+`.cybedefend/config.json` and no CybeDefend project with VibeDefend enabled
+matches its git `origin`, you get one line saying so and VibeDefend stays off
+for the rest of that session: no rules before a write, no Action Guards, no
+proposals inbox, no end-of-session gap analysis. Run `vibedefend link` in the
+folder, and the next session starts with VibeDefend on.
+
+A folder that does map to a project, but where you are signed out or the API
+does not answer, is a different case: the line says so, nothing is switched
+off, and the hooks try again on the next prompt or edit.
 
 ---
 
@@ -209,6 +229,7 @@ vibedefend update             Upgrade the binary if newer, then refresh hooks
 vibedefend update --self      Upgrade only the CLI binary (don't touch hooks)
 vibedefend status             Read-only install report (region, agents, API check)
 vibedefend doctor             Diagnose the install and repair what's fixable
+vibedefend link               Link the current folder to a CybeDefend project
 vibedefend login              (Re-)authenticate against the CybeDefend API
 vibedefend uninstall          Remove the hooks, the MCP server and your credentials
 vibedefend --help             Full help
@@ -351,7 +372,7 @@ Codex gates hooks behind manual approval — see [Codex setup gotcha](#codex-set
 
 <Accordion title="Hooks don't seem to run after install">
 
-Run `vibedefend status` for a read-only report of region, wired agents and a live API check, then `vibedefend doctor` to diagnose and repair what's fixable (`vibedefend doctor --check` reports without changing anything). Confirm the repo has a `.cybedefend/config.json` with a valid `projectId` — without a linked project the rule-fetch and gap-analysis hooks have nothing to call.
+Run `vibedefend status` for a read-only report of region, wired agents and a live API check, then `vibedefend doctor` to diagnose and repair what's fixable (`vibedefend doctor --check` reports without changing anything). If the session opened with a line saying CybeDefend is off for this session, the folder maps to no project and every hook is skipped — run `vibedefend link` there, and see [A folder with no project](#a-folder-with-no-project).
 
 </Accordion>
 
