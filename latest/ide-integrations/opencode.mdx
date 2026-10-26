@@ -31,7 +31,7 @@ Looking for the CybeDefend editor extension (scans, DeepFix, gutter icons)? See 
     npx -y @cybedefend/vibedefend@latest install
     ```
 
-    VibeDefend adds a `cybedefend` entry to OpenCode's config (`~/.config/opencode/opencode.json`, or `opencode.jsonc` if you already have one) and drops its plugin in OpenCode's `plugins` folder.
+    VibeDefend adds a `cybedefend` entry to OpenCode's config (`~/.config/opencode/opencode.json`, or `opencode.jsonc` if you already have one; the folder is `$XDG_CONFIG_HOME/opencode` when `XDG_CONFIG_HOME` is set) and drops its plugin in OpenCode's `plugins` folder.
   </Step>
   <Step title="Sign in to the MCP server">
     OpenCode does not open your browser on its own to sign in to an MCP server. When the `opencode` command is available and OpenCode is not signed in to CybeDefend yet, `vibedefend install` runs the sign-in for you and your browser opens. Otherwise, run it once yourself:
@@ -78,7 +78,11 @@ OpenCode has no usable event to run the long-session gap analysis before its con
 vibedefend uninstall
 ```
 
-For OpenCode, this deletes the plugin file (`plugins/cybedefend-vibedefend.js` in OpenCode's config directory, `~/.config/opencode` unless `XDG_CONFIG_HOME` is set) and the `cybedefend` entry of its `opencode.json` or `opencode.jsonc`. A file at that path that VibeDefend did not write is left alone.
+`vibedefend uninstall` removes VibeDefend from every agent it wired, not only OpenCode, and asks you to confirm first (`--yes` skips the question). It also signs you out of VibeDefend and deletes the `~/.cybedefend/` folder, keeping your own `regions.json`.
+
+For OpenCode, it deletes the plugin file (`plugins/cybedefend-vibedefend.js` in OpenCode's config directory, `~/.config/opencode` unless `XDG_CONFIG_HOME` is set) and the `cybedefend` entry of its `opencode.json` or `opencode.jsonc`. A file at that path that VibeDefend did not write is left alone.
+
+To remove VibeDefend from OpenCode only, delete that plugin file and the `cybedefend` entry from OpenCode's config by hand. Running `vibedefend install` again without OpenCode ticked leaves OpenCode as it is.
 
 The sign-in OpenCode holds for the server is OpenCode's own and stays. To forget it:
 
