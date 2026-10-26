@@ -245,6 +245,48 @@ After that, updates are hands-off (or one `vibedefend update`) as above.
 
 ---
 
+## Usage and monthly limits
+
+VibeDefend is billed by usage, in three units. Each one has its own free allowance
+every calendar month, for the whole organization, and the allowances reset on the
+1st:
+
+| Unit | What counts as one | Free each month |
+|---|---|---|
+| Rule injections | A hook fetching the security rules for your agent | 1,000 |
+| Guard judgments | An Action Guard deciding on one tool call | 500 |
+| Diff scans | A scan of what a session changed | 100 |
+
+Without a card on file, usage stops at the free allowance and starts again next
+month. To go further, an organization administrator or a billing manager adds a
+card on VibeDefend's **Usage & billing** page. Each unit is then billed past its
+free allowance, up to a **monthly cap** per unit.
+
+Caps are proposed when the card is added and scale with the number of members in
+the organization. You can raise, lower or remove each one; a cap you set by hand
+stays yours and is never adjusted for you again, and resetting a unit puts it back
+on the recommended cap. A unit that reaches its cap stops until the cap is raised
+or the month ends.
+
+The same page shows the month's usage per unit — current, projected to month end,
+free allowance and cap — broken down by project and by member. Stopping usage
+billing invoices the month's usage and puts the organization back on the free
+allowance.
+
+### When VibeDefend stops
+
+Your agent is told which unit stopped and why, and not to retry. Each of these
+needs an organization administrator or a billing manager:
+
+| Reason | What to do |
+|---|---|
+| The month's free allowance for that unit is used up | Add a card, or wait for the 1st of next month |
+| The unit's monthly cap is reached | Raise or remove the cap |
+| A VibeDefend usage invoice is unpaid | Pay it — every VibeDefend feature is paused until it is |
+| VibeDefend is not activated for the organization | Activate it in organization settings |
+
+---
+
 ## Tunables
 
 The hook settings are chosen at install and stored in your VibeDefend config. To change them, re-run `vibedefend install` and answer the hook-config prompts again:
@@ -322,6 +364,13 @@ Expected, once. Codex's MCP-scoped token (`aud: cybedefend-mcp`) has limited Per
 <Accordion title="I pin versions / run in a locked-down environment">
 
 Decline the "automatic background updates" prompt at install (or it's disabled automatically when VibeDefend can't self-resolve a global install). You then get a one-line nudge when a new version ships and update on your own schedule with `vibedefend update`.
+
+</Accordion>
+
+<Accordion title="My agent says VibeDefend stopped and told it not to retry">
+
+A usage limit was hit, or VibeDefend is paused for the organization. The message
+names the unit and the reason — see [When VibeDefend stops](#when-vibedefend-stops).
 
 </Accordion>
 

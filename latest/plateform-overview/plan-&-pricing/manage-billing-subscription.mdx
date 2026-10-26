@@ -3,7 +3,14 @@ title: "Manage Billing & Subscription"
 description: "Configure your subscription, manage seats, add credits, and update billing information."
 ---
 
-The **Billing & Subscription** page allows you to manage your CybeDefend plan, adjust the number of seats, purchase add-on credit packs, and maintain accurate billing information for invoicing.
+Each product has its own **Usage & billing** page — one for the AppSec Platform,
+one for VibeDefend — where you pick a plan, adjust seats and projects, and follow
+the current month's usage. The **Billing account** page in organization settings
+holds what both products share: your billing identity, your payment method, your
+invoices, and which products are active.
+
+This page covers the AppSec Platform's plan and billing. For VibeDefend's monthly
+allowances and spending caps, see [VibeDefend](/latest/agent-ai-integration/vibedefend#usage-and-monthly-limits).
 
 ---
 
@@ -18,22 +25,36 @@ Monitor and adjust your current subscription plan to match your organization's n
 ### Key Information
 
 - **Plan Type**: View your current subscription plan (Trial, Pro, Enterprise, etc.)
-- **Seats**: The seats your plan allows — the seats included in your plan plus any **Extra Users** you have added
+- **Seats**: The seats your plan allows — the seats included in your plan plus any extra seats you have added
 - **Trial Period**: If applicable, see when your trial ends
 - **Billing Cycle**: View current period end and next reset date
 
 ### Seats and Invitations
 
-Each plan comes with a number of seats, and an invitation is refused once they are all taken. Members, open invitations and the invitation you are sending all count against the total.
+Each plan comes with a number of seats, and an invitation is refused once they are
+all taken. Members, open invitations and the invitation you are sending all count
+against the total. Only people who hold the AppSec Platform take an AppSec seat —
+see [Per-member product access](/latest/get-started/account-setup/managing-access-org-teams#per-member-product-access).
 
-| Plan | Seats included | Extra Users |
-|------|----------------|-------------|
-| Developer | 1 | — |
-| Team | 5 | Up to 5 |
-| Scale | 15 | Up to 10 |
-| Enterprise | 25 | — |
+| Plan | Seats included | Seats maximum | Projects included | Projects maximum |
+|------|----------------|---------------|-------------------|------------------|
+| Pro | 1 | 5 | 10 | 100 |
+| Team | 5 | 25 | 30 | 250 |
+| Enterprise | 25 | By quote | Unlimited | Unlimited |
 
-The **Extra Users** add-on is available on the Team and Scale plans and raises the total. The **Seats** row then shows the split, for example `7 (5 plan + 2 extra)`. Developer is a single-user plan: it cannot invite members.
+On **Pro** and **Team** you buy seats one at a time and projects in packs of ten,
+up to the plan's maximum; past that maximum the plan picker points you at
+**Enterprise**. The **Seats** row then shows the split, for example
+`7 (5 plan + 2 extra)`.
+
+**Pro** does not include policies, reports, SBOM, AI-BOM, the EU AI Act report or
+the Jira integration.
+
+Lowering seats or projects is refused while more are in use than you are asking
+for: remove the extra members or projects first.
+
+If your organization is on an earlier plan, it keeps that plan's seats, projects
+and limits, and its name carries **(previous offer)** on this page.
 
 ### Monthly Usage Limits
 
@@ -42,10 +63,22 @@ Your subscription includes per-seat limits for Cybe AI features:
 - **Cybe Security Champion** — AI-powered vulnerability prioritization (per seat)
 - **Cybe AutoFix** — Automated vulnerability remediation suggestions (per seat)
 - **Cybe Analysis** — Deep code analysis and insights (per seat)
-- **Project Limit** — Unlimited projects across your organization
+
+On **Pro**, **Team** and **Enterprise**, the organization's monthly Cybe allowance
+is **300 credits per filled seat**: a seat you have paid for but not yet given to a
+member adds nothing to the pool.
+
+**Projects** are capped by your plan, as the table above shows. A project counts
+against the cap the first time the AppSec Platform analyses it, and creating one
+past the cap is refused — buy a pack of ten projects, or move up a plan.
 
 <Tip>
-A change that costs more — upgrading your plan, adding **Extra Users**, raising a credit pack, or switching to yearly billing — is invoiced for the rest of the current period as soon as you confirm it, and takes effect once that invoice is paid. If the payment needs authentication or your card is refused, you are sent to the invoice's payment page and nothing changes until it is paid. The full price then appears on your next invoice. Lowering a quantity is credited on your next invoice instead of refunded.
+A change that costs more — upgrading your plan, adding seats or projects, raising a credit pack, or switching to yearly billing — is invoiced for the rest of the current period as soon as you confirm it, and takes effect once that invoice is paid. If the payment needs authentication or your card is refused, you are sent to the invoice's payment page and nothing changes until it is paid. The full price then appears on your next invoice.
+
+Lowering a quantity is not credited: what you give up stays available until the end
+of the current period, and the lower amount is billed from the next one. Only one
+change is applied at a time — if another change of your organization is still
+going through, yours is refused and you can try again in a moment.
 </Tip>
 
 <Note>
@@ -143,5 +176,5 @@ All add-on credits are pooled at the **organization level**. Any team member can
 </Info>
 
 <Note>
-Add-ons are prorated based on when you purchase them during your billing cycle: the prorated amount is invoiced when you confirm the purchase, and the credits are added once that invoice is paid. Removing packs is credited on your next invoice. Unused credits from monthly packs expire at the end of each billing period.
+Add-ons are prorated based on when you purchase them during your billing cycle: the prorated amount is invoiced when you confirm the purchase, and the credits are added once that invoice is paid. Removing packs is not credited: the packs stay available until the end of the current period, and the lower amount is billed from the next one. Unused credits from monthly packs expire at the end of each billing period.
 </Note>

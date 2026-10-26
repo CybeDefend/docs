@@ -59,7 +59,7 @@ The role is checked again when the invitee accepts. If your own role no longer a
 2. **Pending Invitations**  
    - Once invited, the user appears in the member list with a **Pending** status.
    - You can cancel the invite at any time if needed.
-   - A pending invitation holds a seat: it counts against your plan's seat allowance until it is accepted, cancelled or expired. See [Seats and Invitations](/latest/plateform-overview/plan-&-pricing/manage-billing-subscription#seats-and-invitations).
+   - An invitation that gives the AppSec Platform holds an AppSec seat: it counts against your plan's seat allowance until it is accepted, cancelled or expired, and it is refused when no seat is free. An invitation that gives VibeDefend alone takes no AppSec seat. See [Seats and Invitations](/latest/plateform-overview/plan-&-pricing/manage-billing-subscription#seats-and-invitations).
 
 <Frame>
   <img src="/images/get-started/setting-up-account/invite-pending-list.png" alt="Pending Invitation List" style={{ borderRadius: '0.5rem' }} />
@@ -77,6 +77,39 @@ The role is checked again when the invitee accepts. If your own role no longer a
 <Note>
 Admins can revoke an invitation before it’s accepted, ensuring you maintain full control over who joins your organization.
 </Note>
+
+### Per-member product access
+
+An organization can run the **AppSec Platform**, **VibeDefend**, or both. Each
+member holds the products you give them, and a member who opens a product they do
+not hold is told to ask an administrator for it.
+
+- Choose the products in the invite dialog. Name none and the invitation gives
+  every active product you are allowed to give.
+- You can only give a product that is **active** on the organization, and, as a
+  manager, only a product you hold yourself.
+- The creator and the administrators always hold both products: you cannot take one
+  away from them, and promoting someone to administrator gives them both.
+- Change a member's products at any time from the member list. An empty selection
+  is allowed — the member stays in the organization and holds no product.
+
+Over the API, the products are a field of the invitation, and a member's products
+are set in one call:
+
+```bash
+curl -X POST "https://api-eu.cybedefend.com/organization/$ORG_ID/invite" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"dev@example.com","role":"member","products":["vibedefend"]}'
+
+curl -X PUT "https://api-eu.cybedefend.com/organization/$ORG_ID/members/$USER_ID/products" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"products":["appsec","vibedefend"]}'
+```
+
+Use `https://api-us.cybedefend.com` if your organization is hosted on the US
+deployment.
 
 ---
 
