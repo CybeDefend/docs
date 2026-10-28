@@ -76,7 +76,7 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 
 ⁶ OpenCode can't hand the agent text before a tool runs, so the rules fetched for an edit arrive with the edit's result: the agent reads them right after the write, before its next step. A call whose tool failed gets none, and the retry fetches them again. When the agent edits through a shell command (its `bash` tool), the rules are fetched the same way.
 
-⁷ OpenCode has no confirmation prompt for a tool call. A guard either blocks the call, in which case the agent reads the reason as the tool's error and the call doesn't run, or lets it through. Guards run on every tool call, MCP tools and sub-agents included.
+⁷ OpenCode has no confirmation prompt for a tool call. A guard either blocks the call, in which case the agent reads the reason as the tool's error and the call doesn't run, or lets it through. Guards run on every tool call, MCP tools and sub-agents included. OpenCode's `--pure` option (or `OPENCODE_PURE=1`) runs it without external plugins, so in that mode no rule lands and no guard runs.
 
 ⁸ `opencode run` ends as soon as its answer is complete, before the end-of-session review can run. The review happens in a session that stays open after the answer.
 

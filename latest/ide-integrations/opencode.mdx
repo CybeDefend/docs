@@ -64,7 +64,7 @@ VibeDefend was tested with OpenCode 1.19. There is no minimum version: it wires 
 
 - **CybeDefend MCP tools**: list findings, open a vulnerability and update its status from the chat.
 - **Business and security rules with each edit**: OpenCode can't hand the agent text before a tool runs, so the rules for an edit arrive with the edit's result. The agent reads them right after the write, before its next step. A call whose tool failed gets none, and the retry fetches them again. Rules are fetched the same way when the agent edits through a shell command.
-- **Action Guards on every tool call**: MCP tools and sub-agents included. OpenCode has no confirmation prompt for a tool call, so a guard either blocks the call (the agent reads the reason as the tool's error, and the call doesn't run) or lets it through.
+- **Action Guards on every tool call**: MCP tools and sub-agents included. OpenCode has no confirmation prompt for a tool call, so a guard either blocks the call (the agent reads the reason as the tool's error, and the call doesn't run) or lets it through. OpenCode's `--pure` option (or `OPENCODE_PURE=1`) runs it without external plugins, so in that mode no rule lands and no guard runs.
 - **Session start**: the CybeDefend doctrine is loaded and the proposals inbox is opened. The doctrine also reaches the agent through the MCP server's instructions.
 - **Session review**: a gap analysis at the end of a substantive session. It runs in a session that stays open after the answer, not with `opencode run`, which ends as soon as its answer is complete.
 
