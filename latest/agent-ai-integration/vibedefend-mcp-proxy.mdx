@@ -1,0 +1,225 @@
+---
+title: "Checking the MCP Servers Your Agents Use"
+description: "VibeDefend sits in front of the MCP servers configured in Claude Code, Cursor, VS Code, Windsurf and Claude Desktop, so each server and each tool is checked against your organization's MCP policy before your agent calls it."
+---
+
+Your coding agents reach third-party MCP servers — a ticket tracker, a database, a
+documentation server, anything you added to their config. VibeDefend puts itself
+between the agent and each of those servers: every server and every tool it offers
+is checked against your **organization's MCP policy**, and what the agent may do
+with a flagged server follows from that policy. Your own decision on a server
+outranks it, in both directions.
+
+This is separate from the [Cybe MCP](/latest/agent-ai-integration/cybe-mcp) server,
+which is CybeDefend's own. That one is never wrapped.
+
+---
+
+## Turn it on
+
+`vibedefend install` asks **"Put the VibeDefend proxy in front of your MCP servers?"**
+— yes by default. It wraps the MCP servers already configured in each supported
+client, keeps a timestamped copy of every config file it rewrites, and then signs
+in to the HTTP ones (see [Signing in to an HTTP server](#signing-in-to-an-http-server)).
+
+Answer no and your configs are left alone. On a machine where the proxy is already
+in place, answering no takes it back out.
+
+Any time after that, one command does the same thing:
+
+```bash
+vibedefend sync             # put the proxy in front of what is configured now
+vibedefend sync --dry-run   # show what would change, write nothing
+vibedefend sync --client cursor
+```
+
+Running it twice changes nothing, so it is safe to re-run whenever you add a server.
+The clients it rewrites are **Claude Code**, **Cursor**, **VS Code**, **Windsurf**
+and **Claude Desktop**; `--client` takes `claude-code`, `cursor`, `vscode`,
+`windsurf` or `claude-desktop`. Pass `--no-backup` to skip the timestamped copies.
+
+<Note>
+The proxy needs a `vibedefend` on your **PATH**, because the entries it writes into
+your client configs run `vibedefend mcp`. If you installed through `npx` with
+`--no-global`, or the `vibedefend` on your PATH does not know the `mcp` subcommand,
+VibeDefend says so and leaves every config untouched. Install or upgrade the CLI
+globally (`npm install -g @cybedefend/vibedefend@latest`), then run `vibedefend sync`.
+</Note>
+
+A wrapped entry in your client config runs `vibedefend mcp --name <server>`. The
+original entry is kept in `~/.cybedefend/mcp/upstreams.json`, and that is what
+[`vibedefend unwrap`](#taking-it-back-out) restores from.
+
+### Keeping new servers wrapped
+
+```bash
+vibedefend sync --hook claude-code      # install it
+vibedefend sync --hook claude-code --remove-hook
+```
+
+This adds a `SessionStart` hook that runs `vibedefend sync --quiet`, so an MCP
+server you add later is wrapped at your next Claude Code session. In quiet mode the
+hook prints nothing unless something changed.
+
+---
+
+## Signing in to an HTTP server
+
+A server reached over HTTP usually wants an authorization of its own. `vibedefend connect`
+takes over the sign-in **Claude Code** or **Codex** already holds for that server —
+nothing opens, nothing is asked — and otherwise runs the OAuth flow in your browser.
+
+```bash
+vibedefend connect --all        # every HTTP server, skipping the connected ones
+vibedefend connect <name>       # one server, by the name in your client config
+```
+
+Give it a name, `--url` or `--all` — it never picks for you.
+
+| Option | What it does |
+|---|---|
+| `--url <url>` | Connect a URL that is not in `upstreams.json` yet. |
+| `--token <bearer>` | Store this bearer token instead of running the browser flow (CI). One server at a time. |
+| `--no-browser` | Print the authorization URL instead of opening a browser (headless, SSH). |
+| `--no-reuse` | Always run the browser flow; do not take over an agent's sign-in. |
+| `--force` | Authorize again even when a usable token is stored. |
+| `--client-id <id>` / `--client-secret <secret>` | Use a client registered out of band, for a server with no dynamic registration. |
+| `--callback-port <port>` | Listen on this loopback port for the callback, for a client whose redirect URI was registered by hand. Remembered per server with `--client-id`. |
+| `--scope <scope>` | Override the scopes the server advertises. |
+| `--strict-issuer` | Refuse an authorization server that does not implement RFC 9207 instead of warning. Also on when the organization policy requires it. |
+
+---
+
+## What your agent sees
+
+Each server comes back with a verdict — **ok**, **suspicious** or **malicious** —
+and your organization's policy decides what the agent is given:
+
+| The agent gets | When |
+|---|---|
+| Every tool, untouched | The server is fine, or your own `allow` covers it. |
+| Every tool, plus a `vibedefend_alert` tool — the call runs, its result framed with what was found | The policy warns on this server. |
+| Every tool, plus `vibedefend_alert` — **you** confirm the call before it runs | The policy asks on this server. |
+| No tool at all, only `vibedefend_blocked`; every call is refused | The policy blocks this server. |
+
+Whether a flagged server is warned about or blocked is the organization's `mode`,
+not a setting on your machine. A server the check has not answered on yet is
+passed through untouched and adds nothing to the agent's view.
+
+---
+
+## Your own decision
+
+```bash
+vibedefend allow <server>           # use it even when VibeDefend flags it
+vibedefend deny <server>            # refuse it whatever the verdict
+vibedefend allow <server> --clear   # back to VibeDefend's own verdict
+```
+
+`<server>` is the name as it appears in your client config — the one
+`vibedefend_alert` tells the agent to repeat back to you. The decision is yours and
+outranks the verdict in both directions: an `allow` makes a flagged server's tools
+available, a `deny` makes a perfectly clean server's tools unavailable. It applies
+on this machine.
+
+---
+
+## Where you stand
+
+`vibedefend status` ends with the proxy's own section: one line per server with its
+verdict, how many tools it offers, which of them were flagged, and your own decision
+when you made one. It also names a `${VARIABLE}` used by a wrapped entry that is not
+set in your environment — the usual reason an otherwise correct server answers `401`.
+
+```bash
+vibedefend status
+vibedefend scan          # reach every registered server once and report what it answers
+vibedefend scan --json
+```
+
+`vibedefend scan` talks to the servers with no agent in the loop, which is the quick
+way to see what VibeDefend makes of a server you just added.
+
+---
+
+## The organization's MCP policy
+
+```bash
+vibedefend org           # the organization this machine works under, and its policy
+vibedefend org <id>      # select another organization you belong to
+```
+
+The policy has two levers, and they live on the organization — nothing on a
+developer's machine can relax them:
+
+| Lever | What it does |
+|---|---|
+| `mode` | `block` replaces a flagged server's tool list; `warn` adds the alert and lets the call through. |
+| `strictIssuer` | Refuse an OAuth authorization server that does not implement RFC 9207 instead of warning about it. |
+
+An organization that never set one works under `mode: block` with `strictIssuer` off.
+
+Any member can read the policy; changing it takes the `manage` permission on the
+organization — the same one as editing the organization itself.
+
+```bash
+# Read
+curl -H "Authorization: Bearer $CYBEDEFEND_TOKEN" \
+  https://api-eu.cybedefend.com/mcp/organization/$ORG_ID/policy
+
+# Replace
+curl -X PUT https://api-eu.cybedefend.com/mcp/organization/$ORG_ID/policy \
+  -H "Authorization: Bearer $CYBEDEFEND_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "mode": "block", "strictIssuer": true }'
+```
+
+<Warning>
+`PUT` is a full replacement: **both** fields are required. A partial body cannot say
+"leave `strictIssuer` alone", and getting that wrong would silently disarm an
+organization that believed it had the lever on.
+</Warning>
+
+Use `https://api-us.cybedefend.com` for the US region.
+
+---
+
+## Taking it back out
+
+```bash
+vibedefend unwrap             # restore every original entry
+vibedefend unwrap --dry-run
+vibedefend unwrap --client vscode
+```
+
+Each entry is restored from `~/.cybedefend/mcp/upstreams.json`; the timestamped
+copies are left for you. `vibedefend uninstall` runs this first, so removing
+VibeDefend leaves your MCP servers as it found them.
+
+---
+
+## Commands
+
+```text
+vibedefend sync               Put the proxy in front of the MCP servers configured now
+vibedefend unwrap             Take the proxy back out, restoring each original entry
+vibedefend connect            Authorize VibeDefend against an HTTP MCP server
+vibedefend scan               Reach every registered server once and report
+vibedefend allow <server>     Use a server even when VibeDefend flags it
+vibedefend deny <server>      Refuse a server whatever the verdict
+vibedefend org [id]           Show or select the organization, and show its MCP policy
+vibedefend status             Install report, then the proxy's verdicts
+```
+
+---
+
+## Related docs
+
+<CardGroup cols={2}>
+  <Card title="VibeDefend, one command to wire every agent" icon="bolt" href="/latest/agent-ai-integration/vibedefend">
+    The installer, the hook layer, Action Guards and the VibeDefend space in the dashboard.
+  </Card>
+  <Card title="Cybe MCP, connect every AI agent" icon="plug" href="/latest/agent-ai-integration/cybe-mcp">
+    CybeDefend's own MCP server and its tools — the one server the proxy never wraps.
+  </Card>
+</CardGroup>

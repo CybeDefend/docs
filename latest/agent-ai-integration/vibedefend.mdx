@@ -99,6 +99,9 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
   <Step title="Sign in">
     If VibeDefend has no stored credentials, it runs the login flow automatically: OAuth 2.0 Authorization Code + PKCE opens your browser to the CybeDefend sign-in page, receives the callback locally, and stores the token bundle in your OS keychain. If your browser already has a dashboard session, this completes instantly. The refresh token persists for 14 days.
   </Step>
+  <Step title="Put the proxy in front of your other MCP servers">
+    Last question, yes by default: whether VibeDefend should sit in front of the MCP servers your clients already have, so each tool is checked against your organization's policy before an agent calls it. VibeDefend then takes over the sign-ins Claude Code and Codex already hold for those servers, and offers the browser for the ones left. Answer no and your client configs are left alone. See [Checking the MCP servers your agents use](/latest/agent-ai-integration/vibedefend-mcp-proxy).
+  </Step>
 </Steps>
 
 ---
@@ -116,7 +119,18 @@ Grab the UUID from the project page on the [EU dashboard](https://eu.cybedefend.
 `vibedefend link`, run at the root of the repository, does the same for you: it
 resolves the project from `--project`, from your git `origin`, or from an
 interactive picker, and writes the `.cybedefend/config.json` itself. `--path`
-points it at another directory.
+points it at another directory, and `--region` picks a region when VibeDefend is
+not installed yet.
+
+The picker also offers **Create a new project**: pick a team, confirm the name
+(the repository's, by default), and VibeDefend creates the project and links it
+to its GitHub or GitLab repository through your organization's integration, which
+starts the first scan. The new project comes with every AI feature on — AI merge
+request, improving results, sorting vulnerabilities and Security Champion — each
+one switchable in the project's settings. Creating a project takes the team
+manager role, or organization creator or administrator. When your `origin` is
+already linked to another project, VibeDefend creates nothing and names the
+project to link instead.
 
 <Note>
 Because `.cybedefend/` is a **directory** here, the deprecated `.cybedefend` exclusion *file* cannot exist beside it — a path is either a file or a directory. Declare your SAST exclusions in [`.cybeignore`](/latest/code-scanning/scanning-options/cybedefend-ignore-file) at the repo root, or in `.cybedefend/ignore` next to `config.json`.
@@ -233,13 +247,26 @@ vibedefend status             Read-only install report (region, agents, API chec
 vibedefend doctor             Diagnose the install and repair what's fixable
 vibedefend link               Link the current folder to a CybeDefend project
 vibedefend login              (Re-)authenticate against the CybeDefend API
+vibedefend org [id]           Show or select the organization, and show its MCP policy
 vibedefend uninstall          Remove the hooks, the MCP server and your credentials
 vibedefend --help             Full help
 ```
 
+These wrap and check the other MCP servers your agents use — see
+[Checking the MCP servers your agents use](/latest/agent-ai-integration/vibedefend-mcp-proxy):
+
+```text
+vibedefend sync               Put the VibeDefend proxy in front of your MCP servers
+vibedefend unwrap             Take it back out, restoring each original entry
+vibedefend connect            Authorize VibeDefend against an HTTP MCP server
+vibedefend scan               Reach every registered MCP server once and report
+vibedefend allow <server>     Use a server even when VibeDefend flags it
+vibedefend deny <server>      Refuse a server whatever the verdict
+```
+
 `vibedefend doctor` takes `--check` for a dry-run (report only, change nothing) and `--yes` to apply every fix without the confirmation prompt. `vibedefend login` takes `--force` to re-authenticate even when credentials are already stored.
 
-`vibedefend uninstall` unwires the VibeDefend hooks and the CybeDefend MCP server from every agent it set up (hooks you added yourself are left alone), signs you out and deletes `~/.cybedefend/`, keeping your custom `regions.json`. It takes `--yes` to skip the confirmation prompt. The npm package itself stays installed; the command prints the line that removes it.
+`vibedefend uninstall` takes your MCP servers back out of the VibeDefend proxy, unwires the VibeDefend hooks and the CybeDefend MCP server from every agent it set up (hooks you added yourself are left alone), signs you out and deletes `~/.cybedefend/`, keeping your custom `regions.json`. It takes `--yes` to skip the confirmation prompt. The npm package itself stays installed; the command prints the line that removes it.
 
 ---
 
@@ -423,6 +450,9 @@ Fully supported — no Git Bash or WSL required. The hook runner is a single bun
 ## Related docs
 
 <CardGroup cols={2}>
+  <Card title="Checking the MCP servers your agents use" icon="shield-halved" href="/latest/agent-ai-integration/vibedefend-mcp-proxy">
+    The proxy in front of your other MCP servers: `sync`, `connect`, `allow` / `deny`, and the organization's MCP policy.
+  </Card>
   <Card title="Cybe MCP, connect every AI agent" icon="plug" href="/latest/agent-ai-integration/cybe-mcp">
     The manual setup and the full reference for the 18 MCP tools VibeDefend wires up for you.
   </Card>
