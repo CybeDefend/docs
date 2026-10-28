@@ -54,11 +54,11 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 | Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot |
 |---|:---:|:---:|:---:|:---:|:---:|
 | **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Business + Security Rules** *(injected pre-write)* | ✅ edit + shell⁴ | ✅ | ✅ edit + shell⁴ | ⚠️ writes only | ✅ |
+| **Business + Security Rules** *(injected pre-write)* | ✅ edit + shell⁴ | ❌ not exposed⁵ | ✅ edit + shell⁴ | ⚠️ writes only | ✅ |
 | **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired |
 | **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ |
 | **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **PreCompact** *(long-session gap analysis)* | ✅ | ✅ | ❌ no event | ❌ no event | ✅ |
+| **PreCompact** *(long-session gap analysis)* | ✅ | ❌ not exposed⁵ | ❌ no event | ❌ no event | ❌ not exposed⁵ |
 | **Doctrine backstop** *(per-prompt reminder)* | ✅ | ❌ | ✱ via MCP³ | ❌ | ❌ |
 | **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 |
 
@@ -70,7 +70,9 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 
 ³ Codex follows the doctrine via the MCP server's `Server.instructions` field on each session, which removes the need for a per-prompt reminder hook.
 
-⁴ On Claude Code and Codex the rules also load when the agent writes files through the shell — `>` / `>>` redirections, heredocs, `tee`, `sed -i`, `perl -pi`, `cp` / `mv`, `dd of=`, `bash -c '…'` — so an agent that edits from the terminal gets the same rules as one using the edit tool. Read-only commands load nothing. Inline interpreters (`python -c`, `node -e`), `git apply` / `patch`, and commands run through `xargs` or `find -exec` are not covered. On Cursor, Windsurf and VS Code Copilot, rules load on the edit tools only.
+⁴ On Claude Code and Codex the rules also load when the agent writes files through the shell — `>` / `>>` redirections, heredocs, `tee`, `sed -i`, `perl -pi`, `cp` / `mv`, `dd of=`, `bash -c '…'` — so an agent that edits from the terminal gets the same rules as one using the edit tool. Read-only commands load nothing. Inline interpreters (`python -c`, `node -e`), `git apply` / `patch`, and commands run through `xargs` or `find -exec` are not covered. On Windsurf and VS Code Copilot, rules load on the edit tools only.
+
+⁵ On Cursor, a pre-write hook can allow or block an edit but cannot add anything to the agent’s context, so the business and security rules do not reach the agent before a write there — Action Guards still apply, since a deny is a block. Cursor and VS Code Copilot likewise expose no way for a hook to reach the agent when the context window is compacted: on those two the gap analysis runs at session end only.
 
 ---
 
