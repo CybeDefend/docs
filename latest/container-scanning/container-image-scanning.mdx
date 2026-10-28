@@ -34,6 +34,31 @@ Securely scan your organization's private container images:
 - **Organization Images**: Scan custom-built images from your CI/CD pipelines
 - **Multi-Registry Support**: Connect multiple private registries simultaneously
 
+## The Branch a Scan Is Stored On
+
+Every container scan request takes an optional `branch`: the git branch the image was built from. A project linked to GitHub or GitLab is shown in the dashboard under that repository's branches, so the branch you send decides where the scan appears.
+
+| What you send | What the scan is stored on |
+|---|---|
+| A branch of the linked repository | That branch, spelled as the repository spells it |
+| A value that is not a branch of the linked repository | Nothing — the request is refused with `400` |
+| Nothing | The project's reference branch, else the repository's default branch, else `main` |
+| Anything, on a project with no repository linked | The value as sent, else the project's reference branch, else `main` |
+
+A leading `refs/heads/` is dropped, so a CI variable that holds `refs/heads/release/2.1` is stored on `release/2.1`.
+
+<Warning>
+On a project linked to GitHub or GitLab, `branch` must name a branch of that repository. A pipeline that puts the image tag there — easy to do when one variable feeds both fields — is refused with `400`, and the message points the tag back to the image field. Send the branch the image was built from and keep the tag in the image field (`imageToScan` on `/project/{projectId}/scan/container/start`, `imageName` on the registry endpoints):
+
+```json
+// Refused
+{ "imageToScan": "myorg/api:v2.102.0", "branch": "v2.102.0" }
+
+// Accepted
+{ "imageToScan": "myorg/api:v2.102.0", "branch": "main" }
+```
+</Warning>
+
 ## How Container Scanning Works
 
 1. **Image Selection**  
