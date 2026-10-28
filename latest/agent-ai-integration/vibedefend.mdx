@@ -294,6 +294,20 @@ free allowance and cap — broken down by project and by member. Stopping usage
 billing invoices the month's usage and puts the organization back on the free
 allowance.
 
+### Under a VibeDefend contract
+
+If your organization holds a VibeDefend contract, usage counts against the volume
+of that contract and is never billed by usage. VibeDefend's **Usage & billing**
+page shows the contract, the date it ends and your CybeDefend contact, and each
+unit is measured against its **contract volume** rather than a free allowance and
+a cap.
+
+A card and spending caps are not used under a contract: those controls are hidden,
+and the API answers `409 CONTRACT_ACTIVE` on the checkout and the cap routes.
+Going past the volume planned in the contract does not stop your agents — the page
+says so, and your CybeDefend contact gets in touch. A unit stops when it reaches
+the usage limit of the contract.
+
 ### When VibeDefend stops
 
 Your agent is told which unit stopped and why, and not to retry. Each of these
@@ -305,6 +319,7 @@ needs an organization administrator or a billing manager:
 | The unit's monthly cap is reached | Raise or remove the cap |
 | A VibeDefend usage invoice is unpaid | Pay it — every VibeDefend feature is paused until it is |
 | VibeDefend is not activated for the organization | Activate it in organization settings |
+| The organization's VibeDefend contract reached its usage limit | Contact CybeDefend — a card or a cap cannot lift it |
 
 ---
 

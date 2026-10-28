@@ -143,3 +143,63 @@ Members then see the products you gave them — see
 <Tip>
 Once your repositories are connected, scans start automatically—no extra steps required.
 </Tip>
+
+---
+
+## Delete an Organization
+
+Only the account that created an organization may delete it, and the deletion is
+confirmed with a 6-digit code e-mailed to that account. The deletion is available
+over the API.
+
+<Warning>
+Deleting an organization is permanent and cannot be undone. It removes its teams
+and projects, their scans, findings, policies and stored files, and cancels the
+organization's subscriptions. The creator keeps their own user account.
+</Warning>
+
+Ask for the code, then send it as `code` in the body of the delete call:
+
+```bash
+curl -X POST "https://api-eu.cybedefend.com/organization/$ORG_ID/deletion-code" \
+  -H "Authorization: Bearer $TOKEN"
+# 202 Accepted — {"expiresAt":"<ISO 8601 timestamp>"}
+
+curl -X DELETE "https://api-eu.cybedefend.com/organization/$ORG_ID" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"code":"012345"}'
+```
+
+Use `https://api-us.cybedefend.com` if your organization is hosted on the US
+deployment.
+
+A code is valid **10 minutes** and is used once; asking for another one replaces
+it. A code may be submitted **5 times**, after which you ask for a new one. At
+most **3 codes an hour** are sent, **60 seconds** apart.
+
+A refusal carries its reason as `code` in the body. Switch on that value, never on
+the message:
+
+| `code` | HTTP | What it means |
+|---|---|---|
+| `NOT_ORGANIZATION_CREATOR` | 403 | The caller did not create this organization |
+| `DELETION_CODE_INVALID` | 400 | Wrong, expired, already used, missing or malformed |
+| `DELETION_CODE_ATTEMPTS_EXCEEDED` | 400 | The code's 5 attempts are spent — ask for a new code |
+| `DELETION_CODE_RATE_LIMITED` | 429 | Another code was asked for too soon, or too many this hour (`Retry-After: 60`) |
+| `DELETION_LOCKED` | 429 | Ten wrong codes within 24 hours — the deletion is locked for 24 hours |
+
+<Warning>
+`DELETE /organization/{organizationId}` takes a body carrying the confirmation
+code, and answers **400** without it:
+
+```diff
+- DELETE /organization/{organizationId}
++ POST   /organization/{organizationId}/deletion-code
++ DELETE /organization/{organizationId}   {"code":"012345"}
+```
+
+An integration that calls it as another member of the organization, or with no
+body, is refused: the call has to be made by the creator's account, with a code
+e-mailed to that account.
+</Warning>
