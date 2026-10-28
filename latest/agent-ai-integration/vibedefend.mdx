@@ -49,7 +49,7 @@ The MCP server is what the hooks call under the hood. VibeDefend installs both, 
 
 ## Supported agents
 
-VibeDefend auto-detects and wires whichever of these you have installed. Unchecked agents stay untouched — re-run `vibedefend install` any time to toggle one on or off.
+VibeDefend auto-detects and wires whichever of these you have installed. Unchecked agents stay untouched. Re-run `vibedefend install` any time to add an agent: it wires the agents you tick and leaves the others as they are, so unticking an agent there doesn't remove it. To remove VibeDefend, run `vibedefend uninstall` (see [Commands](#commands)), which removes it from every agent it wired, then `vibedefend install` again for the agents you keep.
 
 | Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot | Google Antigravity | OpenCode |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -135,10 +135,11 @@ vibedefend update --self      Upgrade only the CLI binary (don't touch hooks)
 vibedefend status             Read-only install report (region, agents, API check)
 vibedefend doctor             Diagnose the install and repair what's fixable
 vibedefend login              (Re-)authenticate against the CybeDefend API
+vibedefend uninstall          Remove VibeDefend from every agent it wired
 vibedefend --help             Full help
 ```
 
-`vibedefend doctor` takes `--check` for a dry-run (report only, change nothing) and `--yes` to apply every fix without the confirmation prompt. `vibedefend login` takes `--force` to re-authenticate even when credentials are already stored.
+`vibedefend doctor` takes `--check` for a dry-run (report only, change nothing) and `--yes` to apply every fix without the confirmation prompt. `vibedefend login` takes `--force` to re-authenticate even when credentials are already stored. `vibedefend uninstall` asks you to confirm first (`--yes` skips the question); it also signs you out of VibeDefend and deletes the `~/.cybedefend/` folder, keeping your own `regions.json`.
 
 ---
 
