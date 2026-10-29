@@ -162,6 +162,7 @@ Once a project is linked, what your agents do on it shows up in the **VibeDefend
 | **Home** — `/vibedefend` | Every project you can read, searchable by name, each with the coding agent that worked on it, its rules, its guard triggers of the last 7 days and when its last diff scan ran. |
 | **Overview** — `/vibedefend/organization/overview` | Key figures over the last **7, 30 or 90 days**, each against the period before: rule proposals waiting for validation, guard triggers, diff scans and the findings they caught — then, day by day, the guard outcomes, the rules served to your agents, the agents at work and the most active projects. |
 | **Activity** — `/vibedefend/activity` | One timeline of the diff scans and guard triggers of every project you can read, newest first, with the agent sessions running right now and the proposals waiting for your validation. Open an event for its detail. |
+| **MCP servers** — `/vibedefend/mcp` | The MCP servers your coding agents use, each with its verdict, the action the proxy applied, its flagged tools and who uses it. See [Checking the MCP servers your agents use](/latest/agent-ai-integration/vibedefend-mcp-proxy#what-your-organization-sees). |
 | **A project** — `/vibedefend/project/<id>` | **Business rules**, **Security rules**, **Action Guards**, **Scan diff** and the **Code map**. |
 
 A coding-agent session counts as running while it has called a Cybe MCP tool in the last **15 minutes**; the list holds at most 200.
@@ -176,9 +177,9 @@ The activity timeline, a project's guard triggers and a project's diff-scan hist
 | **Projects** | Up to 100 at a time. A project you cannot read is left out. |
 | **Who** | Up to 50 people. |
 | **Agent** | Claude Code, Claude Desktop, Cursor, Codex, Windsurf, Gemini CLI, VS Code — and `unknown` for a session that declared none. |
-| **Event** | A diff scan, a denied action, a warned action. |
+| **Event** | A diff scan, a denied action, a warned action, and an MCP call that was refused, accepted while suspicious, passed with a warning, or whose result carried an injection. |
 
-A diff scan carries its branch, the scanners it ran (`sast`, `iac`, `secret`), its findings by severity and who launched it. A guard trigger carries the tool the agent called, the rule that fired, and whether the call was denied or warned.
+A diff scan carries its branch, the scanners it ran (`sast`, `iac`, `secret`), its findings by severity and who launched it. A guard trigger carries the tool the agent called, the rule that fired, and whether the call was denied or warned. An MCP call event carries the server, the tool, why it was flagged and the agent that made the call.
 
 ### The languages a security rule targets
 

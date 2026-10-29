@@ -8,7 +8,8 @@ documentation server, anything you added to their config. VibeDefend puts itself
 between the agent and each of those servers: every server and every tool it offers
 is checked against your **organization's MCP policy**, and what the agent may do
 with a flagged server follows from that policy. Your own decision on a server
-outranks it, in both directions.
+outranks the verdict in both directions — unless your organization blocks the
+server, which nothing on your machine can reopen.
 
 This is separate from the [Cybe MCP](/latest/agent-ai-integration/cybe-mcp) server,
 which is CybeDefend's own. That one is never wrapped.
@@ -120,7 +121,9 @@ vibedefend allow <server> --clear   # back to VibeDefend's own verdict
 `vibedefend_alert` tells the agent to repeat back to you. The decision is yours and
 outranks the verdict in both directions: an `allow` makes a flagged server's tools
 available, a `deny` makes a perfectly clean server's tools unavailable. It applies
-on this machine.
+on this machine. A server
+[your organization blocks](#blocking-a-server-for-the-whole-organization) is the one
+thing an `allow` cannot reopen.
 
 ---
 
@@ -181,6 +184,96 @@ organization that believed it had the lever on.
 </Warning>
 
 Use `https://api-us.cybedefend.com` for the US region.
+
+---
+
+## What your organization sees
+
+Each machine running the proxy reports the MCP servers its agent uses, and the calls
+the proxy refused, asked about, warned on or whose result it flagged. A report names
+the server, the tool and the outcome — never the arguments of a call, and never what
+it returned.
+
+**MCP servers**, at `/vibedefend/mcp` in the dashboard, is one row per server — a
+remote host, a package, or a local command:
+
+| Column | What it holds |
+|---|---|
+| **Server** | The host, the npm or PyPI package with its version when it is pinned, or the name of the entry in your client config. |
+| **Verdict** | `malicious`, `suspicious`, `clean` or `unverified`. |
+| **Action applied** | What the agent was given: allowed, asks the user, warns, blocked, or pending. |
+| **Tools** | How many tools the server offers, and how many of them are flagged. |
+| **Members · agents** | Who uses it, and from which coding agent. |
+| **Seen** | When it was last used. |
+
+Filter on the verdict, on blocked or not blocked, on one member, on one coding-agent
+family, or search a host, a package or a config name. Open a row for the people who
+use that server, its flagged tools with the reason each was flagged, its malware
+advisories, and its latest flagged calls.
+
+Administrators and managers see every member by name. Any other member sees their
+own servers and their own calls only, and filtering on someone else returns nothing.
+
+<Note>
+A machine appears here when it runs **vibedefend 1.7 or later**. An earlier version
+reports nothing.
+</Note>
+
+The same calls land in the [VibeDefend activity timeline](/latest/agent-ai-integration/vibedefend#in-the-dashboard).
+
+---
+
+## Blocking a server for the whole organization
+
+A block refuses a server on every member's machine, **whatever the `mode`** and
+whatever the developer's own `allow`. Creators, administrators and managers add one —
+the `manage_integration` permission. It reaches sessions that are already open within
+**15 minutes**, and so does lifting it.
+
+Block a server from its row on the **MCP servers** page, or add one by hand under
+**Settings → VibeDefend → Blocked MCP servers**:
+
+| Target | What it matches | How you give it |
+|---|---|---|
+| **Host** | A remote server by host name | `mcp.example.com` — the host alone: no scheme, path, port, wildcard or IP address |
+| **Package** | An npm or PyPI package, any version | `postmark-mcp`, `mcp-server-fetch` — the name, without a version |
+| **A server you already see** | That exact server, local commands included | Chosen from its row on the MCP servers page, not typed |
+
+An optional label of up to **64 characters** says why; every member of the
+organization reads it. An organization holds **500 active blocks** at a time.
+
+Any member can read the blocked list, and it does not need VibeDefend: a block stays
+applied when VibeDefend is turned off, and the proxy keeps refusing the server.
+
+<Note>
+Lifting a block needs `manage_integration`, which an organization with no writable
+product does not hold. With VibeDefend off and AppSec read-only, turn VibeDefend back
+on — its free tier bills nothing — then lift the block.
+</Note>
+
+Over the API, against `https://api-eu.cybedefend.com` or
+`https://api-us.cybedefend.com`:
+
+```bash
+# Block a host for the organization
+curl -X POST https://api-eu.cybedefend.com/organization/$ORG_ID/vibedefend/mcp/blocks \
+  -H "Authorization: Bearer $CYBEDEFEND_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{ "target": { "type": "host", "value": "mcp.example.com" }, "label": "Not approved" }'
+
+# Every active block, with who added it and when
+curl -H "Authorization: Bearer $CYBEDEFEND_TOKEN" \
+  https://api-eu.cybedefend.com/organization/$ORG_ID/mcp/blocks
+
+# Lift one
+curl -X DELETE https://api-eu.cybedefend.com/organization/$ORG_ID/mcp/blocks/$BLOCK_ID \
+  -H "Authorization: Bearer $CYBEDEFEND_TOKEN"
+```
+
+`target.type` is `host`, `package` (`npm:<name>` or `pypi:<name>`) or `seen` (the
+`ref` of a row of the servers page). A refusal carries a `code`:
+`MCP_BLOCK_INVALID_TARGET`, `MCP_BLOCK_ALREADY_EXISTS`, `MCP_BLOCK_LIMIT_REACHED`,
+`MCP_BLOCK_NOT_FOUND` or `MCP_SERVER_NOT_FOUND`.
 
 ---
 
