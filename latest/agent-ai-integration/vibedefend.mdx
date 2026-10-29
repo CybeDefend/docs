@@ -1,6 +1,6 @@
 ---
 title: "VibeDefend, one command to wire every agent"
-description: "VibeDefend is the one-shot installer that connects Claude Code, Cursor, OpenAI Codex, Windsurf and VS Code Copilot to CybeDefend. It registers the MCP server and the hook layer in a single command — business and security rules land in the agent's context before each edit, dangerous actions are hard-blocked, and a gap analysis catches undocumented rules at the end of substantive sessions. npx one-liner, macOS / Linux / Windows, Node ≥ 18.17."
+description: "VibeDefend is the one-shot installer that connects Claude Code, Cursor, OpenAI Codex, Windsurf, VS Code Copilot and Google Antigravity to CybeDefend. It registers the MCP server and the hook layer in a single command — business and security rules land in the agent's context before each edit, dangerous actions are hard-blocked, and a gap analysis catches undocumented rules at the end of substantive sessions. npx one-liner, macOS / Linux / Windows, Node ≥ 18.17."
 ---
 
 <Note>
@@ -51,16 +51,16 @@ The MCP server is what the hooks call under the hood. VibeDefend installs both, 
 
 VibeDefend auto-detects and wires whichever of these you have installed. Unchecked agents stay untouched — re-run `vibedefend install` any time to toggle one on or off.
 
-| Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot |
-|---|:---:|:---:|:---:|:---:|:---:|
-| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Business + Security Rules** *(injected pre-edit)* | ✅ | ✅ | ✅ | ⚠️ writes only | ✅ |
-| **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired |
-| **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ |
-| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **PreCompact** *(long-session gap analysis)* | ✅ | ✅ | ❌ no event | ❌ no event | ✅ |
-| **Doctrine backstop** *(per-prompt reminder)* | ✅ | ❌ | ✱ via MCP³ | ❌ | ❌ |
-| **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 |
+| Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot | Google Antigravity |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ sign in by hand⁴ |
+| **Business + Security Rules** *(injected pre-edit)* | ✅ | ✅ | ✅ | ⚠️ writes only | ✅ | ⚠️ after the edit⁵ |
+| **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired | ✅ all tools⁶ |
+| **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ | ✅ |
+| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **PreCompact** *(long-session gap analysis)* | ✅ | ✅ | ❌ no event | ❌ no event | ✅ | ❌ no event |
+| **Doctrine backstop** *(per-prompt reminder)* | ✅ | ❌ | ✱ via MCP³ | ❌ | ❌ | ❌ |
+| **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 | ≥ 2.0 (app / IDE) |
 
 **Legend** — ✅ supported · ⚠️ supported with caveats · ❌ not exposed by the agent · ✱ alternate mechanism
 
@@ -69,6 +69,12 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 ² Windsurf has no native SessionStart event. VibeDefend wires `pre_user_prompt`, which fires on every turn. The hook is idempotent and cheap (one GET to the proposals endpoint, returns "0 pending" once the inbox is empty), so the per-turn cost is negligible.
 
 ³ Codex follows the doctrine via the MCP server's `Server.instructions` field on each session, which removes the need for a per-prompt reminder hook.
+
+⁴ Antigravity does not open the MCP sign-in on its own — see [Antigravity sign-in](#antigravity-sign-in) below.
+
+⁵ Antigravity has no channel to inject context into the model from its PreToolUse hook, so rules fetched before a write are held and delivered at the agent's next model call (its PreInvocation event) — one step later than on the other agents, but before the agent acts on what it just read.
+
+⁶ `agy --dangerously-skip-permissions` runs no hook at all, on any event. On Windows, a home path with a space in it is not supported: Antigravity cannot quote the hook command it runs, so the installer refuses to wire a command that could not start.
 
 ---
 
@@ -178,6 +184,17 @@ Codex 0.131+ requires you to approve each hook from the `/hooks` panel **inside 
 
 ---
 
+## Antigravity sign-in
+
+VibeDefend registers the CybeDefend MCP server in `~/.gemini/config/mcp_config.json`, the file Antigravity 2.0, the Antigravity IDE and the `agy` CLI share. But Antigravity does not open the sign-in on its own, and `agy` has no login command VibeDefend could run for you (as it runs `codex mcp login` for Codex). Until you sign in once, `cybedefend` shows **Unauthorized** next to an **Authenticate** button and every Cybe tool call fails. The installer prints these steps under **Next steps**:
+
+- **Antigravity 2.0**: open **Customizations** in the sidebar (in the Antigravity IDE: **Antigravity User Settings → Customizations**), then the **Installed** tab. Under **MCP Servers**, click **Authenticate** next to `cybedefend` and finish the sign-in in your browser. A **Sign out** button replaces **Authenticate** once you are signed in.
+- **`agy` CLI**: run `/mcp`, select `cybedefend`, choose **Authenticate**, then open the URL it prints.
+
+The app, the IDE and the CLI each keep their own sign-in: authenticate in each one you use. The [Cybe MCP](/latest/agent-ai-integration/cybe-mcp#google-antigravity) page has the details.
+
+---
+
 ## VibeDefend or the manual MCP setup?
 
 Both connect your agent to the same CybeDefend tenant. The difference is how much of the platform comes along.
@@ -200,6 +217,12 @@ You can also do both: run VibeDefend for the agents it supports and add the raw 
 <Accordion title="Codex shows `Installed N / Active 0`">
 
 Codex gates hooks behind manual approval — see [Codex setup gotcha](#codex-setup-gotcha) above. Open Codex, run `/hooks`, and trust the `cybedefend` entries.
+
+</Accordion>
+
+<Accordion title="Antigravity shows `Unauthorized` next to `cybedefend`">
+
+Expected until you sign in once: Antigravity does not open the sign-in on its own. See [Antigravity sign-in](#antigravity-sign-in) above.
 
 </Accordion>
 
