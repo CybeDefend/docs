@@ -194,6 +194,16 @@ the proxy refused, asked about, warned on or whose result it flagged. A report n
 the server, the tool and the outcome — never the arguments of a call, and never what
 it returned.
 
+A report also carries the project the session works on, when VibeDefend can tell
+which one it is. **Claude Code** gets it from the `.cybedefend/config.json` or the
+git `origin` of the folder the agent was launched in. Any other agent needs it named
+outright: set `CYBEDEFEND_PROJECT_ID` to a project UUID in the environment the agent
+starts from, and every report from that session carries that project — it also wins
+over `.cybedefend/config.json` for Claude Code. Calls reported without a project
+still reach the dashboard, but they carry none, and filtering the
+[activity timeline](/latest/agent-ai-integration/vibedefend#filtering-the-timeline)
+on a project leaves them out.
+
 **MCP servers**, at `/vibedefend/mcp` in the dashboard, is one row per server — a
 remote host, a package, or a local command:
 
