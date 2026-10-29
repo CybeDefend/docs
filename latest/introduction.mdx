@@ -46,7 +46,7 @@ Security teams evaluating CybeDefend usually want this answer before anything el
 
 **The scanning platform receives your repository, because it cannot scan what it does not have.** Your repo is cloned into an isolated container, analysed, and the container together with its copy of the code is destroyed when the scan finishes. **We do not retain source code after analysis.** What we keep is the result: findings, their file and line, and repository metadata.
 
-**VibeDefend is a different thing.** It is the layer that plugs into your AI coding agent (Claude Code, Cursor, Windsurf, GitHub Copilot, OpenAI Codex) and it runs on the developer's machine. Edits happen locally, and only governance metadata comes back to the platform.
+**VibeDefend is a different thing.** It is the layer that plugs into your AI coding agent (Claude Code, Cursor, Windsurf, GitHub Copilot, OpenAI Codex, Google Antigravity) and it runs on the developer's machine. Edits happen locally, and only governance metadata comes back to the platform.
 
 **If you enable the AI features that learn your repository's conventions**, we additionally keep a business-logic knowledge graph. It holds **file paths and a short description of what each file does. It does not contain your source code.** You can delete it at any time, and disabling the AI features stops it being built.
 

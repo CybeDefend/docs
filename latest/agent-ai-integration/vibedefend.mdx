@@ -1,6 +1,6 @@
 ---
 title: "VibeDefend, one command to wire every agent"
-description: "VibeDefend is the one-shot installer that connects Claude Code, Cursor, OpenAI Codex, Windsurf and VS Code Copilot to CybeDefend. It registers the MCP server and the hook layer in a single command — business and security rules land in the agent's context before each edit, dangerous actions are hard-blocked, and a gap analysis catches undocumented rules at the end of substantive sessions. npx one-liner, macOS / Linux / Windows, Node ≥ 18.17. The VibeDefend space in the dashboard shows what your agents did."
+description: "VibeDefend is the one-shot installer that connects Claude Code, Cursor, OpenAI Codex, Windsurf, VS Code Copilot and Google Antigravity to CybeDefend. It registers the MCP server and the hook layer in a single command — business and security rules land in the agent's context before each edit, dangerous actions are hard-blocked, and a gap analysis catches undocumented rules at the end of substantive sessions. npx one-liner, macOS / Linux / Windows, Node ≥ 18.17. The VibeDefend space in the dashboard shows what your agents did."
 ---
 
 <Note>
@@ -51,28 +51,30 @@ The MCP server is what the hooks call under the hood. VibeDefend installs both, 
 
 VibeDefend auto-detects and wires whichever of these you have installed. Unchecked agents stay untouched — re-run `vibedefend install` any time to toggle one on or off. A region switch is the exception: it re-points the MCP server of unchecked agents too, so none is left on the region you left.
 
-| Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot |
-|---|:---:|:---:|:---:|:---:|:---:|
-| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Business + Security Rules** *(injected pre-write)* | ✅ edit + shell⁴ | ❌ not exposed⁵ | ✅ edit + shell⁴ | ⚠️ writes only | ✅ |
-| **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired |
-| **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ |
-| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **PreCompact** *(long-session gap analysis)* | ✅ | ❌ not exposed⁵ | ❌ no event | ❌ no event | ❌ not exposed⁵ |
-| **Doctrine backstop** *(per-prompt reminder)* | ✅ | ❌ | ✱ via MCP³ | ❌ | ❌ |
-| **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 |
+| Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot | Google Antigravity |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Business + Security Rules** *(injected pre-write)* | ✅ edit + shell⁴ | ❌ not exposed⁵ | ✅ edit + shell⁴ | ⚠️ writes only | ✅ | ⚠️ edit + shell⁴, at the next model call⁶ |
+| **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes, reads, shell + MCP fallback¹ | ❌ not yet wired | ✅ all tools |
+| **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ | ✅ |
+| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **PreCompact** *(long-session gap analysis)* | ✅ | ❌ not exposed⁵ | ❌ no event | ❌ no event | ❌ not exposed⁵ | ❌ no event |
+| **Doctrine backstop** *(per-prompt reminder)* | ✅ | ❌ | ✱ via MCP³ | ❌ | ❌ | ❌ |
+| **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 | latest |
 
 **Legend** — ✅ supported · ⚠️ supported with caveats · ❌ not exposed by the agent · ✱ alternate mechanism
 
-¹ Windsurf's `pre_write_code` hook hard-blocks on file writes only. For non-write tool calls (Read / Bash / WebFetch) the installer drops a snippet into `.windsurfrules` instructing the agent to call `cybe_guards_check` via MCP before sensitive actions — soft enforcement that relies on the model following its rules file.
+¹ Windsurf hard-blocks file writes, file reads and shell commands: Cascade has one pre-hook per kind of action, and the guard runs on those three, showing the agent the reason it was refused. A warning lets the action through, unseen by the agent, since Cascade only shows it a hook's output on a block. Cascade exposes no hook for web fetches and does not gate MCP tool calls, so for those the installer drops a snippet into `.windsurfrules` instructing the agent to call `cybe_guards_check` via MCP before sensitive actions — soft enforcement that relies on the model following its rules file.
 
 ² Windsurf has no native SessionStart event. VibeDefend wires `pre_user_prompt`, which fires on every turn. The hook is idempotent and cheap (one GET to the proposals endpoint, returns "0 pending" once the inbox is empty), so the per-turn cost is negligible.
 
 ³ Codex follows the doctrine via the MCP server's `Server.instructions` field on each session, which removes the need for a per-prompt reminder hook.
 
-⁴ On Claude Code and Codex the rules also load when the agent writes files through the shell — `>` / `>>` redirections, heredocs, `tee`, `sed -i`, `perl -pi`, `cp` / `mv`, `dd of=`, `bash -c '…'` — so an agent that edits from the terminal gets the same rules as one using the edit tool. Read-only commands load nothing. Inline interpreters (`python -c`, `node -e`), `git apply` / `patch`, and commands run through `xargs` or `find -exec` are not covered. On Windsurf and VS Code Copilot, rules load on the edit tools only.
+⁴ On Claude Code, Codex and Antigravity (its `run_command` tool) the rules also load when the agent writes files through the shell — `>` / `>>` redirections, heredocs, `tee`, `sed -i`, `perl -pi`, `cp` / `mv`, `dd of=`, `bash -c '…'` — so an agent that edits from the terminal gets the same rules as one using the edit tool. Read-only commands load nothing. Inline interpreters (`python -c`, `node -e`), `git apply` / `patch`, and commands run through `xargs` or `find -exec` are not covered. On Windsurf and VS Code Copilot, rules load on the edit tools only.
 
 ⁵ On Cursor, a pre-write hook can allow or block an edit but cannot add anything to the agent’s context, so the business and security rules do not reach the agent before a write there — Action Guards still apply, since a deny is a block. Cursor and VS Code Copilot likewise expose no way for a hook to reach the agent when the context window is compacted: on those two the gap analysis runs at session end only.
+
+⁶ Antigravity gives a pre-write hook no channel to the model either, so the rules fetched for an edit are held and delivered at the agent's **next model call** rather than before the write itself — one step later than on the other clients, and still before the agent acts on what it just read.
 
 ---
 
@@ -176,7 +178,7 @@ The activity timeline, a project's guard triggers and a project's diff-scan hist
 | **Period** | Events at or after a start instant, strictly before an end one. |
 | **Projects** | Up to 100 at a time. A project you cannot read is left out. |
 | **Who** | Up to 50 people. |
-| **Agent** | Claude Code, Claude Desktop, Cursor, Codex, Windsurf, Gemini CLI, VS Code — and `unknown` for a session that declared none. |
+| **Agent** | Claude Code, Claude Desktop, Cursor, Codex, Windsurf, Antigravity, Gemini CLI, VS Code — and `unknown` for a session that declared none. |
 | **Event** | A diff scan, a denied action, a warned action, and an MCP call that was refused, accepted while suspicious, passed with a warning, or whose result carried an injection. |
 
 A diff scan carries its branch, the scanners it ran (`sast`, `iac`, `secret`), its findings by severity and who launched it. A guard trigger carries the tool the agent called, the rule that fired, and whether the call was denied or warned. An MCP call event carries the server, the tool, why it was flagged and the agent that made the call.
@@ -390,6 +392,23 @@ Codex 0.131+ requires you to approve each hook from the `/hooks` panel **inside 
 
 ---
 
+## Antigravity setup gotcha
+
+Antigravity opens no sign-in on its own, and `agy` has no login command the installer can run for you. Until you sign in once, the `cybedefend` MCP server answers **Unauthorized** and its tools stay out of reach:
+
+- **In the app or the IDE extension** — open **Customizations → Installed → MCP Servers** and click **Authenticate** next to `cybedefend`.
+- **In the `agy` CLI** — run `/mcp`, pick `cybedefend`, then **Authenticate**.
+
+The app, the IDE extension and the CLI each keep their own sign-in, so authenticate in each one you work in. `vibedefend install` prints these steps under *Next steps*.
+
+<Warning>
+`agy --dangerously-skip-permissions` runs no hook at all, on any event: no rules before a write, no Action Guards, no session review. Use it only where you accept that VibeDefend is off for that run.
+</Warning>
+
+Antigravity keeps its hooks and its MCP servers in one user-global `~/.gemini/config/`, shared by the app, the IDE extension and `agy` and never per project — so one install covers every repository you open, and `vibedefend uninstall` clears it once for all of them. Two limits to know: on Windows, Antigravity cannot run a hook whose path contains a space, and the installer says so and leaves Antigravity unwired rather than wire a command that would fail; and the MCP servers you already have in Antigravity are not put behind the [VibeDefend proxy](/latest/agent-ai-integration/vibedefend-mcp-proxy), so they are not checked against your organization's MCP policy there.
+
+---
+
 ## VibeDefend or the manual MCP setup?
 
 Both connect your agent to the same CybeDefend tenant. The difference is how much of the platform comes along.
@@ -412,6 +431,12 @@ You can also do both: run VibeDefend for the agents it supports and add the raw 
 <Accordion title="Codex shows `Installed N / Active 0`">
 
 Codex gates hooks behind manual approval — see [Codex setup gotcha](#codex-setup-gotcha) above. Open Codex, run `/hooks`, and trust the `cybedefend` entries.
+
+</Accordion>
+
+<Accordion title="Antigravity says the `cybedefend` server is Unauthorized">
+
+Antigravity needs one manual sign-in, per surface — see [Antigravity setup gotcha](#antigravity-setup-gotcha) above. In the app or the IDE extension, open **Customizations → Installed → MCP Servers** and click **Authenticate**; in `agy`, run `/mcp`, pick `cybedefend`, then **Authenticate**.
 
 </Accordion>
 
