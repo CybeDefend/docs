@@ -1,6 +1,6 @@
 ---
 title: "Cybe MCP, connect every AI agent"
-description: "Step-by-step setup for Claude Code, Claude Desktop, Cursor, VS Code Copilot Chat, Windsurf, Antigravity, OpenCode, Continue, Cline, Zed and any MCP-compatible client. Browser-only OAuth, two regional URLs, 18 typed tools."
+description: "Step-by-step setup for Claude Code, Claude Desktop, Cursor, VS Code Copilot Chat, Windsurf, Google Antigravity, OpenCode, Continue, Cline, Zed and any MCP-compatible client. Browser-only OAuth, two regional URLs, 18 typed tools."
 ---
 
 <Note>
@@ -8,7 +8,7 @@ description: "Step-by-step setup for Claude Code, Claude Desktop, Cursor, VS Cod
 </Note>
 
 <Tip>
-**Want this done in one command?** [VibeDefend](/latest/agent-ai-integration/vibedefend) registers this MCP server for Claude Code, Cursor, Codex, Windsurf, VS Code Copilot, Antigravity and OpenCode, and wires the hook layer (rules before each edit, action guards, session-end gap analysis), in a single `npx` install. This page is the manual setup, and the reference for the tools VibeDefend connects on your behalf.
+**Want this done in one command?** [VibeDefend](/latest/agent-ai-integration/vibedefend) registers this MCP server for Claude Code, Cursor, Codex, Windsurf, VS Code Copilot, Google Antigravity and OpenCode, and wires the hook layer (rules before each edit, action guards, session-end gap analysis), in a single `npx` install. This page is the manual setup, and the reference for the tools VibeDefend connects on your behalf.
 </Tip>
 
 ---
@@ -119,9 +119,9 @@ Windsurf's MCP config lives at `~/.codeium/windsurf/mcp_config.json`:
 
 Reload Windsurf. Same OAuth-on-first-call flow.
 
-### Antigravity
+### Google Antigravity
 
-Antigravity's MCP config lives at `~/.gemini/config/mcp_config.json`:
+Antigravity 2.0, the Antigravity IDE and the `agy` CLI share one MCP config file: `~/.gemini/config/mcp_config.json` (Windows: `%USERPROFILE%\.gemini\config\mcp_config.json`).
 
 ```json
 {
@@ -133,7 +133,16 @@ Antigravity's MCP config lives at `~/.gemini/config/mcp_config.json`:
 }
 ```
 
-Restart Antigravity, or reopen its MCP panel, to pick up the change. Antigravity opens a browser to sign in the first time it connects.
+<Warning>
+**Antigravity does not open the sign-in on its own.** Unlike the clients above, it waits for you to start it. Until you do, `cybedefend` shows **Unauthorized** next to an **Authenticate** button and every Cybe tool call fails.
+</Warning>
+
+Sign in once:
+
+- **Antigravity 2.0**: open **Customizations** in the sidebar (in the Antigravity IDE: **Antigravity User Settings → Customizations**), then the **Installed** tab. Under **MCP Servers**, click **Authenticate** next to `cybedefend` (click **Refresh** first if it is not listed yet) and finish the sign-in in your browser. If the browser gives you a code instead of returning to Antigravity, paste it into the field Antigravity shows and click **Submit**. A **Sign out** button replaces **Authenticate** once you are signed in.
+- **`agy` CLI**: run `/mcp`, select `cybedefend`, choose **Authenticate**, then open the URL it prints. The status goes from **Auth Needed** to **Authed**.
+
+The app, the IDE and the CLI each keep their own sign-in: authenticate in each one you use.
 
 ### OpenCode
 
@@ -284,6 +293,12 @@ If your client doesn't forward env vars to MCP servers (Claude Desktop, for inst
 ---
 
 ## Troubleshooting
+
+<Accordion title="Antigravity shows `Unauthorized` next to `cybedefend`">
+
+You have not signed in yet: Antigravity does not open the sign-in on its own. Click **Authenticate** next to `cybedefend` in **Customizations → Installed → MCP Servers**, or run `/mcp` in the `agy` CLI. See [Google Antigravity](#google-antigravity) above.
+
+</Accordion>
 
 <Accordion title="The browser opens but the OAuth page won't load">
 

@@ -53,14 +53,14 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 
 | Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot | Google Antigravity | OpenCode |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Business + Security Rules** *(injected pre-edit)* | ✅ | ✅ | ✅ | ⚠️ writes only | ✅ | ⚠️ next model call⁴,⁵ | ⚠️ with the edit's result⁶ |
-| **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired | ✅ all tools⁴,⁵ | ✅ all tools⁷ |
-| **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ | ✅⁵ | ✅ |
-| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ | ✅⁵ | ✅ (⚠️ not with `opencode run`⁸) |
+| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ sign in by hand⁴ | ✅ |
+| **Business + Security Rules** *(injected pre-edit)* | ✅ | ✅ | ✅ | ⚠️ writes only | ✅ | ⚠️ after the edit⁵ | ⚠️ with the edit's result⁷ |
+| **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired | ✅ all tools⁶ | ✅ all tools⁸ |
+| **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ | ✅ | ✅ |
+| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ (⚠️ not with `opencode run`⁹) |
 | **PreCompact** *(long-session gap analysis)* | ✅ | ✅ | ❌ no event | ❌ no event | ✅ | ❌ no event | ❌ no usable event |
 | **Doctrine backstop** *(per-prompt reminder)* | ✅ | ❌ | ✱ via MCP³ | ❌ | ❌ | ❌ | ✱ via MCP³ |
-| **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 | ≥ 2.0 (app / IDE) | 1.19 (tested)⁹ |
+| **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 | ≥ 2.0 (app / IDE) | 1.19 (tested)¹⁰ |
 
 **Legend** — ✅ supported · ⚠️ supported with caveats · ❌ not exposed by the agent · ✱ alternate mechanism
 
@@ -70,17 +70,19 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 
 ³ Codex and OpenCode follow the doctrine via the MCP server's `Server.instructions` field on each session, which removes the need for a per-prompt reminder hook.
 
-⁴ Antigravity's pre-edit hook can't pass text to the agent, so business and security rules reach it at its next model call, right after the edit. `agy`'s auto-approve flag skips every hook, so in that mode no rule lands and no guard runs.
+⁴ Antigravity does not open the MCP sign-in on its own — see [Antigravity sign-in](#antigravity-sign-in) below.
 
-⁵ On Windows, hooks aren't wired when the home folder path contains a space.
+⁵ Antigravity has no channel to inject context into the model from its PreToolUse hook, so rules fetched before a write are held and delivered at the agent's next model call (its PreInvocation event) — one step later than on the other agents, but before the agent acts on what it just read.
 
-⁶ OpenCode can't hand the agent text before a tool runs, so the rules fetched for an edit arrive with the edit's result: the agent reads them right after the write, before its next step. A call whose tool failed gets none, and the retry fetches them again. When the agent edits through a shell command (its `bash` tool), the rules are fetched the same way.
+⁶ `agy --dangerously-skip-permissions` runs no hook at all, on any event. On Windows, a home path with a space in it is not supported: Antigravity cannot quote the hook command it runs, so the installer refuses to wire a command that could not start.
 
-⁷ OpenCode has no confirmation prompt for a tool call. A guard either blocks the call, in which case the agent reads the reason as the tool's error and the call doesn't run, or lets it through. Guards run on every tool call, MCP tools and sub-agents included. OpenCode's `--pure` option (or `OPENCODE_PURE=1`) runs it without external plugins, so in that mode no rule lands and no guard runs.
+⁷ OpenCode can't hand the agent text before a tool runs, so the rules fetched for an edit arrive with the edit's result: the agent reads them right after the write, before its next step. A call whose tool failed gets none, and the retry fetches them again. When the agent edits through a shell command (its `bash` tool), the rules are fetched the same way.
 
-⁸ `opencode run` ends as soon as its answer is complete, before the end-of-session review can run. The review happens in a session that stays open after the answer.
+⁸ OpenCode has no confirmation prompt for a tool call. A guard either blocks the call, in which case the agent reads the reason as the tool's error and the call doesn't run, or lets it through. Guards run on every tool call, MCP tools and sub-agents included. OpenCode's `--pure` option (or `OPENCODE_PURE=1`) runs it without external plugins, so in that mode no rule lands and no guard runs.
 
-⁹ There is no minimum version: VibeDefend wires the OpenCode it finds (the `opencode` command or the desktop app) and was tested with 1.19. OpenCode loads its plugins when it starts, so restart it after `vibedefend install` and `vibedefend update`.
+⁹ `opencode run` ends as soon as its answer is complete, before the end-of-session review can run. The review happens in a session that stays open after the answer.
+
+¹⁰ There is no minimum version: VibeDefend wires the OpenCode it finds (the `opencode` command or the desktop app) and was tested with 1.19. OpenCode loads its plugins when it starts, so restart it after `vibedefend install` and `vibedefend update`.
 
 ---
 
@@ -191,6 +193,17 @@ Codex 0.131+ requires you to approve each hook from the `/hooks` panel **inside 
 
 ---
 
+## Antigravity sign-in
+
+VibeDefend registers the CybeDefend MCP server in `~/.gemini/config/mcp_config.json`, the file Antigravity 2.0, the Antigravity IDE and the `agy` CLI share. But Antigravity does not open the sign-in on its own, and `agy` has no login command VibeDefend could run for you (as it runs `codex mcp login` for Codex). Until you sign in once, `cybedefend` shows **Unauthorized** next to an **Authenticate** button and every Cybe tool call fails. The installer prints these steps under **Next steps**:
+
+- **Antigravity 2.0**: open **Customizations** in the sidebar (in the Antigravity IDE: **Antigravity User Settings → Customizations**), then the **Installed** tab. Under **MCP Servers**, click **Authenticate** next to `cybedefend` and finish the sign-in in your browser. A **Sign out** button replaces **Authenticate** once you are signed in.
+- **`agy` CLI**: run `/mcp`, select `cybedefend`, choose **Authenticate**, then open the URL it prints.
+
+The app, the IDE and the CLI each keep their own sign-in: authenticate in each one you use. The [Cybe MCP](/latest/agent-ai-integration/cybe-mcp#google-antigravity) page has the details.
+
+---
+
 ## VibeDefend or the manual MCP setup?
 
 Both connect your agent to the same CybeDefend tenant. The difference is how much of the platform comes along.
@@ -213,6 +226,12 @@ You can also do both: run VibeDefend for the agents it supports and add the raw 
 <Accordion title="Codex shows `Installed N / Active 0`">
 
 Codex gates hooks behind manual approval — see [Codex setup gotcha](#codex-setup-gotcha) above. Open Codex, run `/hooks`, and trust the `cybedefend` entries.
+
+</Accordion>
+
+<Accordion title="Antigravity shows `Unauthorized` next to `cybedefend`">
+
+Expected until you sign in once: Antigravity does not open the sign-in on its own. See [Antigravity sign-in](#antigravity-sign-in) above.
 
 </Accordion>
 
