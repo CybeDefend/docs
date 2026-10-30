@@ -84,7 +84,7 @@ OpenCode has no usable event to run the long-session gap analysis before its con
 
 ## V1 and V2 on one machine
 
-Both versions read the same config folder, so the one plugin file and the one `cybedefend` entry serve both. Each keeps its own sign-in, and the `opencode` command on your PATH runs only one of them.
+Both versions read the same config folder, so the one plugin file and the one `cybedefend` entry serve both. Each keeps its own sign-in, and the `opencode` command on your PATH runs only one of them. They share a data folder too, where the order matters: V1 refuses one that V2 created first (`Database is not empty and has no session table`), while V1 then V2 works.
 
 - When `opencode` is V1, `vibedefend install` signs V1 in if it needs to, then lists V2's two steps under **Next steps**: `opencode2 service restart` and `opencode2 mcp auth cybedefend` when `opencode2` is on your PATH (npm and the install script add it, Homebrew does not), otherwise the same commands run with V2's own binary.
 - When `opencode` is V2, `vibedefend install` lists `opencode service restart` and `opencode mcp auth cybedefend` under **Next steps**, and a sign-in V1 already holds stays as it is.
