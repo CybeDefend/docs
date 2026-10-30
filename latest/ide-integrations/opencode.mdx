@@ -15,6 +15,8 @@ OpenCode is an AI coding agent that runs in your terminal or as a desktop app. I
   The installer that wires OpenCode, and every other agent it detects
 </Card>
 
+VibeDefend works with OpenCode V1 (1.18.29 or later) and OpenCode V2 (2.x). To see which one you have, run `opencode --version`: V1 prints a number such as `1.19.4`, V2 a line such as `opencode v2.2.1`. Where the two differ, this page says so.
+
 <Tip>
 Looking for the CybeDefend editor extension (scans, DeepFix, gutter icons)? See the [VS Code Extension](/latest/ide-integrations/vscode) guide.
 </Tip>
@@ -34,16 +36,20 @@ Looking for the CybeDefend editor extension (scans, DeepFix, gutter icons)? See 
     VibeDefend adds a `cybedefend` entry to OpenCode's config (`~/.config/opencode/opencode.json`, or `opencode.jsonc` if you already have one; the folder is `$XDG_CONFIG_HOME/opencode` when `XDG_CONFIG_HOME` is set) and drops its plugin in OpenCode's `plugins` folder.
   </Step>
   <Step title="Sign in to the MCP server">
-    OpenCode does not open your browser on its own to sign in to an MCP server. When the `opencode` command is available and OpenCode is not signed in to CybeDefend yet, `vibedefend install` runs the sign-in for you and your browser opens. Otherwise, run it once yourself:
+    OpenCode does not open your browser on its own to sign in to an MCP server. Both versions sign in with the same command:
 
     ```bash
     opencode mcp auth cybedefend
     ```
 
-    If OpenCode later reports that the server needs authentication, run the command again.
+    - **OpenCode V1**: when the `opencode` command is V1 and it is not signed in to CybeDefend yet, `vibedefend install` runs this for you and your browser opens. Otherwise, run it once yourself.
+    - **OpenCode V2**: `vibedefend install` does not run it and cannot tell whether V2 is signed in, so it lists this step under **Next steps** on every install. Run it once. If V2 is already signed in, it asks before signing in again. Inside OpenCode, `/mcps` opens the same sign-in.
+
+    Moving from V1 to V2? Sign in again: V2 does not use V1's sign-in. If OpenCode later reports that the server needs authentication, run the command again.
   </Step>
   <Step title="Restart OpenCode">
-    OpenCode loads its plugins when it starts. Quit it and start it again after `vibedefend install`, and after every `vibedefend update`.
+    - **OpenCode V1** loads its plugins when it starts. Quit it and start it again after `vibedefend install`, and after every `vibedefend update`.
+    - **OpenCode V2** reloads the plugin on its own. If it does not pick it up, run `opencode service restart`: V2's background service keeps running after you quit OpenCode, so quitting does not restart it.
   </Step>
   <Step title="Link your project">
     Add a `.cybedefend/config.json` with your project UUID at the root of the repository.
@@ -60,15 +66,24 @@ Only want the MCP tools, without the rules and the guards? Follow the [OpenCode 
 
 ## What you get
 
-VibeDefend was tested with OpenCode 1.19. There is no minimum version: it wires the OpenCode it finds, whether the `opencode` command or the desktop app.
+VibeDefend covers OpenCode 1.18.29 and later, and 2.x. It was tested with OpenCode 1.19 and checked against OpenCode 2.2.1. It wires the OpenCode it finds, whether the `opencode` or `opencode2` command or the desktop app.
 
 - **CybeDefend MCP tools**: list findings, open a vulnerability and update its status from the chat.
 - **Business and security rules with each edit**: OpenCode can't hand the agent text before a tool runs, so the rules for an edit arrive with the edit's result. The agent reads them right after the write, before its next step. A call whose tool failed gets none, and the retry fetches them again. Rules are fetched the same way when the agent edits through a shell command.
-- **Action Guards on every tool call**: MCP tools and sub-agents included. OpenCode has no confirmation prompt for a tool call, so a guard either blocks the call (the agent reads the reason as the tool's error, and the call doesn't run) or lets it through. OpenCode's `--pure` option (or `OPENCODE_PURE=1`) runs it without external plugins, so in that mode no rule lands and no guard runs.
+- **Action Guards on every tool call**: MCP tools and sub-agents included. OpenCode has no confirmation prompt for a tool call, so a guard either blocks the call (the agent reads the reason as the tool's error, and the call doesn't run) or lets it through. On V1, OpenCode's `--pure` option (or `OPENCODE_PURE=1`) runs it without external plugins, so in that mode no rule lands and no guard runs. V2 has no such option.
 - **Session start**: the CybeDefend doctrine is loaded and the proposals inbox is opened. The doctrine also reaches the agent through the MCP server's instructions.
-- **Session review**: a gap analysis at the end of a substantive session. It runs in a session that stays open after the answer, not with `opencode run`, which ends as soon as its answer is complete.
+- **Session review**: a gap analysis at the end of a substantive session. `opencode run` ends as soon as its answer is complete, before the review can run. On V1 the review therefore needs a session that stays open after the answer. On V2 it still runs in the background once `opencode run` has exited, and `opencode run` prints none of it.
 
-OpenCode has no usable event to run the long-session gap analysis before its context is compacted, so that moment isn't covered. The full comparison with the other agents is in the [VibeDefend](/latest/agent-ai-integration/vibedefend#supported-agents) page.
+OpenCode has no usable event to run the long-session gap analysis before its context is compacted, so that moment isn't covered. VibeDefend's MCP proxy isn't placed in front of OpenCode's other MCP servers, so your organization's MCP inventory and blocks don't reach them. The full comparison with the other agents is in the [VibeDefend](/latest/agent-ai-integration/vibedefend#supported-agents) page.
+
+---
+
+## V1 and V2 on one machine
+
+Both versions read the same config folder, so the one plugin file and the one `cybedefend` entry serve both. Each keeps its own sign-in, and the `opencode` command on your PATH runs only one of them.
+
+- When `opencode` is V1, `vibedefend install` signs V1 in if it needs to, then lists V2's sign-in under **Next steps**: `opencode2 mcp auth cybedefend` when `opencode2` is on your PATH (npm and the install script add it, Homebrew does not), otherwise `opencode mcp auth cybedefend` run with V2's own binary.
+- When `opencode` is V2, `vibedefend install` lists `opencode mcp auth cybedefend` under **Next steps**, and a sign-in V1 already holds stays as it is.
 
 ---
 
@@ -89,6 +104,8 @@ The sign-in OpenCode holds for the server is OpenCode's own and stays. To forget
 ```bash
 opencode mcp logout cybedefend
 ```
+
+On OpenCode V2, run this before `vibedefend uninstall`: once the `cybedefend` entry is gone, V2 answers `MCP server not found`.
 
 ---
 

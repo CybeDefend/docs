@@ -53,14 +53,14 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 
 | Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot | Google Antigravity | OpenCode |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ sign in by hand⁴ | ✅ |
+| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ sign in by hand⁴ | ✅ V2: sign in by hand¹⁰ |
 | **Business + Security Rules** *(injected pre-edit)* | ✅ | ✅ | ✅ | ⚠️ writes only | ✅ | ⚠️ after the edit⁵ | ⚠️ with the edit's result⁷ |
 | **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired | ✅ all tools⁶ | ✅ all tools⁸ |
 | **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ | ✅ | ✅ |
-| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ (⚠️ not with `opencode run`⁹) |
+| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ (⚠️ `opencode run`⁹) |
 | **PreCompact** *(long-session gap analysis)* | ✅ | ✅ | ❌ no event | ❌ no event | ✅ | ❌ no event | ❌ no usable event |
 | **Doctrine backstop** *(per-prompt reminder)* | ✅ | ❌ | ✱ via MCP³ | ❌ | ❌ | ❌ | ✱ via MCP³ |
-| **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 | ≥ 2.0 (app / IDE) | 1.19 (tested)¹⁰ |
+| **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 | ≥ 2.0 (app / IDE) | 1.18.29+ and 2.x¹⁰ |
 
 **Legend** — ✅ supported · ⚠️ supported with caveats · ❌ not exposed by the agent · ✱ alternate mechanism
 
@@ -76,13 +76,13 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 
 ⁶ `agy --dangerously-skip-permissions` runs no hook at all, on any event. On Windows, a home path with a space in it is not supported: Antigravity cannot quote the hook command it runs, so the installer refuses to wire a command that could not start.
 
-⁷ OpenCode can't hand the agent text before a tool runs, so the rules fetched for an edit arrive with the edit's result: the agent reads them right after the write, before its next step. A call whose tool failed gets none, and the retry fetches them again. When the agent edits through a shell command (its `bash` tool), the rules are fetched the same way.
+⁷ OpenCode can't hand the agent text before a tool runs, so the rules fetched for an edit arrive with the edit's result: the agent reads them right after the write, before its next step. A call whose tool failed gets none, and the retry fetches them again. When the agent edits through a shell command (its `bash` tool, `shell` on V2), the rules are fetched the same way.
 
-⁸ OpenCode has no confirmation prompt for a tool call. A guard either blocks the call, in which case the agent reads the reason as the tool's error and the call doesn't run, or lets it through. Guards run on every tool call, MCP tools and sub-agents included. OpenCode's `--pure` option (or `OPENCODE_PURE=1`) runs it without external plugins, so in that mode no rule lands and no guard runs.
+⁸ OpenCode has no confirmation prompt for a tool call. A guard either blocks the call, in which case the agent reads the reason as the tool's error and the call doesn't run, or lets it through. Guards run on every tool call, MCP tools and sub-agents included. On V1, OpenCode's `--pure` option (or `OPENCODE_PURE=1`) runs it without external plugins, so in that mode no rule lands and no guard runs. V2 has no such option. VibeDefend's MCP proxy isn't placed in front of OpenCode's other MCP servers, so your organization's MCP inventory and blocks don't reach them.
 
-⁹ `opencode run` ends as soon as its answer is complete, before the end-of-session review can run. The review happens in a session that stays open after the answer.
+⁹ `opencode run` ends as soon as its answer is complete, before the end-of-session review can run. On V1 the review therefore needs a session that stays open after the answer. On V2 it still runs in the background once `opencode run` has exited, and `opencode run` prints none of it.
 
-¹⁰ There is no minimum version: VibeDefend wires the OpenCode it finds (the `opencode` command or the desktop app) and was tested with 1.19. OpenCode loads its plugins when it starts, so restart it after `vibedefend install` and `vibedefend update`.
+¹⁰ VibeDefend wires the OpenCode it finds (the `opencode` or `opencode2` command, or the desktop app). It was tested with OpenCode 1.19 and checked against OpenCode 2.2.1. After `vibedefend install` and `vibedefend update`, restart V1, which loads its plugins when it starts; V2 reloads them on its own, and `opencode service restart` covers the case where it does not. V2 does not use V1's sign-in, and `vibedefend install` cannot tell whether V2 is signed in: it lists `opencode mcp auth cybedefend` under **Next steps** on every install. See [OpenCode](/latest/ide-integrations/opencode).
 
 ---
 
@@ -249,13 +249,13 @@ Expected, once. Codex's MCP-scoped token (`aud: cybedefend-mcp`) has limited Per
 
 <Accordion title="OpenCode shows no rules and no guards after install">
 
-OpenCode loads its plugins when it starts. Quit OpenCode and start it again, then run `vibedefend status` to confirm it is wired.
+OpenCode V1 loads its plugins when it starts: quit OpenCode and start it again. OpenCode V2 reloads them on its own: if it did not, run `opencode service restart`, since quitting OpenCode leaves V2's background service running. Then run `vibedefend status` to confirm it is wired.
 
 </Accordion>
 
 <Accordion title="OpenCode says the CybeDefend server needs authentication">
 
-OpenCode doesn't open your browser on its own to sign in to an MCP server. Run `opencode mcp auth cybedefend` once: your browser opens on the CybeDefend sign-in page. If OpenCode reports again that the server needs authentication, run the command again. `vibedefend install` runs it for you when the `opencode` command is available and OpenCode isn't signed in to CybeDefend yet.
+OpenCode doesn't open your browser on its own to sign in to an MCP server. Run `opencode mcp auth cybedefend` once: your browser opens on the CybeDefend sign-in page. If OpenCode reports again that the server needs authentication, run the command again. `vibedefend install` runs it for you when the `opencode` command is V1 and isn't signed in to CybeDefend yet. It never runs it on V2, which doesn't use V1's sign-in: after moving from V1, sign in again. If V2 answers `MCP server not found`, give it a few seconds to load the new config and run the command again.
 
 </Accordion>
 

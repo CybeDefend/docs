@@ -146,7 +146,7 @@ The app, the IDE and the CLI each keep their own sign-in: authenticate in each o
 
 ### OpenCode
 
-OpenCode's MCP config lives at `~/.config/opencode/opencode.json` (or `opencode.jsonc` if you already have one; the folder is `$XDG_CONFIG_HOME/opencode` when `XDG_CONFIG_HOME` is set). Add the `cybedefend` entry, merging it into the file if it exists:
+OpenCode V1 and V2 share one MCP config: `~/.config/opencode/opencode.json` (or `opencode.jsonc` if you already have one; the folder is `$XDG_CONFIG_HOME/opencode` when `XDG_CONFIG_HOME` is set). Add the `cybedefend` entry, merging it into the file if it exists:
 
 ```json
 {
@@ -167,7 +167,9 @@ OpenCode does not open your browser on its own. Sign in once with:
 opencode mcp auth cybedefend
 ```
 
-If OpenCode later reports that the server needs authentication, run the command again. Restart OpenCode to pick up the change. `vibedefend install` writes this entry and runs the sign-in for you when the `opencode` command is available.
+If OpenCode later reports that the server needs authentication, run the command again. V1 and V2 each keep their own sign-in: after moving from V1 to V2, sign in again.
+
+Restart OpenCode V1 to pick up the change; OpenCode V2 reloads its config on its own. `vibedefend install` writes this entry for both versions, and runs the sign-in for you when the `opencode` command is V1. On V2 it lists the command under **Next steps**. See [OpenCode](/latest/ide-integrations/opencode).
 
 ### Continue · Cline · Zed · any other MCP client
 
