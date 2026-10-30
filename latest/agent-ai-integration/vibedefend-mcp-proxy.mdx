@@ -235,10 +235,22 @@ The same calls land in the [VibeDefend activity timeline](/latest/agent-ai-integ
 
 ## Blocking a server for the whole organization
 
-A block refuses a server on every member's machine, **whatever the `mode`** and
-whatever the developer's own `allow`. Creators, administrators and managers add one —
-the `manage_integration` permission. It reaches sessions that are already open within
-**15 minutes**, and so does lifting it.
+A block refuses a server on every member's machine for the calls that go through
+VibeDefend, **whatever the `mode`** and whatever the developer's own `allow`.
+Creators, administrators and managers add one — the `manage_integration` permission.
+It reaches sessions that are already open within **15 minutes**, and so does lifting it.
+
+<Warning>
+A block reaches a server only where VibeDefend is in front of it: an entry it wrapped
+in a supported client's own config, on that member's machine. These never go through
+the proxy, so a block does not refuse them:
+
+- connectors added from a claude.ai account — block those in that account's
+  organization settings;
+- MCP servers that come with a Claude Code plugin;
+- the servers declared in a project's `.mcp.json`, a versioned file shared with every
+  collaborator, which VibeDefend never rewrites.
+</Warning>
 
 Block a server from its row on the **MCP servers** page, or add one by hand under
 **Settings → VibeDefend → Blocked MCP servers**:
