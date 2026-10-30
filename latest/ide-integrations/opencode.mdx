@@ -35,6 +35,14 @@ Looking for the CybeDefend editor extension (scans, DeepFix, gutter icons)? See 
 
     VibeDefend adds a `cybedefend` entry to OpenCode's config (`~/.config/opencode/opencode.json`, or `opencode.jsonc` if you already have one; the folder is `$XDG_CONFIG_HOME/opencode` when `XDG_CONFIG_HOME` is set) and drops its plugin in OpenCode's `plugins` folder.
   </Step>
+  <Step title="Restart OpenCode">
+    - **OpenCode V1** loads its plugins when it starts. Quit it and start it again after `vibedefend install`, and after every `vibedefend update`.
+    - **OpenCode V2**: run `opencode service restart` after `vibedefend install`, and after every `vibedefend update`. V2's background service keeps running after you quit OpenCode, and it does not load a plugin written while it runs: after a first install no guard is active until you restart it, and after an update it goes on running the previous plugin. The restart also closes the terminals that service keeps open.
+
+    ```bash
+    opencode service restart
+    ```
+  </Step>
   <Step title="Sign in to the MCP server">
     OpenCode does not open your browser on its own to sign in to an MCP server. Both versions sign in with the same command:
 
@@ -43,13 +51,9 @@ Looking for the CybeDefend editor extension (scans, DeepFix, gutter icons)? See 
     ```
 
     - **OpenCode V1**: when the `opencode` command is V1 and it is not signed in to CybeDefend yet, `vibedefend install` runs this for you and your browser opens. Otherwise, run it once yourself.
-    - **OpenCode V2**: `vibedefend install` does not run it and cannot tell whether V2 is signed in, so it lists this step under **Next steps** on every install. Run it once. If V2 is already signed in, it asks before signing in again. Inside OpenCode, `/mcps` opens the same sign-in.
+    - **OpenCode V2**: `vibedefend install` does not run it and cannot tell whether V2 is signed in, so it lists this step under **Next steps** on every install, after the restart. Run it once. If V2 is already signed in, it asks before signing in again. Inside OpenCode, `/mcps` opens the same sign-in.
 
     Moving from V1 to V2? Sign in again: V2 does not use V1's sign-in. If OpenCode later reports that the server needs authentication, run the command again.
-  </Step>
-  <Step title="Restart OpenCode">
-    - **OpenCode V1** loads its plugins when it starts. Quit it and start it again after `vibedefend install`, and after every `vibedefend update`.
-    - **OpenCode V2** reloads the plugin on its own. If it does not pick it up, run `opencode service restart`: V2's background service keeps running after you quit OpenCode, so quitting does not restart it.
   </Step>
   <Step title="Link your project">
     Add a `.cybedefend/config.json` with your project UUID at the root of the repository.
@@ -82,8 +86,10 @@ OpenCode has no usable event to run the long-session gap analysis before its con
 
 Both versions read the same config folder, so the one plugin file and the one `cybedefend` entry serve both. Each keeps its own sign-in, and the `opencode` command on your PATH runs only one of them.
 
-- When `opencode` is V1, `vibedefend install` signs V1 in if it needs to, then lists V2's sign-in under **Next steps**: `opencode2 mcp auth cybedefend` when `opencode2` is on your PATH (npm and the install script add it, Homebrew does not), otherwise `opencode mcp auth cybedefend` run with V2's own binary.
-- When `opencode` is V2, `vibedefend install` lists `opencode mcp auth cybedefend` under **Next steps**, and a sign-in V1 already holds stays as it is.
+- When `opencode` is V1, `vibedefend install` signs V1 in if it needs to, then lists V2's two steps under **Next steps**: `opencode2 service restart` and `opencode2 mcp auth cybedefend` when `opencode2` is on your PATH (npm and the install script add it, Homebrew does not), otherwise the same commands run with V2's own binary.
+- When `opencode` is V2, `vibedefend install` lists `opencode service restart` and `opencode mcp auth cybedefend` under **Next steps**, and a sign-in V1 already holds stays as it is.
+
+VibeDefend can also update itself in the background, which rewrites the plugin without printing anything. A running V2 goes on using the plugin it loaded, with its guards on, until the next `opencode service restart`.
 
 ---
 

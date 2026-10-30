@@ -169,7 +169,7 @@ opencode mcp auth cybedefend
 
 If OpenCode later reports that the server needs authentication, run the command again. V1 and V2 each keep their own sign-in: after moving from V1 to V2, sign in again.
 
-Restart OpenCode V1 to pick up the change; OpenCode V2 reloads its config on its own. `vibedefend install` writes this entry for both versions, and runs the sign-in for you when the `opencode` command is V1. On V2 it lists the command under **Next steps**. See [OpenCode](/latest/ide-integrations/opencode).
+Restart OpenCode V1 to pick up the change; a running OpenCode V2 reads this entry on its own within a few seconds. `vibedefend install` writes this entry for both versions, and runs the sign-in for you when the `opencode` command is V1. On V2 it lists two steps under **Next steps**: `opencode service restart`, which the plugin it adds needs, then this sign-in. See [OpenCode](/latest/ide-integrations/opencode).
 
 ### Continue · Cline · Zed · any other MCP client
 

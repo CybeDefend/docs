@@ -82,7 +82,7 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 
 ⁹ `opencode run` ends as soon as its answer is complete, before the end-of-session review can run. On V1 the review therefore needs a session that stays open after the answer. On V2 it still runs in the background once `opencode run` has exited, and `opencode run` prints none of it.
 
-¹⁰ VibeDefend wires the OpenCode it finds (the `opencode` or `opencode2` command, or the desktop app). It was tested with OpenCode 1.19 and checked against OpenCode 2.2.1. After `vibedefend install` and `vibedefend update`, restart V1, which loads its plugins when it starts; V2 reloads them on its own, and `opencode service restart` covers the case where it does not. V2 does not use V1's sign-in, and `vibedefend install` cannot tell whether V2 is signed in: it lists `opencode mcp auth cybedefend` under **Next steps** on every install. See [OpenCode](/latest/ide-integrations/opencode).
+¹⁰ VibeDefend wires the OpenCode it finds (the `opencode` or `opencode2` command, or the desktop app). It was tested with OpenCode 1.19 and checked against OpenCode 2.2.1. After `vibedefend install` and `vibedefend update`, restart V1, which loads its plugins when it starts, and run `opencode service restart` on V2, whose running service does not load a plugin written while it runs: after a first install, no guard is active until then. V2 does not use V1's sign-in, and `vibedefend install` cannot tell whether V2 is signed in: it lists `opencode service restart`, then `opencode mcp auth cybedefend`, under **Next steps** on every install. See [OpenCode](/latest/ide-integrations/opencode).
 
 ---
 
@@ -249,13 +249,13 @@ Expected, once. Codex's MCP-scoped token (`aud: cybedefend-mcp`) has limited Per
 
 <Accordion title="OpenCode shows no rules and no guards after install">
 
-OpenCode V1 loads its plugins when it starts: quit OpenCode and start it again. OpenCode V2 reloads them on its own: if it did not, run `opencode service restart`, since quitting OpenCode leaves V2's background service running. Then run `vibedefend status` to confirm it is wired.
+OpenCode V1 loads its plugins when it starts: quit OpenCode and start it again. On OpenCode V2, run `opencode service restart`: its background service keeps running after you quit OpenCode, and it does not load a plugin written while it runs. Then run `vibedefend status` to confirm it is wired.
 
 </Accordion>
 
 <Accordion title="OpenCode says the CybeDefend server needs authentication">
 
-OpenCode doesn't open your browser on its own to sign in to an MCP server. Run `opencode mcp auth cybedefend` once: your browser opens on the CybeDefend sign-in page. If OpenCode reports again that the server needs authentication, run the command again. `vibedefend install` runs it for you when the `opencode` command is V1 and isn't signed in to CybeDefend yet. It never runs it on V2, which doesn't use V1's sign-in: after moving from V1, sign in again. If V2 answers `MCP server not found`, give it a few seconds to load the new config and run the command again.
+OpenCode doesn't open your browser on its own to sign in to an MCP server. Run `opencode mcp auth cybedefend` once: your browser opens on the CybeDefend sign-in page. If OpenCode reports again that the server needs authentication, run the command again. `vibedefend install` runs it for you when the `opencode` command is V1 and isn't signed in to CybeDefend yet. It never runs it on V2, which doesn't use V1's sign-in: after moving from V1, sign in again. If V2 answers `MCP server not found` right after an install, run `opencode service restart`, then the command again.
 
 </Accordion>
 
