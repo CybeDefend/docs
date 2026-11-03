@@ -159,6 +159,22 @@ projects; a further request answers `429 Too Many Requests` until one of them
 finishes.
 </Note>
 
+### What the Pull Request Changes
+
+The pull request edits the dependency manifest only — `package.json`,
+`pyproject.toml`, `go.mod`, `composer.json` and their equivalents. Your lock
+file is not regenerated.
+
+<Warning>
+**Refresh the lock file before you merge.** The pull request carries a **Lock
+Files** section that lists, for each manifest it edited whose ecosystem keeps a
+lock file, the command that brings the lock file in line with the new version —
+`npm install --package-lock-only`, `poetry lock`, `go mod tidy`,
+`dotnet restore --force-evaluate` and so on. Run it in the folder of that
+manifest. Merging the manifest change on its own leaves your build resolving
+the vulnerable version from the lock file.
+</Warning>
+
 ### Repository support
 
 SCA AutoFix clones the repository linked to the project to resolve the
