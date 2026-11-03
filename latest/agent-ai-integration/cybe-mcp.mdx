@@ -1,6 +1,6 @@
 ---
 title: "Cybe MCP, connect every AI agent"
-description: "Step-by-step setup for Claude Code, Claude Desktop, Cursor, VS Code Copilot Chat, Windsurf, Google Antigravity, Continue, Cline, Zed and any MCP-compatible client. Browser-only OAuth, two regional URLs, 18 typed tools."
+description: "Step-by-step setup for Claude Code, Claude Desktop, Cursor, VS Code Copilot Chat, Windsurf, Google Antigravity, OpenCode, Continue, Cline, Zed and any MCP-compatible client. Browser-only OAuth, two regional URLs, 18 typed tools."
 ---
 
 <Note>
@@ -8,7 +8,7 @@ description: "Step-by-step setup for Claude Code, Claude Desktop, Cursor, VS Cod
 </Note>
 
 <Tip>
-**Want this done in one command?** [VibeDefend](/latest/agent-ai-integration/vibedefend) registers this MCP server for Claude Code, Cursor, Codex, Windsurf, VS Code Copilot and Google Antigravity — and wires the hook layer (rules before each edit, action guards, session-end gap analysis) — in a single `npx` install. This page is the manual setup, and the reference for the tools VibeDefend connects on your behalf.
+**Want this done in one command?** [VibeDefend](/latest/agent-ai-integration/vibedefend) registers this MCP server for Claude Code, Cursor, Codex, Windsurf, VS Code Copilot, Google Antigravity and OpenCode, and wires the hook layer (rules before each edit, action guards, session-end gap analysis), in a single `npx` install. This page is the manual setup, and the reference for the tools VibeDefend connects on your behalf.
 </Tip>
 
 ---
@@ -143,6 +143,33 @@ Sign in once:
 - **`agy` CLI**: run `/mcp`, select `cybedefend`, choose **Authenticate**, then open the URL it prints. The status goes from **Auth Needed** to **Authed**.
 
 The app, the IDE and the CLI each keep their own sign-in: authenticate in each one you use.
+
+### OpenCode
+
+OpenCode V1 and V2 share one MCP config: `~/.config/opencode/opencode.json` (or `opencode.jsonc` if you already have one; the folder is `$XDG_CONFIG_HOME/opencode` when `XDG_CONFIG_HOME` is set). Add the `cybedefend` entry, merging it into the file if it exists:
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "cybedefend": {
+      "type": "remote",
+      "url": "https://mcp-eu.cybedefend.com/mcp",
+      "enabled": true
+    }
+  }
+}
+```
+
+OpenCode does not open your browser on its own. Sign in once with:
+
+```bash
+opencode mcp auth cybedefend
+```
+
+If OpenCode later reports that the server needs authentication, run the command again. V1 and V2 each keep their own sign-in: after moving from V1 to V2, sign in again.
+
+Restart OpenCode V1 to pick up the change; a running OpenCode V2 reads this entry on its own within a few seconds. `vibedefend install` writes this entry for both versions, and runs the sign-in for you when the `opencode` command is V1. On V2 it lists two steps under **Next steps**: `opencode service restart`, which the plugin it adds needs, then this sign-in. See [OpenCode](/latest/ide-integrations/opencode).
 
 ### Continue · Cline · Zed · any other MCP client
 

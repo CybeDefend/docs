@@ -1,6 +1,6 @@
 ---
 title: "VibeDefend, one command to wire every agent"
-description: "VibeDefend is the one-shot installer that connects Claude Code, Cursor, OpenAI Codex, Windsurf, VS Code Copilot and Google Antigravity to CybeDefend. It registers the MCP server and the hook layer in a single command — business and security rules land in the agent's context before each edit, dangerous actions are hard-blocked, and a gap analysis catches undocumented rules at the end of substantive sessions. npx one-liner, macOS / Linux / Windows, Node ≥ 18.17."
+description: "VibeDefend is the one-shot installer that connects Claude Code, Cursor, OpenAI Codex, Windsurf, VS Code Copilot, Google Antigravity and OpenCode to CybeDefend. It registers the MCP server and the hook layer in a single command: business and security rules land in the agent's context before each edit, dangerous actions are hard-blocked, and a gap analysis catches undocumented rules at the end of substantive sessions. npx one-liner, macOS / Linux / Windows, Node ≥ 18.17."
 ---
 
 <Note>
@@ -49,18 +49,18 @@ The MCP server is what the hooks call under the hood. VibeDefend installs both, 
 
 ## Supported agents
 
-VibeDefend auto-detects and wires whichever of these you have installed. Unchecked agents stay untouched — re-run `vibedefend install` any time to toggle one on or off.
+VibeDefend auto-detects and wires whichever of these you have installed. Unchecked agents stay untouched. Re-run `vibedefend install` any time to add an agent: it wires the agents you tick and leaves the others as they are, so unticking an agent there doesn't remove it. To remove VibeDefend, run `vibedefend uninstall` (see [Commands](#commands)), which removes it from every agent it wired, then `vibedefend install` again for the agents you keep.
 
-| Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot | Google Antigravity |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ sign in by hand⁴ |
-| **Business + Security Rules** *(injected pre-edit)* | ✅ | ✅ | ✅ | ⚠️ writes only | ✅ | ⚠️ after the edit⁵ |
-| **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired | ✅ all tools⁶ |
-| **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ | ✅ |
-| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **PreCompact** *(long-session gap analysis)* | ✅ | ✅ | ❌ no event | ❌ no event | ✅ | ❌ no event |
-| **Doctrine backstop** *(per-prompt reminder)* | ✅ | ❌ | ✱ via MCP³ | ❌ | ❌ | ❌ |
-| **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 | ≥ 2.0 (app / IDE) |
+| Capability | Claude Code | Cursor | OpenAI Codex | Windsurf | VS Code Copilot | Google Antigravity | OpenCode |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ sign in by hand⁴ | ✅ V2: sign in by hand¹⁰ |
+| **Business + Security Rules** *(injected pre-edit)* | ✅ | ✅ | ✅ | ⚠️ writes only | ✅ | ⚠️ after the edit⁵ | ⚠️ with the edit's result⁷ |
+| **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes + MCP fallback¹ | ❌ not yet wired | ✅ all tools⁶ | ✅ all tools⁸ |
+| **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ | ✅ | ✅ |
+| **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ (⚠️ `opencode run`⁹) |
+| **PreCompact** *(long-session gap analysis)* | ✅ | ✅ | ❌ no event | ❌ no event | ✅ | ❌ no event | ❌ no usable event |
+| **Doctrine backstop** *(per-prompt reminder)* | ✅ | ❌ | ✱ via MCP³ | ❌ | ❌ | ❌ | ✱ via MCP³ |
+| **Min version** | latest | ≥ 1.7 | latest | latest | ≥ 1.110 | ≥ 2.0 (app / IDE) | 1.18.29+ and 2.x¹⁰ |
 
 **Legend** — ✅ supported · ⚠️ supported with caveats · ❌ not exposed by the agent · ✱ alternate mechanism
 
@@ -68,13 +68,21 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 
 ² Windsurf has no native SessionStart event. VibeDefend wires `pre_user_prompt`, which fires on every turn. The hook is idempotent and cheap (one GET to the proposals endpoint, returns "0 pending" once the inbox is empty), so the per-turn cost is negligible.
 
-³ Codex follows the doctrine via the MCP server's `Server.instructions` field on each session, which removes the need for a per-prompt reminder hook.
+³ Codex and OpenCode follow the doctrine via the MCP server's `Server.instructions` field on each session, which removes the need for a per-prompt reminder hook.
 
 ⁴ Antigravity does not open the MCP sign-in on its own — see [Antigravity sign-in](#antigravity-sign-in) below.
 
 ⁵ Antigravity has no channel to inject context into the model from its PreToolUse hook, so rules fetched before a write are held and delivered at the agent's next model call (its PreInvocation event) — one step later than on the other agents, but before the agent acts on what it just read.
 
 ⁶ `agy --dangerously-skip-permissions` runs no hook at all, on any event. On Windows, a home path with a space in it is not supported: Antigravity cannot quote the hook command it runs, so the installer refuses to wire a command that could not start.
+
+⁷ OpenCode can't hand the agent text before a tool runs, so the rules fetched for an edit arrive with the edit's result: the agent reads them right after the write, before its next step. A call whose tool failed gets none, and the retry fetches them again. When the agent edits through a shell command (its `bash` tool, `shell` on V2), the rules are fetched the same way.
+
+⁸ OpenCode has no confirmation prompt for a tool call. A guard either blocks the call, in which case the agent reads the reason as the tool's error and the call doesn't run, or lets it through. Guards run on every tool call, MCP tools and sub-agents included. On V1, OpenCode's `--pure` option (or `OPENCODE_PURE=1`) runs it without external plugins, so in that mode no rule lands and no guard runs. V2 has no such option. VibeDefend's MCP proxy isn't placed in front of OpenCode's other MCP servers, so your organization's MCP inventory and blocks don't reach them.
+
+⁹ `opencode run` ends as soon as its answer is complete, before the end-of-session review can run. On V1 the review therefore needs a session that stays open after the answer. On V2 it still runs in the background once `opencode run` has exited, and `opencode run` prints none of it.
+
+¹⁰ VibeDefend wires the OpenCode it finds (the `opencode` or `opencode2` command, or the desktop app). It was tested with OpenCode 1.19 and checked against OpenCode 2.2.1. After `vibedefend install` and `vibedefend update`, restart V1, which loads its plugins when it starts, and run `opencode service restart` on V2, whose running service does not load a plugin written while it runs: after a first install, no guard is active until then. V2 does not use V1's sign-in, and `vibedefend install` cannot tell whether V2 is signed in: it lists `opencode service restart`, then `opencode mcp auth cybedefend`, under **Next steps** on every install. See [OpenCode](/latest/ide-integrations/opencode).
 
 ---
 
@@ -129,10 +137,11 @@ vibedefend update --self      Upgrade only the CLI binary (don't touch hooks)
 vibedefend status             Read-only install report (region, agents, API check)
 vibedefend doctor             Diagnose the install and repair what's fixable
 vibedefend login              (Re-)authenticate against the CybeDefend API
+vibedefend uninstall          Remove VibeDefend from every agent it wired
 vibedefend --help             Full help
 ```
 
-`vibedefend doctor` takes `--check` for a dry-run (report only, change nothing) and `--yes` to apply every fix without the confirmation prompt. `vibedefend login` takes `--force` to re-authenticate even when credentials are already stored.
+`vibedefend doctor` takes `--check` for a dry-run (report only, change nothing) and `--yes` to apply every fix without the confirmation prompt. `vibedefend login` takes `--force` to re-authenticate even when credentials are already stored. `vibedefend uninstall` asks you to confirm first (`--yes` skips the question); it also signs you out of VibeDefend and deletes the `~/.cybedefend/` folder, keeping your own `regions.json`.
 
 ---
 
@@ -238,6 +247,18 @@ Expected, once. Codex's MCP-scoped token (`aud: cybedefend-mcp`) has limited Per
 
 </Accordion>
 
+<Accordion title="OpenCode shows no rules and no guards after install">
+
+OpenCode V1 loads its plugins when it starts: quit OpenCode and start it again. On OpenCode V2, run `opencode service restart`: its background service keeps running after you quit OpenCode, and it does not load a plugin written while it runs. Then run `vibedefend status` to confirm it is wired.
+
+</Accordion>
+
+<Accordion title="OpenCode says the CybeDefend server needs authentication">
+
+OpenCode doesn't open your browser on its own to sign in to an MCP server. Run `opencode mcp auth cybedefend` once: your browser opens on the CybeDefend sign-in page. If OpenCode reports again that the server needs authentication, run the command again. `vibedefend install` runs it for you when the `opencode` command is V1 and isn't signed in to CybeDefend yet. It never runs it on V2, which doesn't use V1's sign-in: after moving from V1, sign in again. If V2 answers `MCP server not found` right after an install, run `opencode service restart`, then the command again.
+
+</Accordion>
+
 <Accordion title="I pin versions / run in a locked-down environment">
 
 Decline the "automatic background updates" prompt at install (or it's disabled automatically when VibeDefend can't self-resolve a global install). You then get a one-line nudge when a new version ships and update on your own schedule with `vibedefend update`.
@@ -247,6 +268,8 @@ Decline the "automatic background updates" prompt at install (or it's disabled a
 <Accordion title="I'm on Windows">
 
 Fully supported — no Git Bash or WSL required. The hook runner is a single bundled Node script that runs the same way on Linux, macOS and Windows.
+
+One exception: Antigravity's hooks aren't wired when your Windows home folder path contains a space.
 
 </Accordion>
 
