@@ -197,7 +197,8 @@
               {
                 "group": "Issue Tracker Integrations",
                 "pages": [
-                  "/latest/issue-tracker-integrations/jira"
+                  "/latest/issue-tracker-integrations/jira",
+                  "/latest/issue-tracker-integrations/linear"
                 ]
               },
               {

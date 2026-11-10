@@ -1,0 +1,149 @@
+---
+title: "Linear"
+description: "Connect a Linear workspace to file CybeDefend findings as tickets, follow their state, and close them when the findings are handled."
+---
+
+The Linear integration turns CybeDefend findings — SAST, SCA, IaC, Container, Secret and CI/CD — into Linear tickets, either for occurrences you pick or automatically after every scan. What happens to a ticket in Linear is reflected back in CybeDefend, and a ticket CybeDefend opened is closed once every finding attached to it is handled.
+
+<Note>
+A Linear workspace belongs to one CybeDefend organization. If it is connected elsewhere, the install is refused with *"This Linear workspace is already connected to another organization"* — disconnect it there first, or use a different workspace.
+</Note>
+
+---
+
+## Prerequisites
+
+<Steps>
+  <Step title="A Linear account with access to the workspace">
+    You authorize the CybeDefend app for the workspace tickets are filed in. It asks for Linear's `read` and `write` scopes.
+  </Step>
+  <Step title="CybeDefend permission">
+    You must hold the `manage_integration` permission on the organization (Owner or Admin).
+  </Step>
+</Steps>
+
+---
+
+## 1. Connect your workspace
+
+<Steps>
+  <Step title="Open organization integrations">
+    Go to **Organization Settings → Integrations** and select **Linear**.
+  </Step>
+  <Step title="Authorize the app">
+    Click **Connect to Linear** and approve access in Linear. The installation link is valid for **10 minutes** and only for the account that started it; if it lapses, start again from CybeDefend rather than reloading the Linear page.
+  </Step>
+  <Step title="Pick the team in each project">
+    The connection is organization-wide. Each CybeDefend project then chooses its own Linear destination — see below.
+  </Step>
+</Steps>
+
+If the workspace later revokes the app, the integration reports **Reconnection required**. Your project settings and ticket links are kept: **Reconnect Linear** restores ticket creation and updates.
+
+<Warning>
+Connecting a **different** workspace to the same organization replaces the current one. Its per-project settings and every finding ↔ ticket link are deleted, and its authorization is revoked. Tickets already in Linear are not touched.
+</Warning>
+
+---
+
+## 2. Point a project at a Linear team
+
+From the project, go to **Settings → Integrations → Linear**.
+
+| Setting | Required | What it does |
+| --- | --- | --- |
+| **Team** | Yes | The Linear team tickets are created in. Nothing is filed without one. |
+| **Project** | No | A Linear project the tickets are attached to. |
+| **Labels** | No | Up to **20** labels added to every ticket. |
+| **Allowed branches** | No | Up to **50** branch names. A finding detected on any other branch is skipped. Leave the list empty to allow every branch. |
+| **Auto-create tickets after scans** | No | Off by default. |
+
+A ticket CybeDefend creates starts in the team's default workflow state, or in its first backlog state — never in **Triage**, so your triage queue stays yours.
+
+---
+
+## 3. File tickets for findings
+
+Each group in the vulnerability lists carries a **Ticket tracking** panel. Choose **Linear** as the ticket tool, then **Create Linear ticket**. The form offers the team, the Linear project, labels, an assignee and a priority, each defaulting to the project's configuration.
+
+What a ticket covers depends on the project's grouping:
+
+| Grouping | One ticket per |
+| --- | --- |
+| **Per vulnerability type** | rule or CVE, with all its occurrences — the default |
+| **Per vulnerability** | individual detection |
+| **Per file** | file, per scanner |
+
+### What the ticket holds
+
+- A title prefixed with `[CybeDefend]`.
+- Severity, CVSS, CWE and OWASP tags, the location, and — for a grouped ticket — up to **50** occurrences followed by how many more there are.
+- A link back to the matching view in CybeDefend, also added to the ticket as an attachment.
+- A priority mapped from the severity: Critical → **Urgent**, High → **High**, Medium → **Medium**, Low → **Low**, anything else → **None**.
+
+<Note>
+Ticket text is built from the finding's metadata, never from your source code — see [CybeDefend Never Stores Your Code](/latest/plateform-overview/security-privacy/never-stores-your-code).
+</Note>
+
+A group that already has an open ticket, and occurrences already linked to an open ticket, are skipped rather than filed twice; the panel then reports that no ticket was created. A closed ticket does not block a new one.
+
+---
+
+## 4. Link findings to a ticket that already exists
+
+In the same panel, choose **Link to an existing ticket** and give the **Linear identifier or link** — `ENG-123`, or a `https://linear.app/…` issue URL. One call links up to **500** occurrences.
+
+CybeDefend records the link and adds a CybeDefend attachment to the ticket. Its description, state and fields are never written.
+
+---
+
+## 5. What comes back from Linear
+
+The tickets CybeDefend knows about follow their Linear counterparts: state, assignee, priority, and the identifier and URL after a move to another team. A ticket deleted in Linear is marked as deleted. **Sync status** on the project's Linear panel refreshes them all on demand.
+
+When you handle a finding in CybeDefend, the ticket it is linked to is updated:
+
+| The ticket | What happens |
+| --- | --- |
+| Created by CybeDefend, every finding on it handled | Closed — in a **completed** state if at least one finding was fixed, a **cancelled** one otherwise — with a comment counting what was fixed and what was ignored |
+| Created by CybeDefend, some findings still open | A comment with the progress, and how many of its findings are handled |
+| One you linked yourself | A comment only — CybeDefend never closes a ticket a person created |
+
+A ticket someone reopened in Linear is not closed again. Comments carry counts and, when you dismissed a finding, the reason you gave — never a location, a code snippet or a value.
+
+---
+
+## 6. Disconnecting Linear
+
+**Organization Settings → Integrations → Linear → Disconnect** revokes the authorization and deletes the integration, every per-project setting and every finding ↔ ticket link. The tickets stay in Linear and are no longer linked back to CybeDefend.
+
+Reconnecting the same workspace afterwards starts from an empty configuration.
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="“Linear is not connected to this organization”">
+    No workspace is connected. Connect one from **Organization Settings → Integrations → Linear**.
+  </Accordion>
+  <Accordion title="“The connection with Linear has expired or was removed”">
+    The app was revoked or uninstalled on the Linear side. Use **Reconnect Linear**; your project settings and ticket links are still there.
+  </Accordion>
+  <Accordion title="“No Linear team is set for this project”">
+    The project has no destination yet. Choose a team in **Project Settings → Integrations → Linear**.
+  </Accordion>
+  <Accordion title="“This Linear team no longer exists or is not accessible”">
+    The team was archived or deleted, or the connected account lost access to it. Pick another team in the project's Linear settings.
+  </Accordion>
+  <Accordion title="“This Linear ticket could not be found”">
+    Check the identifier or the link. The ticket must live in the connected workspace.
+  </Accordion>
+  <Accordion title="No ticket is created after a scan">
+    Check that **Auto-create tickets after scans** is on, that the scan's branch is in the allowed branches (or that the list is empty), that the project has a team, and that the findings are not already linked to an open ticket — duplicates are skipped on purpose.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+**Related:** [Jira Cloud](/latest/issue-tracker-integrations/jira) · [Project Vulnerability List](/latest/managing-vulnerabilities/project-vulnerability-list) · [Updating Vulnerabilities](/latest/managing-vulnerabilities/updating-vulnerabilities)
