@@ -182,6 +182,32 @@ A repository scanned through a **GitHub** or **GitLab** integration must hold at
 
 Above that limit the scan stops before any scanner runs, and the project reports *"We could not process the repository archive. It may be too large or not a valid archive."*
 
+### Archives You Upload
+
+An archive you upload yourself — **Upload ZIP** in the dashboard, or `cybedefend scan` with `--dir` or `--file` — is checked against four limits before any scanner runs:
+
+| Limit | Value |
+|-------|-------|
+| Size of the uploaded ZIP | 5 GiB |
+| Uncompressed size of all its entries together | 5 GiB |
+| Uncompressed size of a single entry | 1 GiB |
+| Number of entries | 200,000 |
+
+Past any of them the scan fails with nothing scanned, and the dashboard names the limit it reached — *"The uploaded archive is too large: 6.20 GiB exceeds the 5.00 GiB limit"*. Leaving build outputs, dependency directories and binaries out of the archive is usually enough to stay under them.
+
+<Note>
+These are the limits of the hosted platform; a self-managed instance can be configured with its own.
+</Note>
+
+A scan refused this way carries `errorCategory: "archive"` and one of these codes on [Get a Scan by ID](/latest/api-reference/endpoint/scan/get-a-scan-by-id), so a pipeline can tell an oversized archive apart from a scanner failure:
+
+| `errorCode` | Name | Limit reached |
+|-------------|------|---------------|
+| `90` | `ARCHIVE_TOO_LARGE` | Size of the uploaded ZIP |
+| `91` | `ARCHIVE_TOO_MANY_ENTRIES` | Number of entries |
+| `92` | `ARCHIVE_ENTRY_TOO_LARGE` | Uncompressed size of a single entry |
+| `93` | `ARCHIVE_INFLATED_TOO_LARGE` | Uncompressed size of all entries together |
+
 ---
 
 **Related:** [Scan Parameters](/latest/code-scanning/scanning-options/scan-parameters) · [Create a Project](/latest/get-started/project-management/create-project) · [Cybe Analysis](/latest/agent-ai-integration/cybe-analysis-detail)
