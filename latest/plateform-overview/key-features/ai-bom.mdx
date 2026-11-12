@@ -52,7 +52,7 @@ Regular dependencies that have nothing to do with AI are **not** included — th
 The scanner combines multiple detection layers so that components are found even when one signal is missing:
 
 1. **Dependency manifests** — parses Python `requirements*.txt`, `setup.py` and `pyproject.toml` to discover declared AI packages and pin their versions. UTF-8 and UTF-16 (Windows-generated) manifests are both supported.
-2. **Source code analysis** — scans source files for AI-related imports and for hard-coded model identifiers (e.g. `"gpt-4o"`, `"claude-..."`, `"meta-llama/Llama-..."`) that would otherwise go unrecorded.
+2. **Source code analysis** — scans source files for AI-related imports and for hard-coded model identifiers (e.g. `"gpt-4o"`, `"claude-..."`, `"meta-llama/Llama-..."`) that would otherwise go unrecorded. An identifier written with a provider routing prefix (`"azure/gpt-4o"`, `"vertex_ai/veo-3.1-generate-001"`) is recorded as the model itself, attributed to the provider that publishes it rather than to the route it is called through.
 3. **Model weight files** — discovers model artifacts on disk by extension, records them as components and fingerprints them with a SHA-256 hash.
 4. **Version & evidence enrichment** — attaches versions from manifests and records the exact file location where each component was found.
 
