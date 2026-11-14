@@ -66,6 +66,10 @@ IAC scanning ensures that **cloud** and **container** configurations adhere to b
   <img src="/images/get-started/general-information/iac.png" alt="IAC Security Analysis" style={{ borderRadius: '0.5rem' }} />
 </Frame>
 
+<Note>
+**The scanners run with CybeDefend's own configuration.** A `.checkov.yaml`, `.checkov.yml`, `kics.config` or `kics.config.<ext>` file at the root of your repository has no effect on the scan. To keep findings out of your results, exclude paths with a [`.cybeignore` file](/latest/code-scanning/scanning-options/cybedefend-ignore-file) or silence a single finding with an [inline `cybedefend-ignore` comment](/latest/code-scanning/scanning-options/inline-ignore-comments).
+</Note>
+
 <Warning>
 IAC misconfigurations can lead to severe breaches. The CybeDefend Engine identifies issues in your code, saving you from manually piecing together results from multiple scanners.
 </Warning>
