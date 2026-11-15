@@ -212,6 +212,47 @@ A scan refused this way carries `errorCategory: "archive"` and one of these code
 | `92` | `ARCHIVE_ENTRY_TOO_LARGE` | Uncompressed size of a single entry |
 | `93` | `ARCHIVE_INFLATED_TOO_LARGE` | Uncompressed size of all entries together |
 
+## Knowing When a Scan's Results Are Final
+
+A scan reaches the `completed` state once its results are final, so a pipeline
+that waits for `completed` can read the results straight away. To follow where a
+scan's results stand at any point, poll:
+
+```
+GET /project/{projectId}/scan/{scanId}/results-status
+```
+
+Base URLs are regional: `https://api-eu.cybedefend.com` or
+`https://api-us.cybedefend.com`. The call takes the same access as
+[Get a Scan by ID](/latest/api-reference/endpoint/scan/get-a-scan-by-id).
+
+| Field | Description |
+|-------|-------------|
+| `scanId` | The scan you asked for |
+| `state` | The state of the scan, as [Get a Scan by ID](/latest/api-reference/endpoint/scan/get-a-scan-by-id) reports it |
+| `resultsStatus` | `pending`, `processing` or `ready` — see below |
+| `resultsFinalizedAt` | ISO-8601 instant at which the results became final. Absent until then |
+
+| `resultsStatus` | What it means for you |
+|-----------------|-----------------------|
+| `pending` | The results are not being processed yet |
+| `processing` | The results are still being processed and may change |
+| `ready` | The scan has ended and its results will not change |
+
+```bash
+curl https://api-eu.cybedefend.com/project/$PROJECT_ID/scan/$SCAN_ID/results-status \
+  -H "Authorization: Bearer $CYBEDEFEND_TOKEN"
+```
+
+```json
+{
+  "scanId": "550e8400-e29b-41d4-a716-446655440001",
+  "state": "completed",
+  "resultsStatus": "ready",
+  "resultsFinalizedAt": "2026-11-13T10:15:30.000Z"
+}
+```
+
 ---
 
 **Related:** [Scan Parameters](/latest/code-scanning/scanning-options/scan-parameters) · [Create a Project](/latest/get-started/project-management/create-project) · [Cybe Analysis](/latest/agent-ai-integration/cybe-analysis-detail)
