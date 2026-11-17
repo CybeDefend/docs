@@ -204,7 +204,7 @@ All tools share the same shape: a typed JSON schema the agent's planner can reas
 | `get_branches` | Distinct branches that have findings on this project. |
 | `list_vulnerabilities_sast` | Paginated SAST findings. Filters: `severity`, `status`, `priority`, `language`, `searchQuery`, `branch`, `hasAutofix`. |
 | `get_vulnerability_sast` | Single SAST finding with code snippet, file path, line, taint sink. |
-| `list_vulnerabilities_sca` | Paginated SCA findings. Filters: `severity`, `status`, `priority`, `packageType`, `language`, `searchQuery`, `branch`, `hasAutofix`. |
+| `list_vulnerabilities_sca` | Paginated SCA findings. Each item carries `cve` and, when the advisory's own id differs from it, `advisoryId` (`GHSA-29mw-wpgm-hmr9`, `PYSEC-…`, `RUSTSEC-…`), so an advisory published without a CVE is still identified. Filters: `severity`, `status`, `priority`, `packageType`, `language`, `searchQuery`, `branch`, `hasAutofix`. |
 | `get_vulnerability_sca` | Single SCA finding with affected package, version, suggested bump. |
 | `list_sca_packages` | Full package tree for the project (direct, dev, transitive). |
 | `list_vulnerabilities_iac` | Paginated IaC findings with the standard filter set. |
