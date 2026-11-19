@@ -117,6 +117,10 @@ Negation is the tool for excluding a whole class while keeping one member of it 
 This matters most for the patterns people reach for first. `**/*.spec.ts` or `tests/` will silence Gitleaks across your whole test suite, which is exactly where fixture credentials — and the occasional real one pasted in by mistake — tend to live.
 </Warning>
 
+<Note>
+**An exclusion does not reach back into your git history.** Secret scanning also reads the commits of the branch it scans, and the exclusion applies to what the scan analyses from that point on. Secrets already reported from older commits stay in your results until you triage them in the **Secrets** tab, and removing the exclusion later brings back only the occurrences still present in your code. See [Git History Coverage](/latest/code-scanning/scanning-options/code-repository-scanning#git-history-coverage).
+</Note>
+
 When only a few findings in a file are false positives, prefer [inline `cybedefend-ignore` comments](/latest/code-scanning/scanning-options/inline-ignore-comments) over listing the whole file here: the exclusion stays scoped to the lines you reviewed, and the rest of the file keeps being scanned.
 
 ## Common Use Cases

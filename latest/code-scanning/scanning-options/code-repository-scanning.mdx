@@ -178,6 +178,25 @@ If you use special file names or custom project layouts, you can configure <stro
 |-----------------------|---------------|
 | **CybeDefend Engine** | Gitleaks      |
 
+### Git History Coverage
+
+On a repository connected through **GitHub** or **GitLab**, secret scanning reads the git history of the branch it scans, not only the files on that branch today: a credential committed earlier and deleted since is still reported. Every new commit is analysed at each scan.
+
+A notice at the top of the **Secrets** tab tells you what the last scan covered. Nothing is shown when the whole history of the branch is covered.
+
+| Notice | What it means for you |
+|--------|------------------------|
+| *Large git history: commits analysed since `<date>`* | Commits older than that date have not been analysed. |
+| *Git history not analysed (too large or unavailable): only the current code was scanned* | The findings come from the files on the branch, not from its history. |
+| *Some commits were not analysed, between `<date>` and `<date>`* | That range was left out. Secrets it introduced and that are gone from the code today are not reported. |
+| *The last analysis of the git history failed. It is retried at the next scan.* | Nothing to do — the next scan picks the range up again. |
+
+The same coverage is on [Get a Scan by ID](/latest/api-reference/endpoint/scan/get-a-scan-by-id) as `historyCoverage` — `complete`, `coveredSince`, `gaps` and `lastPassOutcome` — so a pipeline can read it without opening the dashboard.
+
+<Note>
+A path excluded by a [`.cybeignore` file](/latest/code-scanning/scanning-options/cybedefend-ignore-file) is excluded from the history too, and an exclusion you add does not reach back into commits already analysed.
+</Note>
+
 ---
 
 ## Repository Size Limit
