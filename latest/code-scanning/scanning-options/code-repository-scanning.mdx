@@ -194,7 +194,7 @@ A notice at the top of the **Secrets** tab tells you what the last scan covered.
 The same coverage is on [Get a Scan by ID](/latest/api-reference/endpoint/scan/get-a-scan-by-id) as `historyCoverage` — `complete`, `coveredSince`, `gaps` and `lastPassOutcome` — so a pipeline can read it without opening the dashboard.
 
 <Note>
-A path excluded by a [`.cybeignore` file](/latest/code-scanning/scanning-options/cybedefend-ignore-file) is excluded from the history too, and an exclusion you add does not reach back into commits already analysed.
+A path excluded by a [`.cybeignore` file](/latest/code-scanning/scanning-options/cybedefend-ignore-file) is excluded from the history too, and a secret the exclusion drops is closed in your results — see [what an exclusion does to secrets](/latest/code-scanning/scanning-options/cybedefend-ignore-file#scope).
 </Note>
 
 ---
