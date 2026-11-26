@@ -147,6 +147,20 @@ Send request bodies uncompressed: `Content-Type: application/json` and no `Conte
 | Request body | Not accepted — send it uncompressed. |
 | Response body | Advertise `Accept-Encoding: br` or `gzip`; large responses come back encoded. |
 
+### Request Body Size
+
+A request body is read up to **1 MiB**. The routes that take a file upload are the
+exception: their multipart parts are bounded by their own limits.
+
+<Warning>
+**A body over 1 MiB is refused with `413`**, before the request reaches any handler.
+Split a bulk call into several requests rather than sending one large body.
+</Warning>
+
+<Note>
+This is the limit of the hosted platform; a self-managed instance can be configured with its own.
+</Note>
+
 ---
 
 ## API Key — Deprecated
