@@ -38,6 +38,7 @@ VibeDefend adds the **active** layer on top. The hooks fire on the agent's own l
 |---|---|---|
 | **Before a write** (`Edit` / `Write` / `MultiEdit`, plus shell commands that write files on Claude Code and Codex⁴) | Injects the business + security rules relevant to *this* change into the agent's context. | The agent writes secure, on-policy code from the first line instead of being corrected afterwards. |
 | **On any tool call** | **Action Guards** evaluate the call against your guard policy and hard-block on deny. | A `rm -rf`, a write to a protected path, or a fetch to a blocked host is stopped before it runs — not flagged after. |
+| **Before a package enters the project** | Resolves the packages an install command or a manifest edit would bring in, has CybeDefend check them, and refuses the call on a bad one. | A malicious or vulnerable dependency is stopped before it is on disk, not found in the next scan. |
 | **At session start** | Loads the CybeDefend doctrine and opens the **proposals inbox** (Accept / Reject picker). | The agent starts every session knowing your rules, and you clear pending rule proposals up front. |
 | **At session end** (`Stop`) | Runs a **gap analysis** once the session crosses the edit threshold. | Surfaces the business rules you relied on but never wrote down, and proposes them for review. |
 | **On long sessions** (`PreCompact`) | Same gap analysis, fired before the context window is compacted. | Long sessions don't lose their rule-gap review just because the transcript got summarised. |
@@ -56,6 +57,7 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 | **MCP server install** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Business + Security Rules** *(injected pre-write)* | ✅ edit + shell⁴ | ❌ not exposed⁵ | ✅ edit + shell⁴ | ⚠️ writes only | ✅ | ⚠️ edit + shell⁴, at the next model call⁶ |
 | **Action Guards** *(hard block on deny)* | ✅ all tools | ✅ all tools | ✅ all tools | ⚠️ writes, reads, shell + MCP fallback¹ | ❌ not yet wired | ✅ all tools |
+| **Package check** *(before a package enters the project)* | ✅ commands + manifest edits | ✅ commands + manifest edits | ✅ commands + manifest edits | ✅ commands + manifest edits | ⚠️ manifest edits only⁷ | ✅ commands + manifest edits |
 | **Session Start** *(loads doctrine + proposals inbox)* | ✅ | ✅ | ✅ | ⚠️ proxied² | ✅ | ✅ |
 | **Session Review** *(end-of-session gap analysis)* | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **PreCompact** *(long-session gap analysis)* | ✅ | ❌ not exposed⁵ | ❌ no event | ❌ no event | ❌ not exposed⁵ | ❌ no event |
@@ -76,6 +78,8 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 
 ⁶ Antigravity gives a pre-write hook no channel to the model either, so the rules fetched for an edit are held and delivered at the agent's **next model call** rather than before the write itself — one step later than on the other clients, and still before the agent acts on what it just read.
 
+⁷ On VS Code the package check is wired on the edit tools only, so a manifest edit is checked before it runs but an install command is not. The command is caught afterwards, by [the end-of-turn check](#the-end-of-turn-check), through the lockfile it changed.
+
 ---
 
 ## The install flow, step by step
@@ -94,6 +98,7 @@ VibeDefend auto-detects and wires whichever of these you have installed. Uncheck
 
     - **Enable the session-end gap analysis?** — default **on**. Without it, the gap analysis never runs.
     - **Edits threshold to trigger it?** — default **1**, so the gap analysis runs after every session that touched code. An integer from 0 to 100; raise it if the nudge feels noisy.
+    - **Check the packages the agent installs or runs, and the manifests it edits?** — default **on**. See [Package check](#package-check).
     - **Enable automatic background updates?** — default **on**. Hooks self-refresh so you never re-run install (see [Keeping VibeDefend current](#keeping-vibedefend-current)).
     - **Enable non-blocking mode?** — default **off**. For an autonomous agent — a CI runner, an unattended agent — with nobody in the chat to answer a prompt. See [Non-blocking mode](#non-blocking-mode).
     - **Enable auto-propose mode?** — default **off** *(not recommended)*. Off means rule proposals need an explicit chat-side "yes". On means the agent drafts and pushes proposals without asking first — you still review them at the next session start. Non-blocking mode supersedes it, so the installer skips this question when you turn that on.
@@ -237,6 +242,28 @@ A SAST finding with a file and a line carries a **Code map** tab: the routes tha
 <Note>
 When no route reaches the line, the tab says so. That is what the analysis found, not a guarantee: the code can still be called another way — a job, a script, another service.
 </Note>
+
+---
+
+## Package check
+
+Before a package enters your project, VibeDefend checks it. The hook fires when the agent installs or runs a package (`npm install`, `pnpm add`, `pip install`, `npx`, `cargo add` and the other managers it knows) and when it edits a manifest (`package.json`, `requirements.txt`, `Cargo.toml`, …). The packages that would actually enter the project — direct and transitive — are resolved on your machine, CybeDefend checks them, and the call is either allowed or refused. A refusal reaches the agent with a link to the check in your dashboard.
+
+The JavaScript, Python, Rust, Go, PHP, Ruby, .NET and Java ecosystems are covered. If the check cannot run — no project, no network, a manager VibeDefend does not know — the call goes ahead.
+
+After the agent edits `requirements.txt`, `pip install -r requirements.txt` checks the lines the file gained since your last commit, with what they pull in.
+
+### The end-of-turn check
+
+Some packages reach a lockfile without being checked first: an install command on [VS Code](#supported-agents), a manager VibeDefend does not parse, a check that could not run. At the end of the agent's turn VibeDefend reads the lockfiles the session changed and checks whatever entered unchecked. It needs a git repository; outside one it does nothing.
+
+This check cannot undo an install. The agent tells you which packages failed and proposes a fix, and changes nothing without your agreement.
+
+### What leaves your machine
+
+Package identity only. For each package: its ecosystem, its name, its version, whether it is a direct dependency, the direct package that pulled it in, and whether it came from the public registry. No manifest, no lockfile, no path, no command line, no environment, no registry URL, no git URL and no code.
+
+A package from a private registry is sent like any other, with its name and version and marked as not public — the registry itself is never named. A git or URL dependency is not sent at all, and the agent is told it was not verified.
 
 ---
 
@@ -387,6 +414,7 @@ The hook settings are chosen at install and stored in your VibeDefend config. To
 | Review threshold | Edits before the session-end gap analysis fires (default `1`, so it fires after every session that touched code; 0 to 100). |
 | Auto-propose | Whether the agent proposes rules without asking you first (default off). |
 | Non-blocking | Whether any hook pauses for a chat-side Accept / Reject (default off). |
+| Package check | Whether the packages the agent installs and the manifests it edits are checked (default on). Stored as `hooks.enablePackageCheck` in `~/.cybedefend/runtime-config.json`. See [Package check](#package-check). |
 
 ### Non-blocking mode
 
